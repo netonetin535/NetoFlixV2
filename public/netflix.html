@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Netflix Clone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: 'Roboto', sans-serif;
+      background-color: #111;
+      color: #fff;
+      overflow-y: scroll;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    body::-webkit-scrollbar { display: none; }
+
+    .floating-icons {
+      position: fixed;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1000;
+    }
+
+    .floating-icons a {
+      color: white;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 6px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .floating-icons a:hover { background-color: #e50914; }
+
+    .floating-icons svg { width: 18px; height: 18px; }
+
+    .admin-login-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 6px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+      border: none;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .admin-login-btn:hover { background-color: #e50914; }
+
+    .admin-login-btn svg { width: 18px; height: 18px; }
+
+    .container { width: 100%; }
+
+    .hero {
+      width: 100%;
+      height: 65vh;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      padding: 60px;
+      position: relative;
+      transition: background-image 0.8s ease-in-out;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #111 10%, transparent 90%);
+    }
+
+    .hero-content { position: relative; z-index: 2; }
+
+    .tipo {
+      color: #e50914;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .hero h1 { font-size: 3em; margin-bottom: 10px; }
+
+    .hero p { max-width: 600px; font-size: 1em; margin-bottom: 20px; }
+
+    .btn {
+      background: white;
+      color: black;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .secundario {
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+    }
+
+    .secao {
+      padding: 20px 60px;
+    }
+
+    .secao h2 {
+      font-size: 1.4em;
+      margin-bottom: 10px;
+    }
+
+    .scroll-wrapper {
+      position: relative;
+    }
+
+    .grid-filmes {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding-bottom: 15px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .grid-filmes::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      min-width: 180px;
+      max-width: 180px;
+      background: #111;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .card:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+      z-index: 10;
+    }
+
+    .card img {
+      width: 100%;
+      height: 270px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-title {
+      padding: 8px;
+      font-size: 0.85em;
+      text-align: center;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .scroll-btn {
+      position: absolute;
+      top: 40%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+      border-radius: 50%;
+      z-index: 10;
+      transition: background 0.3s ease;
+    }
+
+    .scroll-btn:hover { background: #e50914; }
+    .scroll-btn.left { left: 0; }
+    .scroll-btn.right { right: 0; }
+
+    .focusable:focus {
+      outline: 3px solid #e50914;
+      z-index: 10000;
+    }
+
+    #loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    #loader.hidden { display: none; }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #ffffff30;
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <a href="admin-login.html" class="admin-login-btn" title="Login Administrativo">
+    <i data-lucide="user"></i>
+  </a>
+
+  <div class="floating-icons">
+    <a href="netflix.html" title="Início"><i data-lucide="home"></i></a>
+    <a href="filmes.html" title="Filmes"><i data-lucide="clapperboard"></i></a>
+    <a href="series.html" title="Séries"><i data-lucide="tv"></i></a>
+    <a href="esportes.html" title="Esportes"><i data-lucide="trophy"></i></a>
+    <a href="historico.html" title="Histórico"><i data-lucide="history"></i></a>
+  </div>
+
+  <div class="container">
+    <div class="hero" id="hero">
+      <div class="hero-content">
+        <p class="tipo">NetoFlix</p>
+        <h1 id="destaque-titulo">Carregando...</h1>
+        <p id="destaque-descricao">Aguarde descrição...</p>
+        <div class="botoes">
+          <button id="btn-assistir" class="btn">▶ Assistir</button>
+          <button class="btn secundario" onclick="abrirMaisInformacoes()">Mais informações</button>
+        </div>
+      </div>
+    </div>
+    <div id="secoes-filmes"></div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    const API_KEY = "5f331944166018e8f887957b773906d4";
+    let filmesValidos = [];
+    let indexAtual = 0;
+
+    async function carregarFilmesValidos() {
+      try {
+        const res = await fetch("catalogo.json");
+        const catalogo = await res.json();
+        filmesValidos = catalogo.filter(f => f.tmdb_id);
+        if (!filmesValidos.length) {
+          console.warn("Nenhum filme válido com tmdb_id encontrado no catálogo.");
+        }
+        atualizarFilmeDestaque();
+        setInterval(atualizarFilmeDestaque, 10000);
+      } catch (e) {
+        console.error("Erro ao carregar catálogo:", e);
+      }
+    }
+
+    async function atualizarFilmeDestaque() {
+      if (!filmesValidos.length) return;
+      const filme = filmesValidos[indexAtual % filmesValidos.length];
+      indexAtual++;
+
+      try {
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${filme.tmdb_id}?api_key=${API_KEY}&language=pt-BR`);
+        const info = await res.json();
+
+        if (!info.backdrop_path) return;
+
+        document.getElementById("hero").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${info.backdrop_path})`;
+        document.getElementById("destaque-titulo").textContent = info.title || "Título";
+        document.getElementById("destaque-descricao").textContent = info.overview || "Descrição...";
+
+        const btnAssistir = document.getElementById("btn-assistir");
+        if (filme.stream_id && filme.tmdb_id) {
+          btnAssistir.onclick = () => {
+            window.location.href = `player.html?stream_id=${filme.stream_id}&tmdb_id=${filme.tmdb_id}`;
+          };
+          btnAssistir.style.display = "inline-block";
+        } else {
+          console.warn(`Filme sem stream_id ou tmdb_id:`, filme);
+          btnAssistir.style.display = "none";
+        }
+      } catch (e) {
+        console.warn("Erro ao atualizar destaque:", e);
+      }
+    }
+
+    async function carregarSecoes() {
+      try {
+        const res = await fetch("catalogo.json");
+        const filmes = await res.json();
+        const secoes = document.getElementById("secoes-filmes");
+
+        const categorias = {
+          "Populares": filmes.slice(0, 12),
+          "Lançamentos": filmes.slice(12, 24),
+          "Recomendados": filmes.slice(24, 36)
+        };
+
+        for (const [categoria, lista] of Object.entries(categorias)) {
+          const secao = document.createElement("div");
+          secao.className = "secao";
+          secao.innerHTML = `
+            <h2>${categoria}</h2>
+            <div class="scroll-wrapper">
+              <button class="scroll-btn left" aria-label="Voltar">◀</button>
+              <div class="grid-filmes"></div>
+              <button class="scroll-btn right" aria-label="Avançar">▶</button>
+            </div>
+          `;
+          secoes.appendChild(secao);
+
+          const grid = secao.querySelector(".grid-filmes");
+
+          for (const filme of lista) {
+            if (!filme.tmdb_id) continue;
+
+            const info = await fetch(`https://api.themoviedb.org/3/movie/${filme.tmdb_id}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
+            if (!info.poster_path) continue;
+
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+              <img src="https://image.tmdb.org/t/p/w300${info.poster_path}" alt="${info.title}" />
+              <div class="card-title">${info.title}</div>
+            `;
+            card.onclick = () => {
+              window.location.href = `detalhes.html?id=${filme.tmdb_id}`;
+            };
+            grid.appendChild(card);
+          }
+
+          const btnLeft = secao.querySelector(".scroll-btn.left");
+          const btnRight = secao.querySelector(".scroll-btn.right");
+
+          btnLeft.onclick = () => grid.scrollBy({ left: -400, behavior: 'smooth' });
+          btnRight.onclick = () => grid.scrollBy({ left: 400, behavior: 'smooth' });
+        }
+      } catch (e) {
+        console.error("Erro nas seções:", e);
+      }
+    }
+
+    function abrirMaisInformacoes() {
+      if (!filmesValidos.length) return;
+      const filmeAtual = filmesValidos[(indexAtual - 1) % filmesValidos.length];
+      window.location.href = `detalhes.html?id=${filmeAtual.tmdb_id}`;
+    }
+
+    (async function iniciar() {
+      await carregarFilmesValidos();
+      await carregarSecoes();
+      document.getElementById("loader").classList.add("hidden");
+    })();
+  </script>
+</body>
+</html>

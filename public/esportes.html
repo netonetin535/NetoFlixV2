@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jogos do Dia</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+    header {
+      text-align: center;
+      padding: 30px 10px;
+      background-color: #111;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #00d8ff;
+    }
+    #btn-login-admin {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: #00d8ff;
+      border: none;
+      color: #111;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+    #btn-login-admin:hover { background-color: #008fb3; }
+    #btn-update-jogos {
+      position: absolute;
+      top: 15px;
+      right: 140px;
+      background-color: #00ffbf;
+      border: none;
+      color: #111;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: none;
+      transition: background-color 0.3s;
+    }
+    #btn-update-jogos:hover { background-color: #00bf8f; }
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      padding: 0 20px;
+    }
+    .card {
+      background-color: #1e2a38;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      position: relative;
+    }
+    .card:hover { transform: scale(1.02); }
+    .teams {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .teams img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      background-color: #fff;
+      border-radius: 50%;
+      padding: 5px;
+    }
+    .match {
+      text-align: center;
+      font-size: 1.1rem;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+    .info {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #ccc;
+    }
+    .time {
+      font-size: 1.2rem;
+      color: #00ffbf;
+      margin-top: 10px;
+    }
+    .btn-editar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #0077aa;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      display: none;
+      transition: background-color 0.3s;
+    }
+    .btn-editar:hover { background-color: #005f7a; }
+    #modal-editar {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    #modal-content {
+      background: #1e2a38;
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 90%;
+      color: #fff;
+    }
+    #modal-content label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    #modal-content input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+    #modal-content .checkbox-group {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #modal-content button {
+      padding: 8px 15px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    #btn-salvar { background-color: #00ffbf; color: #111; }
+    #btn-cancelar { background-color: #777; color: #eee; }
+    .btn-assistir {
+      cursor: pointer;
+      color: #00ffbf;
+      font-weight: bold;
+      text-decoration: underline;
+      display: inline-block;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏆 Jogos do Dia</h1>
+    <button id="btn-login-admin">Login Admin</button>
+    <button id="btn-update-jogos" title="Executar scraper.py">Atualizar Jogos</button>
+  </header>
+
+  <main class="container" id="jogos-container"></main>
+
+  <div id="modal-editar">
+    <div id="modal-content">
+      <h2>Editar Link do Jogo</h2>
+      <label for="input-link">Link m3u8:</label>
+      <input type="text" id="input-link" placeholder="Cole o link m3u8 aqui" />
+      <div class="checkbox-group">
+        <input type="checkbox" id="checkbox-ativo" />
+        <label for="checkbox-ativo">Ativar Link</label>
+      </div>
+      <button id="btn-salvar">Salvar</button>
+      <button id="btn-cancelar">Cancelar</button>
+    </div>
+  </div>
+
+  <script>
+    const btnLoginAdmin = document.getElementById("btn-login-admin");
+    const btnUpdateJogos = document.getElementById("btn-update-jogos");
+    const jogosContainer = document.getElementById("jogos-container");
+    const modal = document.getElementById("modal-editar");
+    const inputLink = document.getElementById("input-link");
+    const checkboxAtivo = document.getElementById("checkbox-ativo");
+    const btnSalvar = document.getElementById("btn-salvar");
+    const btnCancelar = document.getElementById("btn-cancelar");
+
+    let jogos = [];
+    let editarIndex = null;
+
+    function isAdmin() {
+      return localStorage.getItem("isAdmin") === "true";
+    }
+
+    function updateAdminUI() {
+      if (isAdmin()) {
+        btnLoginAdmin.textContent = "Logout Admin";
+        btnUpdateJogos.style.display = "inline-block";
+      } else {
+        btnLoginAdmin.textContent = "Login Admin";
+        btnUpdateJogos.style.display = "none";
+      }
+      renderJogos();
+    }
+
+    // Verifica com backend se está logado
+    fetch('/check-admin')
+      .then(res => res.json())
+      .then(data => {
+        if (data.isAdmin) {
+          localStorage.setItem("isAdmin", "true");
+        } else {
+          localStorage.removeItem("isAdmin");
+        }
+        updateAdminUI();
+      });
+
+    btnLoginAdmin.onclick = () => {
+      if (isAdmin()) {
+        fetch('/logout', { method: 'POST' })
+          .then(() => {
+            localStorage.removeItem("isAdmin");
+            updateAdminUI();
+          });
+      } else {
+        window.location.href = "loginjogos.html";
+      }
+    };
+
+    btnUpdateJogos.onclick = () => {
+      if (!isAdmin()) return alert("Você precisa estar logado como admin!");
+      btnUpdateJogos.disabled = true;
+      btnUpdateJogos.textContent = "Atualizando...";
+
+      fetch('/update', { method: 'POST' })
+        .then(r => {
+          if (!r.ok) throw new Error("Erro ao atualizar");
+          return r.json();
+        })
+        .then(data => {
+          alert(data.message);
+          carregarJogos();
+        })
+        .catch(e => {
+          alert("Erro ao atualizar jogos: " + e.message);
+        })
+        .finally(() => {
+          btnUpdateJogos.disabled = false;
+          btnUpdateJogos.textContent = "Atualizar Jogos";
+        });
+    };
+
+    function carregarJogos() {
+      fetch('/jogos.json')
+        .then(res => res.json())
+        .then(data => {
+          jogos = data;
+          const linksSalvos = JSON.parse(localStorage.getItem("linksJogos") || "{}");
+          jogos = jogos.map(jogo => {
+            const chave = jogo.match;
+            if (linksSalvos[chave]) {
+              return {...jogo, link_m3u8: linksSalvos[chave].link_m3u8 || null, ativo: linksSalvos[chave].ativo || false };
+            }
+            return {...jogo, link_m3u8: null, ativo: false};
+          });
+          renderJogos();
+        })
+        .catch(err => {
+          console.error("Erro ao carregar jogos:", err);
+          jogosContainer.innerHTML = "<p style='text-align:center;'>Erro ao carregar os jogos.</p>";
+        });
+    }
+
+    function renderJogos() {
+      jogosContainer.innerHTML = "";
+      if (!jogos.length) {
+        jogosContainer.innerHTML = "<p style='text-align:center;width:100%;font-size:1.2rem;'>Nenhum jogo encontrado.</p>";
+        return;
+      }
+
+      jogos.forEach((jogo, i) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        let infoHtml = "";
+        if (jogo.ativo && jogo.link_m3u8) {
+          const urlEncoded = encodeURIComponent(jogo.link_m3u8);
+          // Aqui abre na MESMA guia, sem target _blank
+          infoHtml = `<a class="btn-assistir" href="playerjogos.html?link=${urlEncoded}">🎬 Assistir</a>`;
+        } else {
+          infoHtml = `📺 ${jogo.channel || "Não informado"}`;
+        }
+
+        card.innerHTML = `
+          <div class="teams">
+            <img src="${jogo.logo_a}" alt="Logo time A">
+            <img src="${jogo.logo_b}" alt="Logo time B">
+          </div>
+          <div class="match">${jogo.match}</div>
+          <div class="time">⏰ ${jogo.time}</div>
+          <div class="info">${infoHtml}</div>
+        `;
+
+        if (isAdmin()) {
+          const btnEditar = document.createElement("button");
+          btnEditar.textContent = "Editar";
+          btnEditar.className = "btn-editar";
+          btnEditar.onclick = () => abrirModalEditar(i);
+          card.appendChild(btnEditar);
+          btnEditar.style.display = "inline-block";
+        }
+
+        jogosContainer.appendChild(card);
+      });
+    }
+
+    function abrirModalEditar(index) {
+      editarIndex = index;
+      const jogo = jogos[index];
+      inputLink.value = jogo.link_m3u8 || "";
+      checkboxAtivo.checked = jogo.ativo || false;
+      modal.style.display = "flex";
+    }
+
+    function fecharModal() {
+      modal.style.display = "none";
+      editarIndex = null;
+      inputLink.value = "";
+      checkboxAtivo.checked = false;
+    }
+
+    btnCancelar.onclick = fecharModal;
+
+    btnSalvar.onclick = () => {
+      if (editarIndex === null) return;
+
+      const novoLink = inputLink.value.trim();
+      const ativo = checkboxAtivo.checked;
+
+      jogos[editarIndex].link_m3u8 = novoLink || null;
+      jogos[editarIndex].ativo = ativo && novoLink.length > 0;
+
+      const chave = jogos[editarIndex].match;
+      let linksSalvos = JSON.parse(localStorage.getItem("linksJogos") || "{}");
+      linksSalvos[chave] = {
+        link_m3u8: jogos[editarIndex].link_m3u8,
+        ativo: jogos[editarIndex].ativo
+      };
+      localStorage.setItem("linksJogos", JSON.stringify(linksSalvos));
+
+      fecharModal();
+      renderJogos();
+    };
+
+    modal.onclick = e => {
+      if (e.target === modal) fecharModal();
+    };
+
+    carregarJogos();
+  </script>
+</body>
+</html>

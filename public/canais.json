@@ -1,0 +1,597 @@
+[
+    {
+        "tvg-id": "BandSports.br",
+        "tvg-name": "BAND SPORTS FHD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94563_ll_h3_ab.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/232867.m3u8"
+    },
+    {
+        "tvg-id": "BandSports.br",
+        "tvg-name": "BAND SPORTS FHD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94563_ll_h3_ab.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/676865.m3u8"
+    },
+    {
+        "tvg-id": "BandSports.br",
+        "tvg-name": "BAND SPORTS HD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94563_ll_h3_ab.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/232866.m3u8"
+    },
+    {
+        "tvg-id": "BandSports.br",
+        "tvg-name": "BAND SPORTS HD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94563_ll_h3_ab.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/676864.m3u8"
+    },
+    {
+        "tvg-id": "BandSports.br",
+        "tvg-name": "BAND SPORTS SD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94563_ll_h3_ab.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/232865.m3u8"
+    },
+    {
+        "tvg-id": "BandSports.br",
+        "tvg-name": "BAND SPORTS SD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94563_ll_h3_ab.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/676863.m3u8"
+    },
+    {
+        "tvg-id": "NSports.br",
+        "tvg-name": "NSPORTS FHD¹",
+        "tvg-logo": "https://www.esm.com.br/assets/img/logos/tvnsports-pos.jpg",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/232892.m3u8"
+    },
+    {
+        "tvg-id": "NSports.br",
+        "tvg-name": "NSPORTS FHD²",
+        "tvg-logo": "http://97j91.xyz:8080/images/NSPORTS.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/676866.m3u8"
+    },
+    {
+        "tvg-id": "NSports.br",
+        "tvg-name": "NSPORTS HD¹",
+        "tvg-logo": "http://97j91.xyz:8080/images/NSPORTS.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/233152.m3u8"
+    },
+    {
+        "tvg-id": "NSports.br",
+        "tvg-name": "NSPORTS HD²",
+        "tvg-logo": "http://97j91.xyz:8080/images/NSPORTS.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/676867.m3u8"
+    },
+    {
+        "tvg-id": "NSports.br",
+        "tvg-name": "NSPORTS SD¹",
+        "tvg-logo": "http://97j91.xyz:8080/images/NSPORTS.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/233150.m3u8"
+    },
+    {
+        "tvg-id": "NSports.br",
+        "tvg-name": "NSPORTS SD²",
+        "tvg-logo": "http://97j91.xyz:8080/images/NSPORTS.png",
+        "group-title": "⚽ ESPORTES",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/676868.m3u8"
+    },
+    {
+        "tvg-id": "SporTV.br",
+        "tvg-name": "SPORTV 1 FHD¹",
+        "tvg-logo": "http://newoneblack.site:80/images/70AkxnypVWPTHy1dtpASpdY3N_qGKo3pYimnvS8rPWIN_y8EjaM_dpDRZ-gDLtwZMhgdpxp4W7hYhLYssSHKsA.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236284.m3u8"
+    },
+    {
+        "tvg-id": "SporTV.br",
+        "tvg-name": "SPORTV 1 FHD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94567_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236285.m3u8"
+    },
+    {
+        "tvg-id": "SporTV.br",
+        "tvg-name": "SPORTV 1 HD¹",
+        "tvg-logo": "http://newoneblack.site:80/images/70AkxnypVWPTHy1dtpASpdY3N_qGKo3pYimnvS8rPWIN_y8EjaM_dpDRZ-gDLtwZMhgdpxp4W7hYhLYssSHKsA.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236286.m3u8"
+    },
+    {
+        "tvg-id": "SporTV.br",
+        "tvg-name": "SPORTV 1 HD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94567_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236287.m3u8"
+    },
+    {
+        "tvg-id": "SporTV.br",
+        "tvg-name": "SPORTV 1 SD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94567_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236288.m3u8"
+    },
+    {
+        "tvg-id": "SporTV.br",
+        "tvg-name": "SPORTV 1 SD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s94567_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236289.m3u8"
+    },
+    {
+        "tvg-id": "SporTV2.br",
+        "tvg-name": "SPORTV 2 FHD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110214_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236290.m3u8"
+    },
+    {
+        "tvg-id": "SporTV2.br",
+        "tvg-name": "SPORTV 2 FHD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110214_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236291.m3u8"
+    },
+    {
+        "tvg-id": "SporTV2.br",
+        "tvg-name": "SPORTV 2 HD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110214_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236292.m3u8"
+    },
+    {
+        "tvg-id": "SporTV2.br",
+        "tvg-name": "SPORTV 2 HD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110214_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236293.m3u8"
+    },
+    {
+        "tvg-id": "SporTV2.br",
+        "tvg-name": "SPORTV 2 SD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110214_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236294.m3u8"
+    },
+    {
+        "tvg-id": "SporTV2.br",
+        "tvg-name": "SPORTV 2 SD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110214_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236295.m3u8"
+    },
+    {
+        "tvg-id": "SporTV3.br",
+        "tvg-name": "SPORTV 3 FHD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110215_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236296.m3u8"
+    },
+    {
+        "tvg-id": "SporTV3.br",
+        "tvg-name": "SPORTV 3 FHD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110215_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236297.m3u8"
+    },
+    {
+        "tvg-id": "SporTV3.br",
+        "tvg-name": "SPORTV 3 HD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110215_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236298.m3u8"
+    },
+    {
+        "tvg-id": "SporTV3.br",
+        "tvg-name": "SPORTV 3 HD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110215_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236299.m3u8"
+    },
+    {
+        "tvg-id": "SporTV3.br",
+        "tvg-name": "SPORTV 3 SD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s110215_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236300.m3u8"
+    },
+    {
+        "tvg-id": "SporTV3.br",
+        "tvg-name": "SPORTV 3 SD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s76967_ll_h3_aa.png",
+        "group-title": "⚽ SPORTV",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/236301.m3u8"
+    },
+    {
+        "tvg-id": "ESPN.us",
+        "tvg-name": "ESPN 1 FHD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s99096_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437918.m3u8"
+    },
+    {
+        "tvg-id": "ESPN.us",
+        "tvg-name": "ESPN 1 FHD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s99096_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437919.m3u8"
+    },
+    {
+        "tvg-id": "ESPN.us",
+        "tvg-name": "ESPN 1 HD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s99096_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437920.m3u8"
+    },
+    {
+        "tvg-id": "ESPN.us",
+        "tvg-name": "ESPN 1 HD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s99096_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437921.m3u8"
+    },
+    {
+        "tvg-id": "ESPN.us",
+        "tvg-name": "ESPN 1 SD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s99096_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437922.m3u8"
+    },
+    {
+        "tvg-id": "ESPN.us",
+        "tvg-name": "ESPN 1 SD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s99096_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437923.m3u8"
+    },
+    {
+        "tvg-id": "ESPN2.br",
+        "tvg-name": "ESPN 2 FHD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s75585_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437924.m3u8"
+    },
+    {
+        "tvg-id": "ESPN2.br",
+        "tvg-name": "ESPN 2 FHD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s75585_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437925.m3u8"
+    },
+    {
+        "tvg-id": "ESPN2.br",
+        "tvg-name": "ESPN 2 HD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s75585_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437926.m3u8"
+    },
+    {
+        "tvg-id": "ESPN2.br",
+        "tvg-name": "ESPN 2 HD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s75585_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437927.m3u8"
+    },
+    {
+        "tvg-id": "ESPN2.br",
+        "tvg-name": "ESPN 2 SD¹",
+        "tvg-logo": "http://www.tmsimg.com/assets/s75585_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437928.m3u8"
+    },
+    {
+        "tvg-id": "ESPN2.br",
+        "tvg-name": "ESPN 2 SD²",
+        "tvg-logo": "http://www.tmsimg.com/assets/s75585_ll_h3_ab.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437929.m3u8"
+    },
+    {
+        "tvg-id": "ESPN3.br",
+        "tvg-name": "ESPN 3 FHD¹",
+        "tvg-logo": "https://a.espncdn.com/watchespn/images/web/network_logos/channel_logo_espnplus_brazil_2x.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437930.m3u8"
+    },
+    {
+        "tvg-id": "ESPN3.br",
+        "tvg-name": "ESPN 3 FHD²",
+        "tvg-logo": "https://a.espncdn.com/watchespn/images/web/network_logos/channel_logo_espnplus_brazil_2x.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437931.m3u8"
+    },
+    {
+        "tvg-id": "ESPN3.br",
+        "tvg-name": "ESPN 3 HD¹",
+        "tvg-logo": "https://a.espncdn.com/watchespn/images/web/network_logos/channel_logo_espnplus_brazil_2x.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437932.m3u8"
+    },
+    {
+        "tvg-id": "ESPN3.br",
+        "tvg-name": "ESPN 3 HD²",
+        "tvg-logo": "https://a.espncdn.com/watchespn/images/web/network_logos/channel_logo_espnplus_brazil_2x.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437933.m3u8"
+    },
+    {
+        "tvg-id": "ESPN3.br",
+        "tvg-name": "ESPN 3 SD¹",
+        "tvg-logo": "https://a.espncdn.com/watchespn/images/web/network_logos/channel_logo_espnplus_brazil_2x.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437934.m3u8"
+    },
+    {
+        "tvg-id": "ESPN3.br",
+        "tvg-name": "ESPN 3 SD²",
+        "tvg-logo": "https://a.espncdn.com/watchespn/images/web/network_logos/channel_logo_espnplus_brazil_2x.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437935.m3u8"
+    },
+    {
+        "tvg-id": "ESPN4.br",
+        "tvg-name": "ESPN 4 FHD¹",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/ESPN_4_logo.svg/2560px-ESPN_4_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437936.m3u8"
+    },
+    {
+        "tvg-id": "ESPN4.br",
+        "tvg-name": "ESPN 4 FHD²",
+        "tvg-logo": "https://static.wikia.nocookie.net/telepedia/images/3/3f/Sem_t%C3%ADtulo.jpg/revision/latest?cb=20220117124447&path-prefix=pt-br",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437937.m3u8"
+    },
+    {
+        "tvg-id": "ESPN4.br",
+        "tvg-name": "ESPN 4 HD¹",
+        "tvg-logo": "https://static.wikia.nocookie.net/telepedia/images/3/3f/Sem_t%C3%ADtulo.jpg/revision/latest?cb=20220117124447&path-prefix=pt-br",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437938.m3u8"
+    },
+    {
+        "tvg-id": "ESPN4.br",
+        "tvg-name": "ESPN 4 HD²",
+        "tvg-logo": "https://static.wikia.nocookie.net/telepedia/images/3/3f/Sem_t%C3%ADtulo.jpg/revision/latest?cb=20220117124447&path-prefix=pt-br",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437939.m3u8"
+    },
+    {
+        "tvg-id": "ESPN4.br",
+        "tvg-name": "ESPN 4 SD¹",
+        "tvg-logo": "https://static.wikia.nocookie.net/telepedia/images/3/3f/Sem_t%C3%ADtulo.jpg/revision/latest?cb=20220117124447&path-prefix=pt-br",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437940.m3u8"
+    },
+    {
+        "tvg-id": "ESPN4.br",
+        "tvg-name": "ESPN 4 SD²",
+        "tvg-logo": "https://static.wikia.nocookie.net/telepedia/images/3/3f/Sem_t%C3%ADtulo.jpg/revision/latest?cb=20220117124447&path-prefix=pt-br",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437941.m3u8"
+    },
+    {
+        "tvg-id": "ESPN5.br",
+        "tvg-name": "ESPN 5 FHD¹",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/ESPN_5_logo.svg/1024px-ESPN_5_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437942.m3u8"
+    },
+    {
+        "tvg-id": "ESPN5.br",
+        "tvg-name": "ESPN 5 FHD²",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/ESPN_5_logo.svg/1024px-ESPN_5_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437943.m3u8"
+    },
+    {
+        "tvg-id": "ESPN5.br",
+        "tvg-name": "ESPN 5 HD¹",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/ESPN_5_logo.svg/1024px-ESPN_5_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437944.m3u8"
+    },
+    {
+        "tvg-id": "ESPN5.br",
+        "tvg-name": "ESPN 5 HD²",
+        "tvg-logo": "http://newoneblack.site:80/images/nmFtbTOHzGjHWxvgvvO0FwKCyFmkPSZdfT4sCnxbC8N06Ayz38k5iSymVwMFxUV5t-cISlGz81LnZVwlVL2ShW2qEdKApGFzIyy8d5xRgGdBHRwqZM-zAV4bxX9-6eTm4XiQnHRFprPFebVBGiybow.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437945.m3u8"
+    },
+    {
+        "tvg-id": "ESPN5.br",
+        "tvg-name": "ESPN 5 SD¹",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/ESPN_5_logo.svg/1024px-ESPN_5_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437946.m3u8"
+    },
+    {
+        "tvg-id": "ESPN5.br",
+        "tvg-name": "ESPN 5 SD²",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/ESPN_5_logo.svg/1024px-ESPN_5_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437947.m3u8"
+    },
+    {
+        "tvg-id": "ESPN6.br",
+        "tvg-name": "ESPN 6 FHD¹",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/ESPN_6_logo.svg/1280px-ESPN_6_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437948.m3u8"
+    },
+    {
+        "tvg-id": "ESPN6.br",
+        "tvg-name": "ESPN 6 FHD²",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/ESPN_6_logo.svg/1280px-ESPN_6_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437949.m3u8"
+    },
+    {
+        "tvg-id": "ESPN6.br",
+        "tvg-name": "ESPN 6 HD¹",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/ESPN_6_logo.svg/1280px-ESPN_6_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437950.m3u8"
+    },
+    {
+        "tvg-id": "ESPN6.br",
+        "tvg-name": "ESPN 6 HD²",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/ESPN_6_logo.svg/1280px-ESPN_6_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437951.m3u8"
+    },
+    {
+        "tvg-id": "ESPN6.br",
+        "tvg-name": "ESPN 6 SD¹",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/ESPN_6_logo.svg/1280px-ESPN_6_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437952.m3u8"
+    },
+    {
+        "tvg-id": "ESPN6.br",
+        "tvg-name": "ESPN 6 SD²",
+        "tvg-logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/ESPN_6_logo.svg/1280px-ESPN_6_logo.svg.png",
+        "group-title": "⚽ ESPN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/437953.m3u8"
+    },
+    {
+        "tvg-id": "ELEVEN",
+        "tvg-name": "ELEVEN SPORTS 01 HD³",
+        "tvg-logo": "https://img.inboxbr.pro/icones_channels/eleven-sports.png",
+        "group-title": "⚽ DAZN - ELEVEN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234965.m3u8"
+    },
+    {
+        "tvg-id": "ELEVEN",
+        "tvg-name": "ELEVEN SPORTS 02 HD³",
+        "tvg-logo": "https://img.inboxbr.pro/icones_channels/eleven-sports.png",
+        "group-title": "⚽ DAZN - ELEVEN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234966.m3u8"
+    },
+    {
+        "tvg-id": "ELEVEN",
+        "tvg-name": "ELEVEN SPORTS 03 HD³",
+        "tvg-logo": "https://img.inboxbr.pro/icones_channels/eleven-sports.png",
+        "group-title": "⚽ DAZN - ELEVEN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234967.m3u8"
+    },
+    {
+        "tvg-id": "ELEVEN",
+        "tvg-name": "ELEVEN SPORTS 04 HD³",
+        "tvg-logo": "https://img.inboxbr.pro/icones_channels/eleven-sports.png",
+        "group-title": "⚽ DAZN - ELEVEN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234968.m3u8"
+    },
+    {
+        "tvg-id": "ELEVEN",
+        "tvg-name": "ELEVEN SPORTS 05 HD³",
+        "tvg-logo": "https://img.inboxbr.pro/icones_channels/eleven-sports.png",
+        "group-title": "⚽ DAZN - ELEVEN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234969.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 01",
+        "tvg-name": "DAZN 01 BR HD",
+        "tvg-logo": "https://img.inboxbr.pro/icones_channels/dazn.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234961.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 01",
+        "tvg-name": "DAZN 01 HD¹",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234497.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 01",
+        "tvg-name": "DAZN 01 HD²",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234498.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 01",
+        "tvg-name": "DAZN 01 PT HD³",
+        "tvg-logo": "https://img.inboxbr.pro/icones_channels/dazn.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234962.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 02",
+        "tvg-name": "DAZN 02 BR HD",
+        "tvg-logo": "https://img.inboxbr.pro/icones_channels/dazn.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234963.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 02",
+        "tvg-name": "DAZN 02 HD¹",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234499.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 02²",
+        "tvg-name": "DAZN 02 HD²",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234500.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 02³",
+        "tvg-name": "DAZN 02 PT HD³",
+        "tvg-logo": "https://img.inboxbr.pro/icones_channels/dazn.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234964.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 03",
+        "tvg-name": "DAZN 03 HD¹",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234501.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 03",
+        "tvg-name": "DAZN 03 HD²",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234502.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 04",
+        "tvg-name": "DAZN 04 HD¹",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234503.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 04",
+        "tvg-name": "DAZN 04 HD²",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234504.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 05",
+        "tvg-name": "DAZN 05 HD¹",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234505.m3u8"
+    },
+    {
+        "tvg-id": "DAZN 05",
+        "tvg-name": "DAZN 05 HD²",
+        "tvg-logo": "https://1000logos.net/wp-content/uploads/2024/10/DAZN-Logo-2016.png",
+        "group-title": "⚽ DAZN",
+        "stream-url": "http://newoneblack.site:80/872621740/Carlos1411/234506.m3u8"
+    }
+]

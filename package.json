@@ -1,0 +1,26 @@
+{
+  "name": "meu-netflix-clone",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "cookie-parser": "^1.4.6",
+    "cron": "^4.3.1",
+    "express": "^5.1.0",
+    "node-cron": "^4.2.0",
+    "node-fetch": "^3.3.2",
+    "p-limit": "^2.3.0",
+    "string-similarity": "^4.0.4"
+  },
+  "engines": {
+    "node": ">=22.17.0"
+  }
+}

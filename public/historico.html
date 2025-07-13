@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Histórico de Filmes e Séries</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      padding: 20px 20px 20px 80px;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #222;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0,0,0,0.6);
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    .card img {
+      width: 100%;
+      height: 270px;
+      object-fit: cover;
+    }
+    .card-content {
+      padding: 10px;
+    }
+    .card h3 {
+      font-size: 1rem;
+      margin: 0 0 6px;
+    }
+    .card p {
+      font-size: 0.85rem;
+      margin: 0 0 10px;
+      color: #ccc;
+    }
+    .card button {
+      background: #e50914;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .limpar-btn {
+      display: inline-block;
+      margin: 20px 10px;
+      padding: 10px 20px;
+      background: #555;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .limpar-btn:hover {
+      background: #e50914;
+    }
+    .section-container {
+      margin-bottom: 40px;
+    }
+    .floating-icons {
+      position: fixed;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 1000;
+    }
+    .floating-icons a {
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .floating-icons a:hover {
+      background-color: #e50914;
+      transform: scale(1.1);
+    }
+    .floating-icons a.active {
+      background-color: #e50914;
+      cursor: default;
+    }
+    .floating-icons svg {
+      width: 18px;
+      height: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-icons">
+    <a href="netflix.html" title="Início"><i data-lucide="home"></i></a>
+    <a href="filmes.html" title="Filmes"><i data-lucide="clapperboard"></i></a>
+    <a href="series.html" title="Séries"><i data-lucide="tv"></i></a>
+    <a href="esportes.html" title="Esportes"><i data-lucide="trophy"></i></a>
+    <a href="historico.html" title="Histórico" class="active"><i data-lucide="history"></i></a>
+  </div>
+
+  <h1>Histórico de Filmes e Séries</h1>
+  <div style="text-align: center;">
+    <button class="limpar-btn" onclick="limparHistoricoFilmes()">🗑️ Limpar Histórico de Filmes</button>
+    <button class="limpar-btn" onclick="limparHistoricoSeries()">🗑️ Limpar Histórico de Séries</button>
+    <button class="limpar-btn" onclick="limparTodoHistorico()">🗑️ Limpar Todo Histórico</button>
+  </div>
+
+  <div class="section-container">
+    <h2>Filmes</h2>
+    <div class="grid" id="historico-filmes-container"></div>
+  </div>
+  <div class="section-container">
+    <h2>Séries</h2>
+    <div class="grid" id="historico-series-container"></div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function carregarHistorico() {
+      const historicoFilmes = JSON.parse(localStorage.getItem('historicoFilmes')) || [];
+      const historicoSeries = JSON.parse(localStorage.getItem('historicoSeries')) || [];
+      const filmesContainer = document.getElementById('historico-filmes-container');
+      const seriesContainer = document.getElementById('historico-series-container');
+      filmesContainer.innerHTML = '';
+      seriesContainer.innerHTML = '';
+
+      if (historicoFilmes.length === 0) {
+        filmesContainer.innerHTML = "<p style='text-align:center;width:100%;color:#aaa;'>Nenhum filme assistido ainda.</p>";
+      } else {
+        historicoFilmes.forEach(filme => {
+          const tempoAssistido = parseFloat(localStorage.getItem(`pos_${filme.stream_id}`)) || 0;
+          const minutos = Math.floor(tempoAssistido / 60);
+          const segundos = Math.floor(tempoAssistido % 60);
+          const tempoFormatado = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <img src="${filme.poster_path}" alt="${filme.title}">
+            <div class="card-content">
+              <h3>${filme.title}</h3>
+              <p>Tempo assistido: ${tempoFormatado}</p>
+              <button onclick="assistirItem('${filme.stream_id}', '${filme.tmdb_id}', '${filme.title}', '${filme.poster_path}', 'filme')">Assistir</button>
+            </div>
+          `;
+          filmesContainer.appendChild(card);
+        });
+      }
+
+      if (historicoSeries.length === 0) {
+        seriesContainer.innerHTML = "<p style='text-align:center;width:100%;color:#aaa;'>Nenhuma série assistida ainda.</p>";
+      } else {
+        historicoSeries.forEach(serie => {
+          const tempoAssistido = parseFloat(localStorage.getItem(`pos_${serie.stream_id}`)) || 0;
+          const minutos = Math.floor(tempoAssistido / 60);
+          const segundos = Math.floor(tempoAssistido % 60);
+          const tempoFormatado = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <img src="${serie.poster_path}" alt="${serie.title}">
+            <div class="card-content">
+              <h3>${serie.title}</h3>
+              <p>Tempo assistido: ${tempoFormatado}</p>
+              <button onclick="assistirItem('${serie.stream_id}', '${serie.tmdb_id}', '${serie.title}', '${serie.poster_path}', 'serie')">Assistir</button>
+            </div>
+          `;
+          seriesContainer.appendChild(card);
+        });
+      }
+    }
+
+    function assistirItem(streamId, tmdbId, title, poster, type) {
+      const url = type === 'serie' 
+        ? `playerseries.html?id=${encodeURIComponent(streamId)}&tmdb=${encodeURIComponent(tmdbId)}`
+        : `player.html?stream_id=${encodeURIComponent(streamId)}&tmdb_id=${encodeURIComponent(tmdbId)}&title=${encodeURIComponent(title)}&poster=${encodeURIComponent(poster)}`;
+      window.location.href = url;
+    }
+
+    function limparHistoricoFilmes() {
+      const historicoFilmes = JSON.parse(localStorage.getItem('historicoFilmes')) || [];
+      historicoFilmes.forEach(filme => {
+        localStorage.removeItem(`pos_${filme.stream_id}`);
+      });
+      localStorage.removeItem('historicoFilmes');
+      carregarHistorico();
+    }
+
+    function limparHistoricoSeries() {
+      const historicoSeries = JSON.parse(localStorage.getItem('historicoSeries')) || [];
+      historicoSeries.forEach(serie => {
+        localStorage.removeItem(`pos_${serie.stream_id}`);
+      });
+      localStorage.removeItem('historicoSeries');
+      carregarHistorico();
+    }
+
+    function limparTodoHistorico() {
+      const historicoFilmes = JSON.parse(localStorage.getItem('historicoFilmes')) || [];
+      const historicoSeries = JSON.parse(localStorage.getItem('historicoSeries')) || [];
+      historicoFilmes.forEach(filme => {
+        localStorage.removeItem(`pos_${filme.stream_id}`);
+      });
+      historicoSeries.forEach(serie => {
+        localStorage.removeItem(`pos_${serie.stream_id}`);
+      });
+      localStorage.removeItem('historicoFilmes');
+      localStorage.removeItem('historicoSeries');
+      carregarHistorico();
+    }
+
+    carregarHistorico();
+  </script>
+</body>
+</html>

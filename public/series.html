@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Todas as Séries</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #111;
+      color: white;
+    }
+    .floating-icons {
+      position: fixed;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 1000;
+    }
+    .floating-icons a,
+    .floating-icons button {
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .floating-icons a:hover,
+    .floating-icons button:hover {
+      background-color: #e50914;
+      transform: scale(1.1);
+    }
+    .floating-icons svg {
+      width: 18px;
+      height: 18px;
+    }
+    .search-group {
+      position: relative;
+    }
+    #search-input {
+      position: absolute;
+      top: 50%;
+      left: 50px;
+      transform: translateY(-50%);
+      width: 0;
+      opacity: 0;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background-color: #000000d9;
+      color: white;
+      outline: none;
+      font-size: 0.9rem;
+      box-shadow: 0 0 6px #000;
+      transition: width 0.3s ease, opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #search-input.active {
+      width: 220px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .container {
+      padding: 30px 30px 30px 80px;
+      width: 100%;
+    }
+    h2 {
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+      animation: fadeIn 0.6s forwards;
+    }
+    .series-card {
+      background: #222;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      animation: fadeInCard 0.6s forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeInCard {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .series-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    .series-card img {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
+      transition: opacity 0.3s ease;
+    }
+    .series-title {
+      padding: 10px;
+      font-size: 1em;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      z-index: 5;
+    }
+    .info-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .series-card:hover .info-overlay {
+      opacity: 1;
+    }
+    .info-overlay span {
+      font-size: 1.1em;
+      color: #fff;
+      text-align: center;
+    }
+    .action-icons {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .series-card:hover .action-icons {
+      opacity: 1;
+    }
+    .action-icons i {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      padding: 10px;
+      color: #fff;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .action-icons i:hover {
+      background-color: #e50914;
+    }
+    .edit-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #e50914;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      display: none;
+      z-index: 15;
+    }
+    .series-card:hover .edit-btn {
+      display: block;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+    .pagination button {
+      padding: 6px 12px;
+      background: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    .pagination button.active {
+      background: #e50914;
+    }
+    .filter-panel {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .filter-content {
+      background-color: #222;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 300px;
+      width: 100%;
+      text-align: center;
+    }
+    .filter-content select {
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      border-radius: 4px;
+      border: none;
+      margin-bottom: 20px;
+    }
+    .filter-content button {
+      background-color: #e50914;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .filter-content button:hover {
+      background-color: #f40612;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-content h2 {
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background: #333;
+      color: #fff;
+      font-size: 1rem;
+    }
+    .form-group input:focus {
+      outline: 2px solid #e50914;
+    }
+    .close-btn, .save-btn {
+      background: #555;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .save-btn {
+      background: #e50914;
+      margin-left: 10px;
+    }
+    .close-btn:hover, .save-btn:hover {
+      background: #f40612;
+    }
+    .error, .success {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .error { color: #e50914; }
+    .success { color: #4caf50; }
+  </style>
+</head>
+<body>
+  <div class="floating-icons">
+    <div class="search-group">
+      <button id="btn-search" title="Buscar"><i data-lucide="search"></i></button>
+      <input type="text" id="search-input" placeholder="Buscar séries..." />
+    </div>
+    <a href="netflix.html" title="Início"><i data-lucide="home"></i></a>
+    <a href="filmes.html" title="Filmes"><i data-lucide="clapperboard"></i></a>
+    <a href="series.html" title="Séries"><i data-lucide="tv"></i></a>
+    <a href="esportes.html" title="Esportes"><i data-lucide="trophy"></i></a>
+    <a href="historico.html" title="Histórico"><i data-lucide="history"></i></a>
+    <button id="btn-filter" title="Filtrar"><i data-lucide="filter"></i></button>
+  </div>
+
+  <div class="filter-panel" id="filter-panel">
+    <div class="filter-content">
+      <h3>Filtrar por Gênero</h3>
+      <select id="genre-select">
+        <option value="">Selecione um Gênero</option>
+      </select>
+      <button id="apply-filter">Aplicar Filtro</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Todas as Séries</h2>
+    <div class="grid" id="grid"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <div class="modal" id="edit-series-modal">
+    <div class="modal-content">
+      <h2>Editar Série</h2>
+      <button class="close-btn" onclick="closeModal()">Fechar</button>
+      <div class="form-group">
+        <label for="edit-series-name">Nome</label>
+        <input type="text" id="edit-series-name" required />
+      </div>
+      <div class="form-group">
+        <label for="edit-series-title">Título</label>
+        <input type="text" id="edit-series-title" required />
+      </div>
+      <div class="form-group">
+        <label for="edit-series-year">Ano</label>
+        <input type="text" id="edit-series-year" required />
+      </div>
+      <div class="form-group">
+        <label for="edit-series-id">ID da Série</label>
+        <input type="text" id="edit-series-id" readonly />
+      </div>
+      <div class="form-group">
+        <label for="edit-series-cover">Capa (URL)</label>
+        <input type="text" id="edit-series-cover" required />
+      </div>
+      <div class="form-group">
+        <label for="edit-series-genre">Gênero</label>
+        <input type="text" id="edit-series-genre" required />
+      </div>
+      <div class="form-group">
+        <label for="edit-series-tmdb-id">TMDB ID</label>
+        <input type="text" id="edit-series-tmdb-id" required />
+      </div>
+      <div class="form-group">
+        <label for="edit-series-tmdb-name">Nome TMDB</label>
+        <input type="text" id="edit-series-tmdb-name" required />
+      </div>
+      <button class="save-btn" onclick="saveSeriesEdit()">Salvar</button>
+      <p class="success" id="edit-series-success">Série editada com sucesso!</p>
+      <p class="error" id="edit-series-error"></p>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const SERIES_POR_PAGINA = 40;
+    let series = [];
+    let seriesFiltradas = [];
+    let paginaAtual = 1;
+    let generos = [];
+
+    const grid = document.getElementById('grid');
+    const pagination = document.getElementById('pagination');
+    const searchInput = document.getElementById('search-input');
+    const btnSearch = document.getElementById('btn-search');
+    const filterPanel = document.getElementById('filter-panel');
+    const btnFilter = document.getElementById('btn-filter');
+    const genreSelect = document.getElementById('genre-select');
+    const applyFilterBtn = document.getElementById('apply-filter');
+
+    btnSearch.addEventListener('click', () => {
+      searchInput.classList.toggle('active');
+      if (searchInput.classList.contains('active')) {
+        searchInput.focus();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!btnSearch.contains(e.target) && !searchInput.contains(e.target)) {
+        searchInput.classList.remove('active');
+      }
+    });
+
+    btnFilter.addEventListener('click', () => {
+      filterPanel.style.display = 'flex';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!filterPanel.contains(e.target) && !btnFilter.contains(e.target)) {
+        filterPanel.style.display = 'none';
+      }
+    });
+
+    applyFilterBtn.addEventListener('click', () => {
+      const selectedGenre = genreSelect.value;
+      seriesFiltradas = selectedGenre
+        ? series.filter(f => f.genre.split(', ').includes(selectedGenre))
+        : series.slice();
+      paginaAtual = 1;
+      renderizarPagina(paginaAtual);
+      criarPaginacao();
+      filterPanel.style.display = 'none';
+    });
+
+    searchInput.addEventListener('input', () => {
+      const termo = searchInput.value.trim().toLowerCase();
+      seriesFiltradas = termo
+        ? series.filter(f => f.title?.toLowerCase().includes(termo))
+        : series.slice();
+      paginaAtual = 1;
+      renderizarPagina(paginaAtual);
+      criarPaginacao();
+    });
+
+    async function carregarSeries() {
+      const res = await fetch('series.json');
+      const catalogo = await res.json();
+      series = catalogo.filter(f => f.tmdb_id);
+      seriesFiltradas = series.slice();
+      generos = [...new Set(series.flatMap(f => f.genre.split(', ')))];
+      generos.forEach(genre => {
+        const option = document.createElement('option');
+        option.value = genre;
+        option.textContent = genre;
+        genreSelect.appendChild(option);
+      });
+      renderizarPagina(paginaAtual);
+      criarPaginacao();
+    }
+
+    async function renderizarPagina(pagina) {
+      grid.innerHTML = '';
+      const inicio = (pagina - 1) * SERIES_POR_PAGINA;
+      const fim = inicio + SERIES_POR_PAGINA;
+      const seriesPagina = seriesFiltradas.slice(inicio, fim);
+      for (const serie of seriesPagina) {
+        try {
+          const div = document.createElement('div');
+          div.className = 'series-card';
+          div.onclick = () => window.location.href = `detalhes_series.html?id=${serie.tmdb_id}`;
+          div.innerHTML = `
+            <img src="${serie.cover}" alt="${serie.title}" />
+            <div class="series-title">${serie.title}</div>
+            <div class="info-overlay">
+              <span>${serie.genre}</span>
+            </div>
+            <div class="action-icons">
+              <i data-lucide="heart"></i>
+              <i data-lucide="play"></i>
+            </div>
+            <button class="edit-btn" onclick="event.stopPropagation(); openEditSeriesModal(${serie.series_id})">Editar</button>`;
+          if (!localStorage.getItem('isAdminLoggedIn')) {
+            div.querySelector('.edit-btn').style.display = 'none';
+          }
+          grid.appendChild(div);
+        } catch (e) {
+          console.error("Erro ao carregar série:", serie, e);
+        }
+      }
+      lucide.createIcons();
+    }
+
+    function criarPaginacao() {
+      const totalPaginas = Math.ceil(seriesFiltradas.length / SERIES_POR_PAGINA);
+      pagination.innerHTML = '';
+
+      const botaoVoltar = document.createElement('button');
+      botaoVoltar.textContent = '⟨ Anterior';
+      botaoVoltar.disabled = paginaAtual === 1;
+      botaoVoltar.onclick = () => {
+        if (paginaAtual > 1) {
+          paginaAtual--;
+          renderizarPagina(paginaAtual);
+          criarPaginacao();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      };
+      pagination.appendChild(botaoVoltar);
+
+      const inicio = paginaAtual;
+      const fim = Math.min(inicio + 4, totalPaginas);
+      for (let i = inicio; i <= fim; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        if (i === paginaAtual) btn.classList.add('active');
+        btn.onclick = () => {
+          paginaAtual = i;
+          renderizarPagina(paginaAtual);
+          criarPaginacao();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        pagination.appendChild(btn);
+      }
+
+      const botaoProximo = document.createElement('button');
+      botaoProximo.textContent = 'Próxima ⟩';
+      botaoProximo.disabled = paginaAtual === totalPaginas;
+      botaoProximo.onclick = () => {
+        if (paginaAtual < totalPaginas) {
+          paginaAtual++;
+          renderizarPagina(paginaAtual);
+          criarPaginacao();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      };
+      pagination.appendChild(botaoProximo);
+    }
+
+    function openEditSeriesModal(series_id) {
+      const serie = series.find(s => s.series_id === series_id);
+      if (serie) {
+        document.getElementById('edit-series-name').value = serie.name;
+        document.getElementById('edit-series-title').value = serie.title;
+        document.getElementById('edit-series-year').value = serie.year;
+        document.getElementById('edit-series-id').value = serie.series_id;
+        document.getElementById('edit-series-cover').value = serie.cover;
+        document.getElementById('edit-series-genre').value = serie.genre;
+        document.getElementById('edit-series-tmdb-id').value = serie.tmdb_id;
+        document.getElementById('edit-series-tmdb-name').value = serie.tmdb_name;
+        document.getElementById('edit-series-modal').style.display = 'flex';
+      }
+    }
+
+    async function saveSeriesEdit() {
+      const serie = {
+        series_id: parseInt(document.getElementById('edit-series-id').value),
+        name: document.getElementById('edit-series-name').value,
+        title: document.getElementById('edit-series-title').value,
+        year: document.getElementById('edit-series-year').value,
+        stream_type: 'series',
+        cover: document.getElementById('edit-series-cover').value,
+        genre: document.getElementById('edit-series-genre').value,
+        tmdb_id: parseInt(document.getElementById('edit-series-tmdb-id').value),
+        tmdb_name: document.getElementById('edit-series-tmdb-name').value
+      };
+
+      if (!serie.name || !serie.title || !serie.year || !serie.series_id || !serie.cover || !serie.genre || !serie.tmdb_id || !serie.tmdb_name) {
+        document.getElementById('edit-series-error').textContent = 'Todos os campos são obrigatórios';
+        document.getElementById('edit-series-error').style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/edit-series', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
+          },
+          body: JSON.stringify(serie)
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('edit-series-success').style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('edit-series-success').style.display = 'none';
+            closeModal();
+            carregarSeries();
+          }, 3000);
+        } else {
+          document.getElementById('edit-series-error').textContent = result.message;
+          document.getElementById('edit-series-error').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao editar série:', error);
+        document.getElementById('edit-series-error').textContent = 'Erro ao editar série: ' + error.message;
+        document.getElementById('edit-series-error').style.display = 'block';
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('edit-series-modal').style.display = 'none';
+      document.getElementById('edit-series-success').style.display = 'none';
+      document.getElementById('edit-series-error').style.display = 'none';
+    }
+
+    carregarSeries();
+  </script>
+</body>
+</html>

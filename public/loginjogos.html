@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login Admin</title>
+  <style>
+    body {
+      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #login-box {
+      background-color: #1e2a38;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+      width: 320px;
+      text-align: center;
+    }
+    #login-box h2 {
+      margin-bottom: 20px;
+      color: #00d8ff;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #00d8ff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      color: #111;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+    button:hover { background-color: #008fb3; }
+    #error-msg {
+      color: #ff5c5c;
+      margin-bottom: 15px;
+      height: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div id="login-box">
+    <h2>Login Admin</h2>
+    <div id="error-msg"></div>
+    <input id="input-user" type="text" placeholder="Usuário" autofocus />
+    <input id="input-pass" type="password" placeholder="Senha" />
+    <button id="btn-login">Entrar</button>
+  </div>
+
+  <script>
+    const inputUser = document.getElementById("input-user");
+    const inputPass = document.getElementById("input-pass");
+    const btnLogin = document.getElementById("btn-login");
+    const errorMsg = document.getElementById("error-msg");
+
+    btnLogin.onclick = () => {
+      const user = inputUser.value.trim();
+      const pass = inputPass.value.trim();
+      errorMsg.textContent = "";
+
+      fetch('/api/login', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Usuário ou senha incorretos");
+        return res.json();
+      })
+      .then(data => {
+        // Salva token simples no localStorage
+        localStorage.setItem("isAdmin", "true");
+        // Redireciona para a página principal (troque por sua página de admin se necessário)
+        window.location.href = "esportes.html";
+      })
+      .catch(err => {
+        errorMsg.textContent = err.message;
+      });
+    };
+
+    [inputUser, inputPass].forEach(input =>
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") btnLogin.click();
+      })
+    );
+  </script>
+</body>
+</html>

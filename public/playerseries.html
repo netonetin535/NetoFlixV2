@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assistir Episódio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      font-family: 'Roboto', sans-serif;
+      overflow: hidden;
+    }
+    #player-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background-color: #000;
+      transition: filter 0.3s ease;
+    }
+    .btn-voltar {
+      position: absolute;
+      top: 15px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 10000;
+      user-select: none;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .btn-voltar:first-of-type { left: 20px; }
+    .btn-voltar:last-of-type { right: 20px; }
+    .controls-overlay {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: translateY(-50%);
+      gap: 60px;
+      z-index: 10;
+      opacity: 1;
+      pointer-events: auto;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .circle-btn {
+      background-color: rgba(255,255,255,0.1);
+      border: 2px solid #fff;
+      color: white;
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out, background-color 0.2s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+    .circle-btn:hover {
+      transform: scale(1.2);
+      background-color: #e50914;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    }
+    .pause-btn {
+      background-color: #00cc99;
+      border: none;
+      color: white;
+      font-size: 2rem;
+    }
+    .bottom-bar {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-size: 0.9rem;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 1;
+      pointer-events: auto;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      width: 100%;
+      position: absolute;
+      bottom: 60px;
+      left: 0;
+      opacity: 1;
+      pointer-events: auto;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .progress-bar {
+      position: relative;
+      flex-grow: 1;
+      height: 8px;
+      background: #555;
+      border-radius: 4px;
+      margin: 0 12px;
+      overflow: hidden;
+      pointer-events: all;
+      cursor: pointer;
+    }
+    .progress {
+      height: 100%;
+      background: #e50914;
+      width: 0%;
+      transition: width 0.2s ease-out, background 0.2s ease-out;
+    }
+    .bottom-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .bottom-buttons button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #fff;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 18px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      user-select: none;
+    }
+    .bottom-buttons button:hover {
+      background: #e50914;
+      transform: scale(1.1);
+    }
+    .dica {
+      position: absolute;
+      bottom: 90px;
+      width: 100%;
+      text-align: center;
+      color: #ccc;
+      font-size: 0.8rem;
+      opacity: 1;
+      pointer-events: auto;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .loading {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #ffffff30;
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    #volume-slider {
+      width: 100px;
+      height: 6px;
+      background: #555;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    #volume-slider::-webkit-slider-thumb {
+      width: 16px;
+      height: 16px;
+      background: #e50914;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    #video-title {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 1.3rem;
+      z-index: 10;
+      text-shadow: 0 0 5px #000;
+      opacity: 1;
+      pointer-events: auto;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      user-select: none;
+    }
+    #episodios-janela {
+      display: none;
+      position: absolute;
+      top: 60px;
+      left: 20px;
+      right: 20px;
+      bottom: 60px;
+      background: #111;
+      color: #fff;
+      overflow: auto;
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 9999;
+    }
+    #episodios-janela h2 {
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    #lista-episodios button {
+      background: #222;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      margin: 4px 0;
+      cursor: pointer;
+      text-align: left;
+    }
+    #lista-episodios button:hover {
+      background: #e50914;
+    }
+    button:focus {
+      outline: 2px solid #00cc99;
+      box-shadow: 0 0 10px #00cc99;
+    }
+    #currentTime, #duration {
+      color: #fff;
+    }
+    /* Classe para esconder interface */
+    .hidden-interface {
+      transform: translateY(-100%) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    .bottom-hidden {
+      transform: translateY(100%) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="player-container">
+    <div id="loading" class="loading"><div class="spinner"></div></div>
+    <button id="btn-episodios" class="btn-voltar"><i class="fas fa-list"></i> Episódios</button>
+    <button class="btn-voltar" onclick="history.back()"><i class="fas fa-arrow-left"></i> Voltar</button>
+    <div id="video-title">Carregando título...</div>
+    <video id="player" autoplay></video>
+    <div class="controls-overlay">
+      <button class="circle-btn" onclick="seek(-10)"><i class="fas fa-backward"></i></button>
+      <button class="circle-btn pause-btn" onclick="togglePlay()" id="playPause"><i class="fas fa-play"></i></button>
+      <button class="circle-btn" onclick="seek(10)"><i class="fas fa-forward"></i></button>
+    </div>
+    <div class="dica">Mantenha pressionados os botões de seta no seu controle para retroceder e avançar</div>
+    <div class="progress-container">
+      <span id="currentTime">00:00</span>
+      <div class="progress-bar" id="progressBar"><div class="progress" id="progress"></div></div>
+      <span id="duration">--:--</span>
+    </div>
+    <div class="bottom-bar">
+      <div class="bottom-buttons">
+        <button onclick="toggleVolume()"><i class="fas fa-volume-up"></i> Volume</button>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1" onchange="setVolume(this.value)" />
+        <button onclick="toggleSize()"><i class="fas fa-compress-arrows-alt"></i> Tamanho original</button>
+        <button onclick="toggleFullscreen()"><i class="fas fa-expand"></i> Tela cheia</button>
+        <button onclick="toggleSpeed()"><i class="fas fa-tachometer-alt"></i> Velocidade</button>
+      </div>
+    </div>
+    <div id="episodios-janela">
+      <h2>Escolha um Episódio</h2>
+      <div id="lista-episodios"></div>
+      <button id="btn-fechar-episodios" style="margin-top:20px; padding:10px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; font-size:1rem; cursor:pointer;">Fechar</button>
+    </div>
+  </div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const streamId = params.get("id");
+    const tmdbId = params.get("tmdb");
+    const API_KEY = "5f331944166018e8f887957b773906d4";
+    const player = document.getElementById("player");
+    const progress = document.getElementById("progress");
+    const currentTimeDisplay = document.getElementById("currentTime");
+    const durationDisplay = document.getElementById("duration");
+    const titleEl = document.getElementById("video-title");
+    const playPauseBtn = document.getElementById("playPause");
+    const progressBar = document.getElementById("progressBar");
+    const volumeSlider = document.getElementById("volume-slider");
+    const loading = document.getElementById("loading");
+    const controlsOverlay = document.querySelector('.controls-overlay');
+    const progressContainer = document.querySelector('.progress-container');
+    const bottomBar = document.querySelector('.bottom-bar');
+    const dica = document.querySelector('.dica');
+    const btnEpisodios = document.getElementById("btn-episodios");
+    const btnFecharEpisodios = document.getElementById("btn-fechar-episodios");
+    const episodiosJanela = document.getElementById("episodios-janela");
+
+    let lastTime = parseFloat(localStorage.getItem(`pos_${streamId}`)) || 0;
+    let controlesTimeout;
+
+    if (!streamId || !tmdbId) {
+      document.getElementById("player-container").innerHTML = "<div style='color:#fff;padding:30px;text-align:center;'>ID do episódio ou TMDb ausente na URL.</div>";
+    } else {
+      const videoUrl = `http://tconect.top:80/series/544484333/642967615/${streamId}.mp4`;
+      player.src = videoUrl;
+      player.currentTime = lastTime;
+
+      // Buscar informações da série e do episódio
+      Promise.all([
+        fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => res.json()),
+        fetch("series.json").then(res => res.json())
+      ])
+        .then(([serieInfo, series]) => {
+          const serie = series.find(s => s.tmdb_id == tmdbId);
+          if (!serie) return;
+          const episodio = serie.episodes.find(e => e.id == streamId);
+          let title = episodio ? episodio.title : "Episódio";
+          let serieTitle = serieInfo.name || "Série";
+          let poster = serieInfo.poster_path ? `https://image.tmdb.org/t/p/w500${serieInfo.poster_path}` : "https://via.placeholder.com/300x450?text=Sem+Capa";
+          
+          document.title = `${serieTitle} - ${title}`;
+          titleEl.innerText = `${serieTitle} - ${title}`;
+
+          // Salvar no histórico de séries
+          const historicoSeries = JSON.parse(localStorage.getItem("historicoSeries")) || [];
+          const existingIndex = historicoSeries.findIndex(s => s.stream_id === streamId);
+          const serieData = {
+            stream_id: streamId,
+            tmdb_id: tmdbId,
+            title: `${serieTitle} - ${title}`,
+            poster_path: poster,
+            type: "serie"
+          };
+
+          if (existingIndex >= 0) {
+            historicoSeries[existingIndex] = serieData;
+          } else {
+            historicoSeries.push(serieData);
+          }
+          localStorage.setItem("historicoSeries", JSON.stringify(historicoSeries));
+        })
+        .catch(e => {
+          console.error("Erro ao carregar dados:", e);
+          titleEl.innerText = "Episódio";
+        });
+
+      player.addEventListener("loadeddata", () => {
+        loading.style.display = "none";
+        durationDisplay.innerText = formatTime(player.duration);
+      });
+
+      player.addEventListener("timeupdate", () => {
+        const percent = (player.currentTime / player.duration) * 100;
+        progress.style.width = `${percent}%`;
+        currentTimeDisplay.innerText = formatTime(player.currentTime);
+        localStorage.setItem(`pos_${streamId}`, player.currentTime);
+      });
+
+      player.addEventListener("ended", () => {
+        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        irParaProximoEpisodio();
+      });
+
+      player.addEventListener("error", () => {
+        loading.style.display = "none";
+        document.getElementById("player-container").innerHTML = "<div style='color:#fff;padding:30px;text-align:center;'>Não foi possível carregar o vídeo.</div>";
+      });
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = Math.floor(sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function seek(seconds) { player.currentTime += seconds; }
+
+    function togglePlay() {
+      if (player.paused) {
+        player.play();
+        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+      } else {
+        player.pause();
+        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+      }
+    }
+
+    function toggleFullscreen() {
+      const el = document.documentElement;
+      if (!document.fullscreenElement) el.requestFullscreen();
+      else document.exitFullscreen();
+    }
+
+    function toggleVolume() {
+      player.muted = !player.muted;
+      volumeSlider.value = player.muted ? 0 : player.volume;
+    }
+
+    function setVolume(value) {
+      player.volume = value;
+      player.muted = false;
+    }
+
+    function toggleSize() {
+      player.style.objectFit = (player.style.objectFit === "contain") ? "fill" : "contain";
+    }
+
+    function toggleSpeed() {
+      let speed = player.playbackRate;
+      speed = (speed === 2) ? 0.5 : speed + 0.5;
+      player.playbackRate = speed;
+    }
+
+    window.onbeforeunload = () => {
+      localStorage.setItem(`pos_${streamId}`, player.currentTime);
+    };
+
+    progressBar.addEventListener('click', (e) => {
+      if (!player.duration) return;
+      const rect = progressBar.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      player.currentTime = percent * player.duration;
+      progress.style.width = `${percent * 100}%`;
+    });
+
+    function mostrarControles() {
+      // Mostrar interface (retornar à posição original)
+      controlsOverlay.classList.remove('hidden-interface');
+      progressContainer.classList.remove('bottom-hidden');
+      bottomBar.classList.remove('bottom-hidden');
+      dica.classList.remove('bottom-hidden');
+      titleEl.classList.remove('hidden-interface');
+      btnEpisodios.classList.remove('hidden-interface');
+      document.querySelectorAll('.btn-voltar').forEach(btn => {
+        btn.classList.remove('hidden-interface');
+      });
+
+      clearTimeout(controlesTimeout);
+      controlesTimeout = setTimeout(() => {
+        // Esconder interface (mover para fora da tela)
+        controlsOverlay.classList.add('hidden-interface');
+        progressContainer.classList.add('bottom-hidden');
+        bottomBar.classList.add('bottom-hidden');
+        dica.classList.add('bottom-hidden');
+        titleEl.classList.add('hidden-interface');
+        btnEpisodios.classList.add('hidden-interface');
+        document.querySelectorAll('.btn-voltar').forEach(btn => {
+          btn.classList.add('hidden-interface');
+        });
+      }, 3000);
+    }
+
+    document.addEventListener('mousemove', mostrarControles);
+    document.addEventListener('keydown', mostrarControles);
+    mostrarControles();
+
+    btnEpisodios.addEventListener("click", abrirListaEpisodios);
+    btnFecharEpisodios.addEventListener("click", fecharListaEpisodios);
+
+    function abrirListaEpisodios() {
+      if (!tmdbId) return alert("TMDb ID ausente da URL.");
+      fetch("series.json")
+        .then(res => res.json())
+        .then(series => {
+          const serie = series.find(s => s.tmdb_id == tmdbId);
+          if (!serie || !serie.episodes) return alert("Episódios não encontrados.");
+          const container = document.getElementById("lista-episodios");
+          container.innerHTML = "";
+          const temporadas = [...new Set(serie.episodes.map(ep => ep.season))].sort();
+          temporadas.forEach(season => {
+            const header = document.createElement("h3");
+            header.textContent = `Temporada ${season}`;
+            header.style.color = "#e50914";
+            container.appendChild(header);
+            const eps = serie.episodes.filter(e => e.season === season);
+            eps.forEach(ep => {
+              const btn = document.createElement("button");
+              btn.textContent = ep.title;
+              btn.onclick = () => location.href = `playerseries.html?id=${ep.id}&tmdb=${tmdbId}`;
+              container.appendChild(btn);
+            });
+          });
+          episodiosJanela.style.display = "block";
+        });
+    }
+
+    function fecharListaEpisodios() {
+      episodiosJanela.style.display = "none";
+    }
+
+    function irParaProximoEpisodio() {
+      if (!tmdbId) return;
+      fetch("series.json")
+        .then(res => res.json())
+        .then(series => {
+          const serie = series.find(s => s.tmdb_id == tmdbId);
+          if (!serie || !serie.episodes) return;
+          const idx = serie.episodes.findIndex(e => e.id == streamId);
+          if (idx !== -1 && idx + 1 < serie.episodes.length) {
+            const proximo = serie.episodes[idx + 1];
+            location.href = `playerseries.html?id=${proximo.id}&tmdb=${tmdbId}`;
+          }
+        });
+    }
+  </script>
+</body>
+</html>

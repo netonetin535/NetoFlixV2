@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel Administrativo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #111;
+      color: #fff;
+      padding: 20px 20px 20px 80px;
+      min-height: 100vh;
+    }
+    .floating-icons {
+      position: fixed;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 1000;
+    }
+    .floating-icons a {
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .floating-icons a:hover {
+      background-color: #e50914;
+      transform: scale(1.1);
+    }
+    .floating-icons svg {
+      width: 18px;
+      height: 18px;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .panel-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .section {
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background: #333;
+      color: #fff;
+      font-size: 1rem;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: 2px solid #e50914;
+    }
+    .search-group {
+      margin-bottom: 20px;
+    }
+    .search-group input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background: #333;
+      color: #fff;
+      font-size: 1rem;
+    }
+    .search-group input:focus {
+      outline: 2px solid #e50914;
+    }
+    button {
+      background: #e50914;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #f40612;
+    }
+    .edit-btn {
+      background: #555;
+      margin-left: 10px;
+    }
+    .edit-btn:hover {
+      background: #e50914;
+    }
+    .list-container {
+      margin-top: 20px;
+    }
+    .list-item {
+      background: #333;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .episode-list {
+      margin-top: 20px;
+    }
+    .episode-item {
+      background: #333;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .list-item button, .episode-item button {
+      background: #555;
+      margin-left: 10px;
+    }
+    .list-item button:hover, .episode-item button:hover {
+      background: #e50914;
+    }
+    .error, .success {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .error { color: #e50914; }
+    .success { color: #4caf50; }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-content h2 {
+      margin-bottom: 20px;
+    }
+    .close-btn {
+      background: #555;
+      float: right;
+    }
+    .close-btn:hover {
+      background: #e50914;
+    }
+    .logout-btn {
+      background: #555;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-top: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .logout-btn:hover {
+      background: #e50914;
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-icons">
+    <a href="netflix.html" title="Início"><i data-lucide="home"></i></a>
+    <a href="filmes.html" title="Filmes"><i data-lucide="clapperboard"></i></a>
+    <a href="series.html" title="Séries"><i data-lucide="tv"></i></a>
+    <a href="esportes.html" title="Esportes"><i data-lucide="trophy"></i></a>
+    <a href="historico.html" title="Histórico"><i data-lucide="history"></i></a>
+  </div>
+
+  <div class="panel-container">
+    <h1>Painel Administrativo</h1>
+
+    <div class="section">
+      <h2>Adicionar Filme</h2>
+      <div class="form-group">
+        <label for="movie-name">Nome</label>
+        <input type="text" id="movie-name" placeholder="Ex: Frankenweenie (2012)" required />
+      </div>
+      <div class="form-group">
+        <label for="movie-title">Título</label>
+        <input type="text" id="movie-title" placeholder="Ex: Frankenweenie" required />
+      </div>
+      <div class="form-group">
+        <label for="movie-year">Ano</label>
+        <input type="text" id="movie-year" placeholder="Ex: 2012" required />
+      </div>
+      <div class="form-group">
+        <label for="movie-stream-id">ID do Stream</label>
+        <input type="text" id="movie-stream-id" placeholder="Ex: 4229095" required />
+      </div>
+      <div class="form-group">
+        <label for="movie-stream-icon">Ícone do Stream (URL)</label>
+        <input type="text" id="movie-stream-icon" placeholder="Ex: https://image.tmdb.org/t/p/w500/..." required />
+      </div>
+      <div class="form-group">
+        <label for="movie-genre">Gênero</label>
+        <input type="text" id="movie-genre" placeholder="Ex: Animação, Comédia, Família" required />
+      </div>
+      <div class="form-group">
+        <label for="movie-tmdb-id">TMDB ID</label>
+        <input type="text" id="movie-tmdb-id" placeholder="Ex: 62214" required />
+      </div>
+      <div class="form-group">
+        <label for="movie-tmdb-name">Nome TMDB</label>
+        <input type="text" id="movie-tmdb-name" placeholder="Ex: Frankenweenie" required />
+      </div>
+      <div class="form-group">
+        <label for="movie-tmdb-url">URL TMDB</label>
+        <input type="text" id="movie-tmdb-url" placeholder="Ex: https://www.themoviedb.org/movie/62214" required />
+      </div>
+      <button onclick="addMovie()">Adicionar Filme</button>
+      <p class="success" id="movie-success">Filme adicionado com sucesso!</p>
+      <p class="error" id="movie-error"></p>
+    </div>
+
+    <div class="section">
+      <h2>Adicionar Série</h2>
+      <div class="form-group">
+        <label for="series-name">Nome</label>
+        <input type="text" id="series-name" placeholder="Ex: O Leopardo (2025)" required />
+      </div>
+      <div class="form-group">
+        <label for="series-title">Título</label>
+        <input type="text" id="series-title" placeholder="Ex: O Leopardo" required />
+      </div>
+      <div class="form-group">
+        <label for="series-year">Ano</label>
+        <input type="text" id="series-year" placeholder="Ex: 2025" required />
+      </div>
+      <div class="form-group">
+        <label for="series-id">ID da Série</label>
+        <input type="text" id="series-id" placeholder="Ex: 125419" required />
+      </div>
+      <div class="form-group">
+        <label for="series-cover">Capa (URL)</label>
+        <input type="text" id="series-cover" placeholder="Ex: https://image.tmdb.org/t/p/w600_and_h900_bestv2/..." required />
+      </div>
+      <div class="form-group">
+        <label for="series-genre">Gênero</label>
+        <input type="text" id="series-genre" placeholder="Ex: Drama" required />
+      </div>
+      <div class="form-group">
+        <label for="series-tmdb-id">TMDB ID</label>
+        <input type="text" id="series-tmdb-id" placeholder="Ex: 225399" required />
+      </div>
+      <div class="form-group">
+        <label for="series-tmdb-name">Nome TMDB</label>
+        <input type="text" id="series-tmdb-name" placeholder="Ex: O Leopardo" required />
+      </div>
+      <h3>Adicionar Episódio</h3>
+      <div class="form-group">
+        <label for="episode-id">ID do Episódio</label>
+        <input type="text" id="episode-id" placeholder="Ex: 4229353" />
+      </div>
+      <div class="form-group">
+        <label for="episode-season">Temporada</label>
+        <input type="text" id="episode-season" placeholder="Ex: 1" />
+      </div>
+      <div class="form-group">
+        <label for="episode-num">Número do Episódio</label>
+        <input type="text" id="episode-num" placeholder="Ex: 1" />
+      </div>
+      <div class="form-group">
+        <label for="episode-title">Título do Episódio</label>
+        <input type="text" id="episode-title" placeholder="Ex: O Leopardo - S01E01 - Episódio 1" />
+      </div>
+      <div class="form-group">
+        <label for="episode-image">Imagem do Episódio (URL)</label>
+        <input type="text" id="episode-image" placeholder="Ex: https://image.tmdb.org/t/p/w600_and_h900_bestv2/..." />
+      </div>
+      <div class="form-group">
+        <label for="episode-cover-big">Capa Grande (URL)</label>
+        <input type="text" id="episode-cover-big" placeholder="Ex: https://image.tmdb.org/t/p/w600_and_h900_bestv2/..." />
+      </div>
+      <div class="form-group">
+        <label for="episode-duration">Duração</label>
+        <input type="text" id="episode-duration" placeholder="Ex: 01:00:14" />
+      </div>
+      <div class="form-group">
+        <label for="episode-release-date">Data de Lançamento</label>
+        <input type="text" id="episode-release-date" placeholder="Ex: 2025-03-05" />
+      </div>
+      <div class="form-group">
+        <label for="episode-plot">Sinopse</label>
+        <textarea id="episode-plot" placeholder="Ex: Em 1860, enquanto o exército italiano avança..." rows="4"></textarea>
+      </div>
+      <button onclick="addEpisode()">Adicionar Episódio à Lista</button>
+      <div class="episode-list" id="episode-list"></div>
+      <button onclick="addSeries()">Adicionar Série</button>
+      <p class="success" id="series-success">Série adicionada com sucesso!</p>
+      <p class="error" id="series-error"></p>
+    </div>
+
+    <!-- Modal para editar filme -->
+    <div class="modal" id="edit-movie-modal">
+      <div class="modal-content">
+        <h2>Editar Filme</h2>
+        <button class="close-btn" onclick="closeModal('edit-movie-modal')">Fechar</button>
+        <div class="form-group">
+          <label for="edit-movie-name">Nome</label>
+          <input type="text" id="edit-movie-name" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-movie-title">Título</label>
+          <input type="text" id="edit-movie-title" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-movie-year">Ano</label>
+          <input type="text" id="edit-movie-year" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-movie-stream-id">ID do Stream</label>
+          <input type="text" id="edit-movie-stream-id" readonly />
+        </div>
+        <div class="form-group">
+          <label for="edit-movie-stream-icon">Ícone do Stream (URL)</label>
+          <input type="text" id="edit-movie-stream-icon" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-movie-genre">Gênero</label>
+          <input type="text" id="edit-movie-genre" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-movie-tmdb-id">TMDB ID</label>
+          <input type="text" id="edit-movie-tmdb-id" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-movie-tmdb-name">Nome TMDB</label>
+          <input type="text" id="edit-movie-tmdb-name" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-movie-tmdb-url">URL TMDB</label>
+          <input type="text" id="edit-movie-tmdb-url" required />
+        </div>
+        <button onclick="saveMovieEdit()">Salvar Alterações</button>
+        <p class="success" id="edit-movie-success">Filme editado com sucesso!</p>
+        <p class="error" id="edit-movie-error"></p>
+      </div>
+    </div>
+
+    <!-- Modal para editar série -->
+    <div class="modal" id="edit-series-modal">
+      <div class="modal-content">
+        <h2>Editar Série</h2>
+        <button class="close-btn" onclick="closeModal('edit-series-modal')">Fechar</button>
+        <div class="form-group">
+          <label for="edit-series-name">Nome</label>
+          <input type="text" id="edit-series-name" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-series-title">Título</label>
+          <input type="text" id="edit-series-title" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-series-year">Ano</label>
+          <input type="text" id="edit-series-year" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-series-id">ID da Série</label>
+          <input type="text" id="edit-series-id" readonly />
+        </div>
+        <div class="form-group">
+          <label for="edit-series-cover">Capa (URL)</label>
+          <input type="text" id="edit-series-cover" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-series-genre">Gênero</label>
+          <input type="text" id="edit-series-genre" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-series-tmdb-id">TMDB ID</label>
+          <input type="text" id="edit-series-tmdb-id" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-series-tmdb-name">Nome TMDB</label>
+          <input type="text" id="edit-series-tmdb-name" required />
+        </div>
+        <button onclick="saveSeriesEdit()">Salvar Alterações</button>
+        <p class="success" id="edit-series-success">Série editada com sucesso!</p>
+        <p class="error" id="edit-series-error"></p>
+      </div>
+    </div>
+
+    <!-- Modal para editar episódio -->
+    <div class="modal" id="edit-episode-modal">
+      <div class="modal-content">
+        <h2>Editar Episódio</h2>
+        <button class="close-btn" onclick="closeModal('edit-episode-modal')">Fechar</button>
+        <div class="form-group">
+          <label for="edit-episode-id">ID do Episódio</label>
+          <input type="text" id="edit-episode-id" readonly />
+        </div>
+        <div class="form-group">
+          <label for="edit-episode-series-id">ID da Série</label>
+          <input type="text" id="edit-episode-series-id" readonly />
+        </div>
+        <div class="form-group">
+          <label for="edit-episode-season">Temporada</label>
+          <input type="text" id="edit-episode-season" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-episode-num">Número do Episódio</label>
+          <input type="text" id="edit-episode-num" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-episode-title">Título do Episódio</label>
+          <input type="text" id="edit-episode-title" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-episode-image">Imagem do Episódio (URL)</label>
+          <input type="text" id="edit-episode-image" />
+        </div>
+        <div class="form-group">
+          <label for="edit-episode-cover-big">Capa Grande (URL)</label>
+          <input type="text" id="edit-episode-cover-big" />
+        </div>
+        <div class="form-group">
+          <label for="edit-episode-duration">Duração</label>
+          <input type="text" id="edit-episode-duration" />
+        </div>
+        <div class="form-group">
+          <label for="edit-episode-release-date">Data de Lançamento</label>
+          <input type="text" id="edit-episode-release-date" />
+        </div>
+        <div class="form-group">
+          <label for="edit-episode-plot">Sinopse</label>
+          <textarea id="edit-episode-plot" rows="4"></textarea>
+        </div>
+        <button onclick="saveEpisodeEdit()">Salvar Alterações</button>
+        <p class="success" id="edit-episode-success">Episódio editado com sucesso!</p>
+        <p class="error" id="edit-episode-error"></p>
+      </div>
+    </div>
+  </div>
+
+  <button class="logout-btn" onclick="logout()">Sair</button>
+
+  <script>
+    lucide.createIcons();
+
+    // Verificar login
+    if (!localStorage.getItem('isAdminLoggedIn')) {
+      window.location.href = 'admin-login.html';
+    }
+
+    let episodes = [];
+
+    function addEpisode() {
+      const episode = {
+        id: document.getElementById('episode-id').value,
+        season: document.getElementById('episode-season').value,
+        episode_num: document.getElementById('episode-num').value,
+        title: document.getElementById('episode-title').value,
+        movie_image: document.getElementById('episode-image').value,
+        cover_big: document.getElementById('episode-cover-big').value,
+        duration: document.getElementById('episode-duration').value,
+        release_date: document.getElementById('episode-release-date').value,
+        plot: document.getElementById('episode-plot').value
+      };
+
+      if (!episode.id || !episode.season || !episode.episode_num || !episode.title) {
+        alert('Preencha todos os campos obrigatórios do episódio (ID, Temporada, Número, Título).');
+        return;
+      }
+
+      episodes.push(episode);
+      renderEpisodeList();
+      clearEpisodeForm();
+    }
+
+    function renderEpisodeList() {
+      const episodeList = document.getElementById('episode-list');
+      episodeList.innerHTML = '';
+      episodes.forEach((ep, index) => {
+        const div = document.createElement('div');
+        div.className = 'episode-item';
+        div.innerHTML = `
+          <span>${ep.title} (T${ep.season}E${ep.episode_num})</span>
+          <div>
+            <button class="edit-btn" onclick="editEpisodeTemp(${index})">Editar</button>
+            <button onclick="removeEpisodeTemp(${index})">Remover</button>
+          </div>
+        `;
+        episodeList.appendChild(div);
+      });
+    }
+
+    function editEpisodeTemp(index) {
+      const episode = episodes[index];
+      document.getElementById('episode-id').value = episode.id;
+      document.getElementById('episode-season').value = episode.season;
+      document.getElementById('episode-num').value = episode.episode_num;
+      document.getElementById('episode-title').value = episode.title;
+      document.getElementById('episode-image').value = episode.movie_image || '';
+      document.getElementById('episode-cover-big').value = episode.cover_big || '';
+      document.getElementById('episode-duration').value = episode.duration || '';
+      document.getElementById('episode-release-date').value = episode.release_date || '';
+      document.getElementById('episode-plot').value = episode.plot || '';
+      episodes.splice(index, 1);
+      renderEpisodeList();
+    }
+
+    function removeEpisodeTemp(index) {
+      episodes.splice(index, 1);
+      renderEpisodeList();
+    }
+
+    function clearEpisodeForm() {
+      document.getElementById('episode-id').value = '';
+      document.getElementById('episode-season').value = '';
+      document.getElementById('episode-num').value = '';
+      document.getElementById('episode-title').value = '';
+      document.getElementById('episode-image').value = '';
+      document.getElementById('episode-cover-big').value = '';
+      document.getElementById('episode-duration').value = '';
+      document.getElementById('episode-release-date').value = '';
+      document.getElementById('episode-plot').value = '';
+    }
+
+    async function addMovie() {
+      const movie = {
+        name: document.getElementById('movie-name').value,
+        title: document.getElementById('movie-title').value,
+        year: document.getElementById('movie-year').value,
+        stream_type: 'movie',
+        stream_id: parseInt(document.getElementById('movie-stream-id').value),
+        stream_icon: document.getElementById('movie-stream-icon').value,
+        genre: document.getElementById('movie-genre').value,
+        tmdb_id: parseInt(document.getElementById('movie-tmdb-id').value),
+        tmdb_name: document.getElementById('movie-tmdb-name').value,
+        tmdb_url: document.getElementById('movie-tmdb-url').value
+      };
+
+      if (!movie.name || !movie.title || !movie.year || !movie.stream_id || !movie.stream_icon || !movie.genre || !movie.tmdb_id || !movie.tmdb_name || !movie.tmdb_url) {
+        document.getElementById('movie-error').textContent = 'Todos os campos do filme são obrigatórios';
+        document.getElementById('movie-error').style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/update-catalog', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
+          },
+          body: JSON.stringify(movie)
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('movie-success').style.display = 'block';
+          setTimeout(() => document.getElementById('movie-success').style.display = 'none', 3000);
+          clearMovieForm();
+        } else {
+          document.getElementById('movie-error').textContent = result.message;
+          document.getElementById('movie-error').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao adicionar filme:', error);
+        document.getElementById('movie-error').textContent = 'Erro ao adicionar filme: ' + error.message;
+        document.getElementById('movie-error').style.display = 'block';
+      }
+    }
+
+    async function removeMovie(stream_id) {
+      try {
+        const response = await fetch('/api/remove-movie', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
+          },
+          body: JSON.stringify({ stream_id })
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('movie-remove-success').style.display = 'block';
+          setTimeout(() => document.getElementById('movie-remove-success').style.display = 'none', 3000);
+        } else {
+          document.getElementById('movie-remove-error').textContent = result.message;
+          document.getElementById('movie-remove-error').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao remover filme:', error);
+        document.getElementById('movie-remove-error').textContent = 'Erro ao remover filme: ' + error.message;
+        document.getElementById('movie-remove-error').style.display = 'block';
+      }
+    }
+
+    async function openEditMovieModal(stream_id) {
+      try {
+        const movie = allMovies.find(m => m.stream_id === stream_id);
+        if (!movie) {
+          alert('Filme não encontrado');
+          return;
+        }
+
+        document.getElementById('edit-movie-name').value = movie.name;
+        document.getElementById('edit-movie-title').value = movie.title;
+        document.getElementById('edit-movie-year').value = movie.year;
+        document.getElementById('edit-movie-stream-id').value = movie.stream_id;
+        document.getElementById('edit-movie-stream-icon').value = movie.stream_icon;
+        document.getElementById('edit-movie-genre').value = movie.genre;
+        document.getElementById('edit-movie-tmdb-id').value = movie.tmdb_id;
+        document.getElementById('edit-movie-tmdb-name').value = movie.tmdb_name;
+        document.getElementById('edit-movie-tmdb-url').value = movie.tmdb_url;
+
+        document.getElementById('edit-movie-modal').style.display = 'flex';
+      } catch (error) {
+        console.error('Erro ao carregar dados do filme:', error);
+        alert('Erro ao carregar dados do filme');
+      }
+    }
+
+    async function saveMovieEdit() {
+      const movie = {
+        stream_id: parseInt(document.getElementById('edit-movie-stream-id').value),
+        name: document.getElementById('edit-movie-name').value,
+        title: document.getElementById('edit-movie-title').value,
+        year: document.getElementById('edit-movie-year').value,
+        stream_type: 'movie',
+        stream_icon: document.getElementById('edit-movie-stream-icon').value,
+        genre: document.getElementById('edit-movie-genre').value,
+        tmdb_id: parseInt(document.getElementById('edit-movie-tmdb-id').value),
+        tmdb_name: document.getElementById('edit-movie-tmdb-name').value,
+        tmdb_url: document.getElementById('edit-movie-tmdb-url').value
+      };
+
+      if (!movie.name || !movie.title || !movie.year || !movie.stream_id || !movie.stream_icon || !movie.genre || !movie.tmdb_id || !movie.tmdb_name || !movie.tmdb_url) {
+        document.getElementById('edit-movie-error').textContent = 'Todos os campos do filme são obrigatórios';
+        document.getElementById('edit-movie-error').style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/edit-movie', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
+          },
+          body: JSON.stringify(movie)
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('edit-movie-success').style.display = 'block';
+          setTimeout(() => document.getElementById('edit-movie-success').style.display = 'none', 3000);
+          closeModal('edit-movie-modal');
+        } else {
+          document.getElementById('edit-movie-error').textContent = result.message;
+          document.getElementById('edit-movie-error').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao editar filme:', error);
+        document.getElementById('edit-movie-error').textContent = 'Erro ao editar filme: ' + error.message;
+        document.getElementById('edit-movie-error').style.display = 'block';
+      }
+    }
+
+    function clearMovieForm() {
+      document.getElementById('movie-name').value = '';
+      document.getElementById('movie-title').value = '';
+      document.getElementById('movie-year').value = '';
+      document.getElementById('movie-stream-id').value = '';
+      document.getElementById('movie-stream-icon').value = '';
+      document.getElementById('movie-genre').value = '';
+      document.getElementById('movie-tmdb-id').value = '';
+      document.getElementById('movie-tmdb-name').value = '';
+      document.getElementById('movie-tmdb-url').value = '';
+    }
+
+    async function addSeries() {
+      const series = {
+        name: document.getElementById('series-name').value,
+        title: document.getElementById('series-title').value,
+        year: document.getElementById('series-year').value,
+        stream_type: 'series',
+        series_id: parseInt(document.getElementById('series-id').value),
+        cover: document.getElementById('series-cover').value,
+        genre: document.getElementById('series-genre').value,
+        tmdb_id: parseInt(document.getElementById('series-tmdb-id').value),
+        tmdb_name: document.getElementById('series-tmdb-name').value,
+        episodes: episodes
+      };
+
+      if (!series.name || !series.title || !series.year || !series.series_id || !series.cover || !series.genre || !series.tmdb_id || !series.tmdb_name) {
+        document.getElementById('series-error').textContent = 'Todos os campos da série são obrigatórios';
+        document.getElementById('series-error').style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/update-series', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
+          },
+          body: JSON.stringify(series)
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('series-success').style.display = 'block';
+          setTimeout(() => document.getElementById('series-success').style.display = 'none', 3000);
+          clearSeriesForm();
+          episodes = [];
+          renderEpisodeList();
+        } else {
+          document.getElementById('series-error').textContent = result.message;
+          document.getElementById('series-error').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao adicionar série:', error);
+        document.getElementById('series-error').textContent = 'Erro ao adicionar série: ' + error.message;
+        document.getElementById('series-error').style.display = 'block';
+      }
+    }
+
+    async function removeSeries(series_id) {
+      try {
+        const response = await fetch('/api/remove-series', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
+          },
+          body: JSON.stringify({ series_id })
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('series-remove-success').style.display = 'block';
+          setTimeout(() => document.getElementById('series-remove-success').style.display = 'none', 3000);
+        } else {
+          document.getElementById('series-remove-error').textContent = result.message;
+          document.getElementById('series-remove-error').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao remover série:', error);
+        document.getElementById('series-remove-error').textContent = 'Erro ao remover série: ' + error.message;
+        document.getElementById('series-remove-error').style.display = 'block';
+      }
+    }
+
+    async function removeEpisode(series_id, episode_id) {
+      try {
+        const response = await fetch('/api/remove-episode', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
+          },
+          body: JSON.stringify({ series_id, episode_id })
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('series-remove-success').style.display = 'block';
+          setTimeout(() => document.getElementById('series-remove-success').style.display = 'none', 3000);
+        } else {
+          document.getElementById('series-remove-error').textContent = result.message;
+          document.getElementById('series-remove-error').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao remover episódio:', error);
+        document.getElementById('series-remove-error').textContent = 'Erro ao remover episódio: ' + error.message;
+        document.getElementById('series-remove-error').style.display = 'block';
+      }
+    }
+
+    async function openEditSeriesModal(series_id) {
+      try {
+        const series = allSeries.find(s => s.series_id === series_id);
+        if (!series) {
+          alert('Série não encontrada');
+          return;
+        }
+
+        document.getElementById('edit-series-name').value = series.name;
+        document.getElementById('edit-series-title').value = series.title;
+        document.getElementById('edit-series-year').value = series.year;
+        document.getElementById('edit-series-id').value = series.series_id;
+        document.getElementById('edit-series-cover').value = series.cover;
+        document.getElementById('edit-series-genre').value = series.genre;
+        document.getElementById('edit-series-tmdb-id').value = series.tmdb_id;
+        document.getElementById('edit-series-tmdb-name').value = series.tmdb_name;
+
+        document.getElementById('edit-series-modal').style.display = 'flex';
+      } catch (error) {
+        console.error('Erro ao carregar dados da série:', error);
+        alert('Erro ao carregar dados da série');
+      }
+    }
+
+    async function saveSeriesEdit() {
+      const series = {
+        series_id: parseInt(document.getElementById('edit-series-id').value),
+        name: document.getElementById('edit-series-name').value,
+        title: document.getElementById('edit-series-title').value,
+        year: document.getElementById('edit-series-year').value,
+        stream_type: 'series',
+        cover: document.getElementById('edit-series-cover').value,
+        genre: document.getElementById('edit-series-genre').value,
+        tmdb_id: parseInt(document.getElementById('edit-series-tmdb-id').value),
+        tmdb_name: document.getElementById('edit-series-tmdb-name').value
+      };
+
+      if (!series.name || !series.title || !series.year || !series.series_id || !series.cover || !series.genre || !series.tmdb_id || !series.tmdb_name) {
+        document.getElementById('edit-series-error').textContent = 'Todos os campos da série são obrigatórios';
+        document.getElementById('edit-series-error').style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/edit-series', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
+          },
+          body: JSON.stringify(series)
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('edit-series-success').style.display = 'block';
+          setTimeout(() => document.getElementById('edit-series-success').style.display = 'none', 3000);
+          closeModal('edit-series-modal');
+        } else {
+          document.getElementById('edit-series-error').textContent = result.message;
+          document.getElementById('edit-series-error').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao editar série:', error);
+        document.getElementById('edit-series-error').textContent = 'Erro ao editar série: ' + error.message;
+        document.getElementById('edit-series-error').style.display = 'block';
+      }
+    }
+
+    async function openEditEpisodeModal(series_id, episode_id) {
+      try {
+        const series = allSeries.find(s => s.series_id === series_id);
+        if (!series) {
+          alert('Série não encontrada');
+          return;
+        }
+        const episode = series.episodes.find(ep => ep.id === episode_id);
+        if (!episode) {
+          alert('Episódio não encontrado');
+          return;
+        }
+
+        document.getElementById('edit-episode-id').value = episode.id;
+        document.getElementById('edit-episode-series-id').value = series_id;
+        document.getElementById('edit-episode-season').value = episode.season;
+        document.getElementById('edit-episode-num').value = episode.episode_num;
+        document.getElementById('edit-episode-title').value = episode.title;
+        document.getElementById('edit-episode-image').value = episode.movie_image || '';
+        document.getElementById('edit-episode-cover-big').value = episode.cover_big || '';
+        document.getElementById('edit-episode-duration').value = episode.duration || '';
+        document.getElementById('edit-episode-release-date').value = episode.release_date || '';
+        document.getElementById('edit-episode-plot').value = episode.plot || '';
+
+        document.getElementById('edit-episode-modal').style.display = 'flex';
+      } catch (error) {
+        console.error('Erro ao carregar dados do episódio:', error);
+        alert('Erro ao carregar dados do episódio');
+      }
+    }
+
+    async function saveEpisodeEdit() {
+      const episode = {
+        series_id: parseInt(document.getElementById('edit-episode-series-id').value),
+        episode_id: document.getElementById('edit-episode-id').value,
+        season: document.getElementById('edit-episode-season').value,
+        episode_num: document.getElementById('edit-episode-num').value,
+        title: document.getElementById('edit-episode-title').value,
+        movie_image: document.getElementById('edit-episode-image').value,
+        cover_big: document.getElementById('edit-episode-cover-big').value,
+        duration: document.getElementById('edit-episode-duration').value,
+        release_date: document.getElementById('edit-episode-release-date').value,
+        plot: document.getElementById('edit-episode-plot').value
+      };
+
+      if (!episode.episode_id || !episode.season || !episode.episode_num || !episode.title) {
+        document.getElementById('edit-episode-error').textContent = 'Campos obrigatórios do episódio (id, temporada, número, título) devem estar presentes';
+        document.getElementById('edit-episode-error').style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/edit-episode', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
+          },
+          body: JSON.stringify(episode)
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('edit-episode-success').style.display = 'block';
+          setTimeout(() => document.getElementById('edit-episode-success').style.display = 'none', 3000);
+          closeModal('edit-episode-modal');
+        } else {
+          document.getElementById('edit-episode-error').textContent = result.message;
+          document.getElementById('edit-episode-error').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao editar episódio:', error);
+        document.getElementById('edit-episode-error').textContent = 'Erro ao editar episódio: ' + error.message;
+        document.getElementById('edit-episode-error').style.display = 'block';
+      }
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      document.getElementById(`${modalId}-success`).style.display = 'none';
+      document.getElementById(`${modalId}-error`).style.display = 'none';
+    }
+
+    function clearSeriesForm() {
+      document.getElementById('series-name').value = '';
+      document.getElementById('series-title').value = '';
+      document.getElementById('series-year').value = '';
+      document.getElementById('series-id').value = '';
+      document.getElementById('series-cover').value = '';
+      document.getElementById('series-genre').value = '';
+      document.getElementById('series-tmdb-id').value = '';
+      document.getElementById('series-tmdb-name').value = '';
+    }
+
+    function logout() {
+      localStorage.removeItem('isAdminLoggedIn');
+      window.location.href = 'admin-login.html';
+    }
+  </script>
+</body>
+</html>
