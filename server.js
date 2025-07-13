@@ -1,14 +1,10 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
-const { exec } = require('child_process');
-const util = require('util');
 const cookieParser = require('cookie-parser');
+const { scrapeGames, saveToJson } = require('./scraper');
 const app = express();
 const PORT = 8000;
-
-// Promisify exec para uso assíncrono
-const execPromise = util.promisify(exec);
 
 // Middleware
 app.use(express.json());
@@ -20,7 +16,7 @@ const adminCredentials = { username: 'admin', password: 'admin123' };
 
 // Rota para o HTML principal
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Ajuste para o nome correto do seu HTML, se necessário
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Rota para o JSON de jogos
@@ -86,10 +82,13 @@ app.post('/update', isAuthenticated, async (req, res) => {
       console.log('Nenhum jogos.json existente para apagar.');
     }
 
-    // Executar o script scraper.py
-    await execPromise('python scraper.py', { cwd: __dirname });
-    console.log('Script scraper.py executado com sucesso.');
+    // Executar o script de scraping
+    const games = await scrapeGames('https://ge.globo.com/agenda');
+    console.log('Script scraper.js executado com sucesso.');
 
+    // Salvar os jogos
+    await saveToJson(games);
+    
     // Verificar se o arquivo jogos.json foi criado
     await fs.access(jogosPath);
     
@@ -159,7 +158,7 @@ app.post('/api/edit-movie', isAuthenticated, async (req, res) => {
       }
     } catch (error) {
       if (error.code !== 'ENOENT') {
-        console.error('Erro ao ler catalogo.json:', error);
+        console.error('Erro aoavía ler catalogo.json:', error);
         throw error;
       }
     }
