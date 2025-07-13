@@ -2,30 +2,63 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Player de Jogos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body, html {
-      margin: 0; padding: 0; height: 100%;
-      background: linear-gradient(135deg, #121212, #1e1e1e);
-      color: #eee;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0; padding: 0;
+      height: 100%;
+      background-color: #111;
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
+    .floating-icons {
+      position: fixed;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 1000;
+    }
+    .floating-icons button {
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .floating-icons button:hover {
+      background-color: #e50914;
+      transform: scale(1.1);
+    }
+    .floating-icons i {
+      width: 18px;
+      height: 18px;
+    }
     header {
       width: 100%;
       background: #222;
-      padding: 12px 20px;
+      padding: 12px 80px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.6);
       display: flex;
       align-items: center;
       gap: 12px;
-      justify-content: space-between;
+      justify-content: center;
       flex-wrap: wrap;
     }
     header h1 {
@@ -39,45 +72,26 @@
       text-align: center;
       min-width: 0;
     }
-    #btn-voltar {
-      background: #00d8ff;
-      border: none;
-      color: #111;
-      font-weight: 700;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
-      flex: 0 0 auto;
-      white-space: nowrap;
-      box-shadow: 0 4px 12px #00d8ff88;
-      filter: drop-shadow(0 2px 3px #008ba4cc);
-    }
-    #btn-voltar:hover {
-      background: #0099bb;
-    }
     main {
       flex-grow: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 20px 80px 20px;
       position: relative;
       width: 100%;
       max-width: 960px;
-      margin: 0 auto 20px;
+      margin: 0 auto;
       min-height: calc(100vh - 88px);
       flex-direction: column;
     }
-
     .video-container {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* 16:9 ratio */
+      padding-top: 56.25%;
       background: black;
-      border-radius: 16px;
-      box-shadow: 0 0 30px #00d8ff99;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
       overflow: hidden;
       max-height: 80vh;
     }
@@ -86,12 +100,10 @@
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      border-radius: 16px;
+      border-radius: 8px;
       outline: none;
       background: black;
     }
-
-    /* Tela de carregamento overlay */
     #loading-overlay {
       position: absolute;
       inset: 0;
@@ -101,7 +113,7 @@
       justify-content: center;
       align-items: center;
       z-index: 20;
-      border-radius: 16px;
+      border-radius: 8px;
       user-select: none;
       transition: opacity 0.3s ease;
     }
@@ -110,10 +122,10 @@
       pointer-events: none;
     }
     #loading-spinner {
-      width: 80px;
-      height: 80px;
-      border: 10px solid rgba(255,255,255,0.15);
-      border-top-color: #00d8ff;
+      width: 60px;
+      height: 60px;
+      border: 8px solid rgba(255,255,255,0.15);
+      border-top-color: #e50914;
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-bottom: 16px;
@@ -123,31 +135,28 @@
     }
     #loading-text {
       font-size: 1.2rem;
-      color: #00d8ff;
+      color: #e50914;
       font-weight: 600;
       letter-spacing: 1.5px;
       text-transform: uppercase;
     }
-
     #error-message {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #ff5c5c;
+      color: #e50914;
       font-weight: 600;
       font-size: 1.2rem;
       text-align: center;
       padding: 20px;
       background: rgba(40, 0, 0, 0.8);
-      border-radius: 12px;
+      border-radius: 8px;
       user-select: none;
       max-width: 80%;
       z-index: 30;
       display: none;
     }
-
-    /* Controles personalizados */
     #controls {
       margin-top: 16px;
       display: flex;
@@ -157,15 +166,13 @@
       flex-wrap: wrap;
     }
     #controls button {
-      background: #00d8ff;
+      background: #e50914;
       border: none;
-      color: #111;
+      color: #fff;
       font-weight: 700;
       padding: 10px 20px;
       border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 12px #00d8ff88;
-      filter: drop-shadow(0 2px 3px #008ba4cc);
       user-select: none;
       transition: background-color 0.3s ease;
       font-size: 1rem;
@@ -174,10 +181,9 @@
       gap: 8px;
     }
     #controls button:hover {
-      background: #0099bb;
+      background: #f40612;
     }
-    #controls button svg {
-      fill: #111;
+    #controls i {
       width: 20px;
       height: 20px;
     }
@@ -187,35 +193,34 @@
       border-radius: 8px;
       height: 20px;
       -webkit-appearance: none;
-      background: #444;
+      background: #333;
       outline: none;
       transition: background-color 0.3s ease;
     }
     #volume-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
-      appearance: none;
       width: 20px;
       height: 20px;
-      background: #00d8ff;
+      background: #e50914;
       cursor: pointer;
       border-radius: 50%;
       border: none;
-      box-shadow: 0 0 5px #00d8ff99;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
       transition: background-color 0.3s ease;
     }
     #volume-slider::-moz-range-thumb {
       width: 20px;
       height: 20px;
-      background: #00d8ff;
+      background: #e50914;
       cursor: pointer;
       border-radius: 50%;
       border: none;
-      box-shadow: 0 0 5px #00d8ff99;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
       transition: background-color 0.3s ease;
     }
     @media (max-width: 480px) {
       header {
-        padding: 10px 15px;
+        padding: 10px 60px;
         gap: 8px;
       }
       header h1 {
@@ -225,17 +230,21 @@
         text-align: center;
         margin-top: 6px;
       }
-      #btn-voltar {
-        flex: 0 0 auto;
-        order: 1;
-        padding: 6px 12px;
-        font-size: 0.9rem;
-        box-shadow: 0 3px 10px #00d8ff88;
-        filter: drop-shadow(0 1px 2px #008ba4cc);
-      }
       main {
-        padding: 10px;
+        padding: 10px 60px 10px;
         min-height: calc(100vh - 72px);
+      }
+      .floating-icons {
+        left: 10px;
+        gap: 15px;
+      }
+      .floating-icons button {
+        width: 32px;
+        height: 32px;
+      }
+      .floating-icons i {
+        width: 16px;
+        height: 16px;
       }
       #volume-slider {
         width: 80px;
@@ -244,42 +253,32 @@
   </style>
 </head>
 <body>
+  <div class="floating-icons">
+    <button id="btn-voltar" title="Voltar para jogos"><i data-lucide="arrow-left"></i></button>
+  </div>
   <header>
-    <button id="btn-voltar" aria-label="Voltar para jogos">← Voltar</button>
     <h1 id="nome-jogo">Carregando...</h1>
   </header>
   <main>
     <div class="video-container">
       <video id="videoPlayer" playsinline></video>
-
       <div id="loading-overlay" aria-live="polite" aria-busy="true">
         <div id="loading-spinner"></div>
         <div id="loading-text">Carregando vídeo...</div>
       </div>
-
       <div id="error-message" role="alert"></div>
     </div>
-
     <div id="controls" aria-label="Controles do vídeo">
-      <button id="btn-playpause" aria-label="Play/Pause">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg> Play
-      </button>
-      <button id="btn-fullscreen" aria-label="Tela cheia">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm10-9h-5v2h3v3h2V5zm0 14h-3v2h5v-5h-2v3zM7 5v3H5V5h5v2H7z"/></svg> Fullscreen
-      </button>
-      <button id="btn-volume" aria-label="Volume">
-        <svg id="icon-volume" viewBox="0 0 24 24" aria-hidden="true" width="20" height="20" fill="#111">
-          <path d="M3 9v6h4l5 5V4L7 9H3z"/>
-          <path id="volume-wave" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"/>
-          <path id="volume-wave2" d="M19 12c0-3.04-1.67-5.64-4.25-6.93v2.06c1.51 1.02 2.5 2.77 2.5 4.87s-1 3.85-2.5 4.87v2.06C17.33 17.64 19 15.04 19 12z"/>
-        </svg>
-      </button>
+      <button id="btn-playpause" aria-label="Play/Pause"><i data-lucide="play"></i> Play</button>
+      <button id="btn-fullscreen" aria-label="Tela cheia"><i data-lucide="maximize"></i> Fullscreen</button>
+      <button id="btn-volume" aria-label="Volume"><i data-lucide="volume-2"></i></button>
       <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1" aria-label="Controle de volume" />
     </div>
   </main>
-
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
   <script>
+    lucide.createIcons();
+
     const video = document.getElementById('videoPlayer');
     const loadingOverlay = document.getElementById('loading-overlay');
     const errorMessage = document.getElementById('error-message');
@@ -289,7 +288,6 @@
     const btnPlayPause = document.getElementById('btn-playpause');
     const btnVolume = document.getElementById('btn-volume');
     const volumeSlider = document.getElementById('volume-slider');
-    const iconVolume = document.getElementById('icon-volume');
 
     const urlParams = new URLSearchParams(window.location.search);
     const link = urlParams.get('link');
@@ -297,7 +295,6 @@
 
     nomeJogo.textContent = nome;
 
-    // Retry settings
     const MAX_RETRIES = 3;
     let retryCount = 0;
     let hls = null;
@@ -349,7 +346,7 @@
           showVideo();
           video.play();
           updatePlayPauseButton(false);
-          retryCount = 0; // reset retry on success
+          retryCount = 0;
         });
 
         hls.on(Hls.Events.ERROR, (event, data) => {
@@ -413,47 +410,14 @@
     };
 
     function updatePlayPauseButton(paused) {
-      btnPlayPause.textContent = paused ? "Play" : "Pause";
-      btnPlayPause.prepend(createPlayPauseIcon(paused));
+      btnPlayPause.innerHTML = `<i data-lucide="${paused ? 'play' : 'pause'}"></i> ${paused ? 'Play' : 'Pause'}`;
+      lucide.createIcons();
     }
 
-    function createPlayPauseIcon(paused) {
-      const ns = "http://www.w3.org/2000/svg";
-      const svg = document.createElementNS(ns, "svg");
-      svg.setAttribute("viewBox", "0 0 24 24");
-      svg.setAttribute("width", "20");
-      svg.setAttribute("height", "20");
-      const path = document.createElementNS(ns, "path");
-      path.setAttribute("fill", "#111");
-      if (paused) {
-        path.setAttribute("d", "M8 5v14l11-7z"); // play icon
-      } else {
-        path.setAttribute("d", "M6 19h4V5H6v14zm8-14v14h4V5h-4z"); // pause icon
-      }
-      svg.appendChild(path);
-      return svg;
-    }
-
-    // Volume controls
     function updateVolumeIcon(volume, muted) {
-      if (muted || volume === 0) {
-        iconVolume.innerHTML = `
-          <path d="M16 7 L14 9 L11 12 L14 15 L16 17" stroke="#111" stroke-width="2" fill="none" />
-          <path d="M3 9v6h4l5 5V4L7 9H3z" fill="#111" />
-          <line x1="19" y1="5" x2="5" y2="19" stroke="#f00" stroke-width="2"/>
-        `;
-      } else if (volume < 0.5) {
-        iconVolume.innerHTML = `
-          <path d="M3 9v6h4l5 5V4L7 9H3z" fill="#111" />
-          <path d="M16 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z" fill="#111" />
-        `;
-      } else {
-        iconVolume.innerHTML = `
-          <path d="M3 9v6h4l5 5V4L7 9H3z" fill="#111" />
-          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z" fill="#111" />
-          <path d="M19 12c0-3.04-1.67-5.64-4.25-6.93v2.06c1.51 1.02 2.5 2.77 2.5 4.87s-1 3.85-2.5 4.87v2.06C17.33 17.64 19 15.04 19 12z" fill="#111" />
-        `;
-      }
+      const icon = muted || volume === 0 ? 'volume-x' : volume < 0.5 ? 'volume-1' : 'volume-2';
+      btnVolume.innerHTML = `<i data-lucide="${icon}"></i>`;
+      lucide.createIcons();
     }
 
     btnVolume.onclick = () => {
@@ -468,12 +432,10 @@
       updateVolumeIcon(video.volume, false);
     };
 
-    // Inicializa volume
     video.volume = 1;
     video.muted = false;
     updateVolumeIcon(video.volume, video.muted);
 
-    // Eventos do video para atualizar o botão play/pause e loading
     video.addEventListener('waiting', () => loadingOverlay.classList.remove('hidden'));
     video.addEventListener('playing', () => {
       loadingOverlay.classList.add('hidden');
@@ -481,9 +443,7 @@
     });
     video.addEventListener('pause', () => updatePlayPauseButton(true));
 
-    // Inicializa stream
     loadStream();
-
   </script>
 </body>
 </html>
