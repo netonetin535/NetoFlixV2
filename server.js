@@ -16,7 +16,7 @@ const adminCredentials = { username: 'admin', password: 'admin123' };
 
 // Rota para o HTML principal
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'netflix.html'));
 });
 
 // Rota para o JSON de jogos
