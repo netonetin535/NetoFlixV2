@@ -2,200 +2,330 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jogos do Dia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
-      margin: 0;
-      padding: 0;
-      color: #fff;
-    }
-    header {
-      text-align: center;
-      padding: 30px 10px;
+      font-family: 'Roboto', sans-serif;
       background-color: #111;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      position: relative;
+      color: white;
+      min-height: 100vh;
     }
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-      color: #00d8ff;
-    }
-    #btn-login-admin {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background-color: #00d8ff;
-      border: none;
-      color: #111;
-      font-weight: bold;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background-color 0.3s;
-    }
-    #btn-login-admin:hover { background-color: #008fb3; }
-    #btn-update-jogos {
-      position: absolute;
-      top: 15px;
-      right: 140px;
-      background-color: #00ffbf;
-      border: none;
-      color: #111;
-      font-weight: bold;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      display: none;
-      transition: background-color 0.3s;
-    }
-    #btn-update-jogos:hover { background-color: #00bf8f; }
-    .container {
-      max-width: 1200px;
-      margin: 30px auto;
-      display: grid;
+    .floating-icons {
+      position: fixed;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
       gap: 20px;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      padding: 0 20px;
+      z-index: 1000;
     }
-    .card {
-      background-color: #1e2a38;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
+    .floating-icons a,
+    .floating-icons button {
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .floating-icons a:hover,
+    .floating-icons button:hover {
+      background-color: #e50914;
+      transform: scale(1.1);
+    }
+    .floating-icons i {
+      width: 18px;
+      height: 18px;
+    }
+    .container {
+      padding: 40px 40px 40px 90px; /* Aumentado para mais espaço */
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 2.5rem; /* Aumentado para destaque */
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Aumentado de 200px para 250px */
+      gap: 25px; /* Aumentado o espaçamento entre cards */
+      animation: fadeIn 0.6s forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeInCard {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .game-card {
+      background: #222;
+      border-radius: 10px; /* Aumentado para borda mais suave */
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
       position: relative;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5); /* Sombra mais pronunciada */
+      opacity: 0;
+      animation: fadeInCard 0.6s forwards;
+      height: 300px; /* Altura mínima fixa para consistência */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    .card:hover { transform: scale(1.02); }
+    .game-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.8);
+    }
     .teams {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      padding: 15px; /* Aumentado para mais espaço interno */
+      background: #222;
+      flex-shrink: 0;
     }
     .teams img {
-      width: 60px;
-      height: 60px;
+      width: 70px; /* Aumentado para melhor visualização */
+      height: 70px;
       object-fit: contain;
       background-color: #fff;
       border-radius: 50%;
       padding: 5px;
     }
-    .match {
+    .game-title {
+      padding: 15px;
+      font-size: 1.1em; /* Aumentado para legibilidade */
       text-align: center;
-      font-size: 1.1rem;
-      margin: 15px 0 5px;
-      font-weight: bold;
+      background: rgba(0, 0, 0, 0.7);
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      z-index: 5;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .info {
+    .info-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      border-radius: 10px;
+      padding: 15px;
+    }
+    .game-card:hover .info-overlay {
+      opacity: 1;
+    }
+    .info-overlay span {
+      font-size: 1rem; /* Aumentado para legibilidade */
+      color: #fff;
       text-align: center;
-      font-size: 0.95rem;
-      color: #ccc;
+      margin: 5px 0;
     }
-    .time {
-      font-size: 1.2rem;
-      color: #00ffbf;
-      margin-top: 10px;
+    .action-icons {
+      position: absolute;
+      bottom: 60px; /* Ajustado para evitar sobreposição com o título */
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px; /* Aumentado o espaçamento entre ícones */
+      opacity: 1; /* Garantir visibilidade inicial */
+      transition: opacity 0.3s ease;
+      z-index: 15;
     }
-    .btn-editar {
+    .game-card:hover .action-icons {
+      opacity: 1;
+    }
+    .action-icons i {
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      padding: 12px; /* Aumentado para ícone maior */
+      color: #fff;
+      font-size: 1.5em; /* Aumentado para destaque */
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .action-icons i:hover {
+      background-color: #e50914;
+    }
+    .edit-btn {
       position: absolute;
       top: 10px;
       right: 10px;
-      background-color: #0077aa;
+      background: #e50914;
       border: none;
-      color: white;
-      padding: 6px 10px;
-      border-radius: 8px;
+      padding: 8px 15px; /* Aumentado para botão maior */
+      border-radius: 6px;
+      color: #fff;
       cursor: pointer;
-      font-size: 0.8rem;
       display: none;
-      transition: background-color 0.3s;
+      z-index: 15;
+      font-size: 0.9rem;
     }
-    .btn-editar:hover { background-color: #005f7a; }
-    #modal-editar {
+    .game-card:hover .edit-btn {
+      display: block;
+    }
+    .modal {
+      display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
       justify-content: center;
       align-items: center;
-      z-index: 9999;
     }
-    #modal-content {
-      background: #1e2a38;
-      padding: 20px;
-      border-radius: 15px;
-      max-width: 400px;
+    .modal-content {
+      background: #222;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 450px;
       width: 90%;
       color: #fff;
     }
-    #modal-content label {
+    .modal-content h2 {
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
       display: block;
-      margin-bottom: 6px;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
       font-weight: bold;
     }
-    #modal-content input[type="text"] {
+    .form-group input[type="text"] {
       width: 100%;
-      padding: 8px;
-      border-radius: 8px;
+      padding: 12px;
       border: none;
-      margin-bottom: 10px;
-      font-size: 1rem;
+      border-radius: 6px;
+      background: #333;
+      color: #fff;
+      font-size: 1.1rem;
     }
-    #modal-content .checkbox-group {
-      margin-bottom: 15px;
+    .form-group input:focus {
+      outline: 2px solid #e50914;
+    }
+    .checkbox-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
+      margin-bottom: 20px;
     }
-    #modal-content button {
-      padding: 8px 15px;
+    .modal-content button {
+      padding: 12px 25px;
       font-weight: bold;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      margin-right: 10px;
+      margin-right: 15px;
     }
-    #btn-salvar { background-color: #00ffbf; color: #111; }
-    #btn-cancelar { background-color: #777; color: #eee; }
-    .btn-assistir {
-      cursor: pointer;
-      color: #00ffbf;
-      font-weight: bold;
-      text-decoration: underline;
-      display: inline-block;
-      margin-top: 8px;
+    .save-btn {
+      background: #e50914;
+      color: #fff;
+    }
+    .close-btn {
+      background: #555;
+      color: #fff;
+    }
+    .save-btn:hover, .close-btn:hover {
+      background: #f40612;
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px 20px 20px 70px;
+      }
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Ajustado para telas menores */
+      }
+      .game-title {
+        font-size: 0.95em;
+      }
+      .floating-icons {
+        left: 10px;
+        gap: 15px;
+      }
+      .floating-icons a,
+      .floating-icons button {
+        width: 32px;
+        height: 32px;
+      }
+      .floating-icons i {
+        width: 16px;
+        height: 16px;
+      }
+      .teams img {
+        width: 50px;
+        height: 50px;
+      }
+      .action-icons {
+        bottom: 50px;
+        gap: 10px;
+      }
+      .action-icons i {
+        padding: 10px;
+        font-size: 1.2em;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
+  <div class="floating-icons">
+    <a href="netflix.html" title="Início"><i data-lucide="home"></i></a>
+    <a href="filmes.html" title="Filmes"><i data-lucide="clapperboard"></i></a>
+    <a href="series.html" title="Séries"><i data-lucide="tv"></i></a>
+    <a href="esportes.html" title="Esportes"><i data-lucide="trophy"></i></a>
+    <a href="historico.html" title="Histórico"><i data-lucide="history"></i></a>
+    <button id="btn-login-admin" title="Login/Logout Admin"><i data-lucide="lock"></i></button>
+    <button id="btn-update-jogos" title="Atualizar Jogos"><i data-lucide="refresh-cw"></i></button>
+  </div>
+
+  <div class="container">
     <h1>🏆 Jogos do Dia</h1>
-    <button id="btn-login-admin">Login Admin</button>
-    <button id="btn-update-jogos" title="Executar scraper.py">Atualizar Jogos</button>
-  </header>
+    <div class="grid" id="jogos-container"></div>
+  </div>
 
-  <main class="container" id="jogos-container"></main>
-
-  <div id="modal-editar">
-    <div id="modal-content">
+  <div class="modal" id="modal-editar">
+    <div class="modal-content">
       <h2>Editar Link do Jogo</h2>
-      <label for="input-link">Link m3u8:</label>
-      <input type="text" id="input-link" placeholder="Cole o link m3u8 aqui" />
+      <div class="form-group">
+        <label for="input-link">Link m3u8:</label>
+        <input type="text" id="input-link" placeholder="Cole o link m3u8 aqui" />
+      </div>
       <div class="checkbox-group">
         <input type="checkbox" id="checkbox-ativo" />
         <label for="checkbox-ativo">Ativar Link</label>
       </div>
-      <button id="btn-salvar">Salvar</button>
-      <button id="btn-cancelar">Cancelar</button>
+      <button class="save-btn" id="btn-salvar">Salvar</button>
+      <button class="close-btn" id="btn-cancelar">Cancelar</button>
     </div>
   </div>
 
   <script>
+    lucide.createIcons();
+
     const btnLoginAdmin = document.getElementById("btn-login-admin");
     const btnUpdateJogos = document.getElementById("btn-update-jogos");
     const jogosContainer = document.getElementById("jogos-container");
@@ -214,16 +344,16 @@
 
     function updateAdminUI() {
       if (isAdmin()) {
-        btnLoginAdmin.textContent = "Logout Admin";
-        btnUpdateJogos.style.display = "inline-block";
+        btnLoginAdmin.innerHTML = '<i data-lucide="log-out"></i>';
+        btnUpdateJogos.style.display = "flex";
       } else {
-        btnLoginAdmin.textContent = "Login Admin";
+        btnLoginAdmin.innerHTML = '<i data-lucide="lock"></i>';
         btnUpdateJogos.style.display = "none";
       }
+      lucide.createIcons();
       renderJogos();
     }
 
-    // Verifica com backend se está logado
     fetch('/check-admin')
       .then(res => res.json())
       .then(data => {
@@ -250,7 +380,8 @@
     btnUpdateJogos.onclick = () => {
       if (!isAdmin()) return alert("Você precisa estar logado como admin!");
       btnUpdateJogos.disabled = true;
-      btnUpdateJogos.textContent = "Atualizando...";
+      btnUpdateJogos.innerHTML = '<i data-lucide="loader-circle" class="spin"></i>';
+      lucide.createIcons();
 
       fetch('/update', { method: 'POST' })
         .then(r => {
@@ -266,7 +397,8 @@
         })
         .finally(() => {
           btnUpdateJogos.disabled = false;
-          btnUpdateJogos.textContent = "Atualizar Jogos";
+          btnUpdateJogos.innerHTML = '<i data-lucide="refresh-cw"></i>';
+          lucide.createIcons();
         });
     };
 
@@ -279,15 +411,16 @@
           jogos = jogos.map(jogo => {
             const chave = jogo.match;
             if (linksSalvos[chave]) {
-              return {...jogo, link_m3u8: linksSalvos[chave].link_m3u8 || null, ativo: linksSalvos[chave].ativo || false };
+              return { ...jogo, link_m3u8: linksSalvos[chave].link_m3u8 || null, ativo: linksSalvos[chave].ativo || false };
             }
-            return {...jogo, link_m3u8: null, ativo: false};
+            return { ...jogo, link_m3u8: null, ativo: false };
           });
+          console.log("Jogos carregados:", jogos); // Depuração
           renderJogos();
         })
         .catch(err => {
           console.error("Erro ao carregar jogos:", err);
-          jogosContainer.innerHTML = "<p style='text-align:center;'>Erro ao carregar os jogos.</p>";
+          jogosContainer.innerHTML = "<p style='text-align:center;width:100%;font-size:1.2rem;'>Nenhum jogo encontrado.</p>";
         });
     }
 
@@ -300,38 +433,40 @@
 
       jogos.forEach((jogo, i) => {
         const card = document.createElement("div");
-        card.className = "card";
-
-        let infoHtml = "";
-        if (jogo.ativo && jogo.link_m3u8) {
-          const urlEncoded = encodeURIComponent(jogo.link_m3u8);
-          // Aqui abre na MESMA guia, sem target _blank
-          infoHtml = `<a class="btn-assistir" href="playerjogos.html?link=${urlEncoded}">🎬 Assistir</a>`;
+        card.className = "game-card";
+        let actionHtml = "";
+        if (jogo.ativo && jogo.link_m3u8 && jogo.link_m3u8.trim() !== "") {
+          actionHtml = `<a href="playerjogos.html?link=${encodeURIComponent(jogo.link_m3u8)}&nome=${encodeURIComponent(jogo.match)}"><i data-lucide="play"></i></a>`;
         } else {
-          infoHtml = `📺 ${jogo.channel || "Não informado"}`;
+          actionHtml = `<span style="color: #666; font-size: 0.9rem;">Sem transmissão</span>`;
         }
-
         card.innerHTML = `
           <div class="teams">
             <img src="${jogo.logo_a}" alt="Logo time A">
             <img src="${jogo.logo_b}" alt="Logo time B">
           </div>
-          <div class="match">${jogo.match}</div>
-          <div class="time">⏰ ${jogo.time}</div>
-          <div class="info">${infoHtml}</div>
+          <div class="game-title">${jogo.match}</div>
+          <div class="info-overlay">
+            <span>⏰ ${jogo.time}</span>
+            <span>${jogo.channel || "Não informado"}</span>
+          </div>
+          <div class="action-icons">
+            ${actionHtml}
+          </div>
         `;
-
         if (isAdmin()) {
           const btnEditar = document.createElement("button");
           btnEditar.textContent = "Editar";
-          btnEditar.className = "btn-editar";
-          btnEditar.onclick = () => abrirModalEditar(i);
+          btnEditar.className = "edit-btn";
+          btnEditar.onclick = (e) => { e.stopPropagation(); abrirModalEditar(i); };
           card.appendChild(btnEditar);
-          btnEditar.style.display = "inline-block";
         }
-
+        if (jogo.ativo && jogo.link_m3u8 && jogo.link_m3u8.trim() !== "") {
+          card.onclick = () => window.location.href = `playerjogos.html?link=${encodeURIComponent(jogo.link_m3u8)}&nome=${encodeURIComponent(jogo.match)}`;
+        }
         jogosContainer.appendChild(card);
       });
+      lucide.createIcons();
     }
 
     function abrirModalEditar(index) {
