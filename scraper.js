@@ -18,14 +18,18 @@ const logger = winston.createLogger({
 
 async function setupPuppeteer() {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: 'new', // Novo modo headless recomendado
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/opt/render/.cache/puppeteer/chrome/linux/chrome-linux64/chrome',
     args: [
       '--no-sandbox',
+      '--disable-setuid-sandbox',
       '--disable-gpu',
-      '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
     ],
   });
   const page = await browser.newPage();
+  // Configurar viewport para simular um dispositivo desktop
+  await page.setViewport({ width: 1280, height: 720 });
   return { browser, page };
 }
 
@@ -35,7 +39,7 @@ async function scrollPage(page) {
   const maxAttempts = 10;
   while (scrollAttempts < maxAttempts) {
     await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 3000)); // Aguarda carregamento dinâmico
     const newHeight = await page.evaluate('document.body.scrollHeight');
     if (newHeight === lastHeight) {
       scrollAttempts++;
@@ -43,6 +47,39 @@ async function scrollPage(page) {
       scrollAttempts = 0;
     }
     lastHeight = newHeight;
+  }
+}
+
+async function extractStreamLink(page, cardUrl) {
+  try {
+    // Navegar até a página do jogo
+    await page.goto(cardUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+    const content = await page.content();
+    const $ = cheerio.load(content);
+
+    // Tentar encontrar links M3U8 ou outros links de streaming
+    let streamLink = null;
+    const videoElements = $('video source, a[href$=".m3u8"], script');
+    for (let i = 0; i < videoElements.length; i++) {
+      const element = $(videoElements[i]);
+      const src = element.attr('src') || element.attr('href') || element.text();
+      if (src && src.includes('.m3u8')) {
+        streamLink = src;
+        break;
+      }
+    }
+
+    // Se não encontrar diretamente, buscar em scripts ou iframes
+    if (!streamLink) {
+      const scripts = $('script').text();
+      const m3u8Match = scripts.match(/(https?:\/\/[^\s]*\.m3u8)/);
+      if (m3u8Match) streamLink = m3u8Match[0];
+    }
+
+    return streamLink || 'Não informado';
+  } catch (e) {
+    logger.warn(`❌ Erro ao extrair link de streaming para ${cardUrl}: ${e.message}`);
+    return 'Não informado';
   }
 }
 
@@ -54,13 +91,24 @@ async function scrapeGames(url) {
   try {
     logger.info(`🟢 Acessando: ${url}`);
     ({ browser, page } = await setupPuppeteer());
-    await page.goto(url, { waitUntil: 'networkidle2' });
+
+    // Interceptar requisições para bloquear recursos desnecessários
+    await page.setRequestInterception(true);
+    page.on('request', (request) => {
+      if (['image', 'stylesheet', 'font'].includes(request.resourceType())) {
+        request.abort();
+      } else {
+        request.continue();
+      }
+    });
+
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
     // Scroll para carregar todos os jogos
     await scrollPage(page);
 
-    // Espera até os cards aparecerem (até 30 segundos)
-    await page.waitForSelector('a[data-card-mode="standard"]', { timeout: 30000 });
+    // Espera até os cards aparecerem (até 60 segundos)
+    await page.waitForSelector('a[data-card-mode="standard"]', { timeout: 60000 });
 
     // Pega todo o HTML
     const content = await page.content();
@@ -73,6 +121,11 @@ async function scrapeGames(url) {
     for (let i = 0; i < gameCards.length; i++) {
       try {
         const card = $(gameCards[i]);
+        const cardUrl = card.attr('href');
+        if (!cardUrl) {
+          logger.warn(`❗ Card ${i + 1} sem URL`);
+          continue;
+        }
 
         // Times
         const teamElements = card.find('span.sc-eeDRCY.kXIsjf');
@@ -84,7 +137,7 @@ async function scrapeGames(url) {
         const teamB = $(teamElements[1]).text().trim();
         const match = `${teamA} x ${teamB}`;
 
-        // Horário - busca span com HH:mm
+        // Horário
         let timeText = 'Não informado';
         card.find('span.sc-jXbUNg.zrfFX').each((_, el) => {
           const text = $(el).text().trim();
@@ -96,8 +149,17 @@ async function scrapeGames(url) {
         const logoA = logoElements.length > 0 ? $(logoElements[0]).attr('src') : null;
         const logoB = logoElements.length > 1 ? $(logoElements[1]).attr('src') : null;
 
-        // Canal fixo como 'Não informado'
-        const channelText = 'Não informado';
+        // Canal
+        let channelText = 'Não informado';
+        card.find('span').each((_, el) => {
+          const text = $(el).text().trim();
+          if (text.toLowerCase().includes('tv') || text.toLowerCase().includes('canal')) {
+            channelText = text;
+          }
+        });
+
+        // Link de streaming
+        const streamLink = await extractStreamLink(page, cardUrl);
 
         // Evita duplicatas
         const gameKey = `${match}_${timeText}`;
@@ -108,8 +170,9 @@ async function scrapeGames(url) {
             channel: channelText,
             logo_a: logoA,
             logo_b: logoB,
+            stream_link: streamLink,
           });
-          logger.info(`✅ ${match} às ${timeText} - Canal: ${channelText}`);
+          logger.info(`✅ ${match} às ${timeText} - Canal: ${channelText} - Stream: ${streamLink}`);
           seenGames.add(gameKey);
         }
 
@@ -157,3 +220,4 @@ if (require.main === module) {
 }
 
 module.exports = { scrapeGames, saveToJson };
+```
