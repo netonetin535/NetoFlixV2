@@ -220,4 +220,3 @@ if (require.main === module) {
 }
 
 module.exports = { scrapeGames, saveToJson };
-```
