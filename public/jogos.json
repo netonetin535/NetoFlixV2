@@ -1,128 +1,72 @@
 [
     {
-        "match": "Holanda x Itália",
-        "time": "11:00",
+        "match": "Athletic Club x Avaí",
+        "time": "19:00",
         "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2024/04/16/Holanda_Eq4QgKA.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2024/04/16/Itália.svg"
+        "logo_a": "https://s.sde.globo.com/media/organizations/2025/01/22/Athletic_Club-mineiro.svg",
+        "logo_b": "https://s.sde.globo.com/media/organizations/2024/05/12/avaí.svg"
     },
     {
-        "match": "Chelsea x Paris Saint-Germain",
-        "time": "16:00",
+        "match": "Juventude x Sport",
+        "time": "20:00",
         "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/teams/2018/03/11/chelsea.svg",
-        "logo_b": "https://s.sde.globo.com/media/teams/2018/03/12/paris-saint-germain.svg"
+        "logo_a": "https://s.sde.globo.com/media/organizations/2021/04/29/Juventude-2021-01.svg",
+        "logo_b": "https://s.sde.globo.com/media/organizations/2018/03/11/sport.svg"
     },
     {
-        "match": "Criciúma x Ferroviária",
-        "time": "16:00",
+        "match": "Flamengo x Atlético-MG",
+        "time": "20:00",
         "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2024/03/28/Criciuma-2024.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2019/01/08/Ferroviaria_Araraquara.svg"
+        "logo_a": "https://s.sde.globo.com/media/organizations/2018/04/10/Flamengo-2018.svg",
+        "logo_b": "https://s.sde.globo.com/media/organizations/2018/03/10/atletico-mg.svg"
     },
     {
-        "match": "Guarani x Ituano",
-        "time": "16:30",
+        "match": "Botafogo-SP x Volta Redonda",
+        "time": "21:30",
+        "channel": "Não informado",
+        "logo_a": "https://s.sde.globo.com/media/organizations/2024/05/15/BFC.svg",
+        "logo_b": "https://s.sde.globo.com/media/organizations/2021/04/27/Volta-Redonda-2020.svg"
+    },
+    {
+        "match": "Retrô x CSA",
+        "time": "19:30",
+        "channel": "Não informado",
+        "logo_a": "https://s.sde.globo.com/media/organizations/2023/01/02/svg.svg",
+        "logo_b": "https://s.sde.globo.com/media/organizations/2018/03/11/csa.svg"
+    },
+    {
+        "match": "Maringá x Brusque",
+        "time": "19:30",
+        "channel": "Não informado",
+        "logo_a": "https://s.sde.globo.com/media/organizations/2023/05/03/Maringá_MfSJ40V.svg",
+        "logo_b": "https://s.sde.globo.com/media/organizations/2020/09/06/brusque.svg"
+    },
+    {
+        "match": "Marcílio Dias x Barra-SC",
+        "time": "20:00",
+        "channel": "Não informado",
+        "logo_a": "https://s.sde.globo.com/media/organizations/2023/11/10/marcilio.svg",
+        "logo_b": "https://s.sde.globo.com/media/organizations/2024/01/19/svg.svg"
+    },
+    {
+        "match": "Real Noroeste x Capixaba",
+        "time": "19:00",
+        "channel": "Não informado",
+        "logo_a": "https://s.sde.globo.com/media/organizations/2024/12/17/real-noroeste-svg-74168.svg",
+        "logo_b": "https://s.sde.globo.com/media/organizations/2024/12/17/capixaba-svg-74172.svg"
+    },
+    {
+        "match": "Guarani x Rio Branco-SP",
+        "time": "19:00",
         "channel": "Não informado",
         "logo_a": "https://s.sde.globo.com/media/organizations/2018/03/11/guarani.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2019/01/08/Ituano_Futebol_Clube.svg"
+        "logo_b": "https://s.sde.globo.com/media/original/2011/12/09/riobranco_30.png"
     },
     {
-        "match": "Botafogo-PB x Londrina",
-        "time": "16:30",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2020/02/12/botsvg.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2018/03/11/londrina.svg"
-    },
-    {
-        "match": "Chapecoense x Remo",
-        "time": "18:30",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2021/06/21/CHAPECOENSE-2018.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2021/02/25/Remo-PA.svg"
-    },
-    {
-        "match": "Corinthians x Bragantino",
-        "time": "19:00",
-        "channel": "SporTV",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2024/10/09/Corinthians_2024_Q4ahot4.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2021/06/28/bragantino.svg"
-    },
-    {
-        "match": "Cruzeiro x Grêmio",
-        "time": "20:30",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2021/02/13/cruzeiro_2021.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2018/03/12/gremio.svg"
-    },
-    {
-        "match": "Fortaleza x Ceará",
-        "time": "20:30",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2021/09/19/Fortaleza_2021_1.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2019/10/10/ceara.svg"
-    },
-    {
-        "match": "Caxias x Anápolis",
+        "match": "Oeste x Santo André",
         "time": "19:00",
         "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2019/01/05/svg-caxias.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2024/02/20/Anápolis_Cib1JGm.svg"
-    },
-    {
-        "match": "Tuna Luso x Manauara",
-        "time": "15:00",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2023/05/01/TunaLusoB.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2024/02/22/manauara-ec.svg"
-    },
-    {
-        "match": "Guarany de Bagé x São Luiz",
-        "time": "15:00",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2024/01/20/GUARANY_DE_BAGÉ.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2019/01/03/Esporte_Clube_Sao_Luiz_de_Ijui-RS-01.svg"
-    },
-    {
-        "match": "Azuriz x Joinville",
-        "time": "15:00",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2024/01/24/Azuriz.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2024/01/04/joinville-svg-66223.svg"
-    },
-    {
-        "match": "Batatais x Mauá",
-        "time": "10:00",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2019/01/10/Batatais_FC-01.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2020/01/06/30_0005_Mauá-FC-SP-BRA.png"
-    },
-    {
-        "match": "Bolívia x Paraguai",
-        "time": "18:00",
-        "channel": "SporTV",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2019/07/13/Bolívia.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2019/07/15/Paraguai.svg"
-    },
-    {
-        "match": "Brasil x Venezuela",
-        "time": "21:00",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2019/07/16/Brasil_rgYHF6Z.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2019/07/15/Venezuela.svg"
-    },
-    {
-        "match": "Desportiva Ferroviária x Rio Branco VN",
-        "time": "19:00",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2023/01/23/Desportiva-Ferroviaria.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2023/05/05/Escudo_Rio_Branco_VN.svg"
-    },
-    {
-        "match": "Portuguesa Santista x São José-SP",
-        "time": "10:00",
-        "channel": "Não informado",
-        "logo_a": "https://s.sde.globo.com/media/organizations/2023/09/22/port_svg.svg",
-        "logo_b": "https://s.sde.globo.com/media/organizations/2019/03/23/sao_jose_ec-sp-01.svg"
+        "logo_a": "https://s.sde.globo.com/media/organizations/2018/03/11/oeste.svg",
+        "logo_b": "https://s.sde.globo.com/media/organizations/2019/05/13/SantoAndreSVG.svg"
     }
 ]
