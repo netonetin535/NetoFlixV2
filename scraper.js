@@ -46,23 +46,6 @@ async function scrollPage(page) {
   }
 }
 
-async function waitForModalAndExtractChannel(page, timeout = 7000) {
-  try {
-    await page.waitForSelector('[class*="modal"], [class*="popup"]', { timeout });
-    const channelElements = await page.$$eval(
-      '[class*="modal"], [class*="popup"]',
-      elements => elements.map(el => el.innerText.trim()).filter(text => text.length > 0)
-    );
-    return channelElements.find(text =>
-      ['sportv', 'globoplay', 'cazétv', 'premiere', 'ge.globo'].some(keyword =>
-        text.toLowerCase().includes(keyword)
-      )
-    ) || 'Não informado';
-  } catch {
-    return 'Não informado';
-  }
-}
-
 async function scrapeGames(url) {
   const games = [];
   const seenGames = new Set();
@@ -86,9 +69,6 @@ async function scrapeGames(url) {
     // Seleciona todos os cards dinamicamente pelo atributo data-card-mode
     const gameCards = $('a[data-card-mode="standard"]');
     logger.info(`🧩 Encontrados ${gameCards.length} cards`);
-
-    // Seleciona todos os botões "Onde assistir?" na página
-    const whereToWatchButtons = await page.$$(`a[data-card-mode="standard"] > button.sc-hzhJZQ.SLnjU`);
 
     for (let i = 0; i < gameCards.length; i++) {
       try {
@@ -116,25 +96,8 @@ async function scrapeGames(url) {
         const logoA = logoElements.length > 0 ? $(logoElements[0]).attr('src') : null;
         const logoB = logoElements.length > 1 ? $(logoElements[1]).attr('src') : null;
 
-        // Canal (clicar e extrair modal se possível)
-        let channelText = 'Não informado';
-
-        if (whereToWatchButtons[i]) {
-          const btn = whereToWatchButtons[i];
-          const btnText = await page.evaluate(el => el.textContent, btn);
-          if (btnText.includes('Onde assistir?')) {
-            await btn.click();
-            logger.info(`🎯 Clique em 'Onde assistir?' no card ${i + 1}`);
-
-            channelText = await waitForModalAndExtractChannel(page);
-
-            logger.info(`📺 Canal do card ${i + 1}: ${channelText}`);
-
-            // Fecha o modal com Escape
-            await page.keyboard.press('Escape');
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-        }
+        // Canal fixo como 'Não informado'
+        const channelText = 'Não informado';
 
         // Evita duplicatas
         const gameKey = `${match}_${timeText}`;
