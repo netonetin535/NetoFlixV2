@@ -2,14 +2,19 @@
   "name": "meu-netflix-clone",
   "version": "1.0.0",
   "main": "server.js",
+  "bin": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "bash render-build.sh && node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "pkg": {
+    "scripts": ["scraper.js"],
+    "assets": [
+      "public/**/*",
+      "catalogo.json",
+      "series.json",
+      "jogos.json"
+    ]
+  },
   "dependencies": {
     "axios": "^1.7.7",
     "cheerio": "^1.0.0",
@@ -19,11 +24,11 @@
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
     "p-limit": "^6.1.0",
-    "puppeteer": "^23.5.3",
+    "puppeteer": "^24.12.1",
     "string-similarity": "^4.0.4",
     "winston": "^3.8.2"
   },
   "engines": {
-    "node": ">=22.10.0"
+    "node": ">=18.0.0"
   }
 }
