@@ -383,7 +383,7 @@
       btnUpdateJogos.innerHTML = '<i data-lucide="loader-circle" class="spin"></i>';
       lucide.createIcons();
 
-      fetch('/update', { method: 'POST' })
+      fetch('/api/update-jogos', { method: 'POST' })
         .then(r => {
           if (!r.ok) throw new Error("Erro ao atualizar");
           return r.json();
