@@ -2,9 +2,9 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Todos os Filmes</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,43 +12,61 @@
       font-family: 'Roboto', sans-serif;
       background-color: #111;
       color: white;
+      line-height: 1.6;
     }
+    .loader {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    .loader.hidden { opacity: 0; pointer-events: none; }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #ffffff20;
+      border-top: 5px solid #e50914;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .floating-icons {
       position: fixed;
       top: 50%;
-      left: 20px;
+      left: 10px;
       transform: translateY(-50%);
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
       z-index: 1000;
     }
-    .floating-icons a,
-    .floating-icons button {
+    .floating-icons a, .floating-icons button {
       background: rgba(0, 0, 0, 0.6);
       color: white;
       border: none;
-      padding: 6px;
+      padding: 8px;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.3s ease;
     }
-    .floating-icons a:hover,
-    .floating-icons button:hover {
+    .floating-icons a:hover, .floating-icons button:hover {
       background-color: #e50914;
       transform: scale(1.1);
     }
-    .floating-icons svg {
-      width: 18px;
-      height: 18px;
-    }
+    .floating-icons svg { width: 20px; height: 20px; }
     .search-group {
       position: relative;
+      margin-bottom: 10px;
     }
     #search-input {
       position: absolute;
@@ -70,68 +88,67 @@
       z-index: 999;
     }
     #search-input.active {
-      width: 220px;
+      width: 200px;
       opacity: 1;
       pointer-events: auto;
     }
     .container {
-      padding: 30px 30px 30px 80px;
+      padding: 20px 20px 20px 70px;
       width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
     }
     h2 {
       margin-bottom: 20px;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
+      font-weight: 700;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 16px;
-      animation: fadeIn 0.6s forwards;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+      animation: fadeIn 0.6s ease-out;
     }
     .movie-card {
       background: #222;
       border-radius: 8px;
       overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       cursor: pointer;
       position: relative;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-      opacity: 0;
-      animation: fadeInCard 0.6s forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes fadeInCard {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .movie-card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
-      background-color: rgba(0, 0, 0, 0.7);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     }
     .movie-card img {
       width: 100%;
+      height: 225px;
+      object-fit: cover;
       display: block;
-      border-radius: 8px;
+      border-radius: 8px 8px 0 0;
       transition: opacity 0.3s ease;
+      opacity: 0;
+      animation: fadeInImage 0.5s ease-out forwards;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInImage { from { opacity: 0; } to { opacity: 1; } }
+    .movie-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
     }
     .movie-title {
       padding: 10px;
       font-size: 1em;
       text-align: center;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.7);
       color: #fff;
-      position: absolute;
-      bottom: 0;
-      width: 100%;
+      position: relative;
       z-index: 5;
     }
     .info-overlay {
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(0, 0, 0, 0.6);
       opacity: 0;
       transition: opacity 0.3s ease;
@@ -140,7 +157,6 @@
       align-items: center;
       z-index: 10;
       border-radius: 8px;
-      padding: 10px;
     }
     .movie-card:hover .info-overlay {
       opacity: 1;
@@ -149,6 +165,7 @@
       font-size: 1.1em;
       color: #fff;
       text-align: center;
+      padding: 5px;
     }
     .action-icons {
       position: absolute;
@@ -166,7 +183,7 @@
     .action-icons i {
       background-color: rgba(255, 255, 255, 0.2);
       border-radius: 50%;
-      padding: 10px;
+      padding: 8px;
       color: #fff;
       font-size: 1.2em;
       cursor: pointer;
@@ -195,12 +212,12 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
+      gap: 8px;
       margin-top: 30px;
+      flex-wrap: wrap;
     }
     .pagination button {
-      padding: 6px 12px;
+      padding: 8px 14px;
       background: #333;
       color: white;
       border: none;
@@ -213,8 +230,10 @@
     }
     .filter-panel {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background-color: rgba(0, 0, 0, 0.8);
       display: none;
       justify-content: center;
@@ -226,7 +245,7 @@
       padding: 20px;
       border-radius: 8px;
       max-width: 300px;
-      width: 100%;
+      width: 90%;
       text-align: center;
     }
     .filter-content select {
@@ -272,6 +291,7 @@
     }
     .modal-content h2 {
       margin-bottom: 20px;
+      font-size: 1.8rem;
     }
     .form-group {
       margin-bottom: 15px;
@@ -279,7 +299,7 @@
     .form-group label {
       display: block;
       font-size: 1rem;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
     .form-group input {
       width: 100%;
@@ -317,29 +337,43 @@
     }
     .error { color: #e50914; }
     .success { color: #4caf50; }
+    @media (max-width: 768px) {
+      .floating-icons { left: 5px; gap: 10px; }
+      .floating-icons a, .floating-icons button { width: 35px; height: 35px; padding: 6px; }
+      .floating-icons svg { width: 18px; height: 18px; }
+      #search-input.active { width: 150px; }
+      .container { padding: 15px 15px 15px 60px; }
+      h2 { font-size: 1.5rem; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+      .movie-card img { height: 195px; }
+      .pagination button { padding: 6px 10px; }
+    }
   </style>
 </head>
 <body>
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+  </div>
   <div class="floating-icons">
     <div class="search-group">
-      <button id="btn-search" title="Buscar"><i data-lucide="search"></i></button>
-      <input type="text" id="search-input" placeholder="Buscar filmes..." />
+      <button id="btn-search" title="Buscar" aria-label="Abrir busca"><i data-lucide="search"></i></button>
+      <input type="text" id="search-input" placeholder="Buscar filmes..." aria-label="Campo de busca" />
     </div>
-    <a href="netflix.html" title="Início"><i data-lucide="home"></i></a>
-    <a href="filmes.html" title="Filmes"><i data-lucide="clapperboard"></i></a>
-    <a href="series.html" title="Séries"><i data-lucide="tv"></i></a>
-    <a href="esportes.html" title="Esportes"><i data-lucide="trophy"></i></a>
-    <a href="historico.html" title="Histórico"><i data-lucide="history"></i></a>
-    <button id="btn-filter" title="Filtrar"><i data-lucide="filter"></i></button>
+    <a href="netflix.html" title="Início" aria-label="Página inicial"><i data-lucide="home"></i></a>
+    <a href="filmes.html" title="Filmes" aria-label="Lista de filmes"><i data-lucide="clapperboard"></i></a>
+    <a href="series.html" title="Séries" aria-label="Lista de séries"><i data-lucide="tv"></i></a>
+    <a href="esportes.html" title="Esportes" aria-label="Seção de esportes"><i data-lucide="trophy"></i></a>
+    <a href="historico.html" title="Histórico" aria-label="Histórico de visualização"><i data-lucide="history"></i></a>
+    <button id="btn-filter" title="Filtrar" aria-label="Abrir filtro"><i data-lucide="filter"></i></button>
   </div>
 
   <div class="filter-panel" id="filter-panel">
     <div class="filter-content">
       <h3>Filtrar por Gênero</h3>
-      <select id="genre-select">
+      <select id="genre-select" aria-label="Selecionar gênero">
         <option value="">Selecione um Gênero</option>
       </select>
-      <button id="apply-filter">Aplicar Filtro</button>
+      <button id="apply-filter" aria-label="Aplicar filtro">Aplicar Filtro</button>
     </div>
   </div>
 
@@ -352,44 +386,44 @@
   <div class="modal" id="edit-movie-modal">
     <div class="modal-content">
       <h2>Editar Filme</h2>
-      <button class="close-btn" onclick="closeModal()">Fechar</button>
+      <button class="close-btn" onclick="closeModal()" aria-label="Fechar modal">Fechar</button>
       <div class="form-group">
         <label for="edit-movie-name">Nome</label>
-        <input type="text" id="edit-movie-name" required />
+        <input type="text" id="edit-movie-name" required aria-label="Nome do filme" />
       </div>
       <div class="form-group">
         <label for="edit-movie-title">Título</label>
-        <input type="text" id="edit-movie-title" required />
+        <input type="text" id="edit-movie-title" required aria-label="Título do filme" />
       </div>
       <div class="form-group">
         <label for="edit-movie-year">Ano</label>
-        <input type="text" id="edit-movie-year" required />
+        <input type="text" id="edit-movie-year" required aria-label="Ano de lançamento" />
       </div>
       <div class="form-group">
         <label for="edit-movie-stream-id">ID do Stream</label>
-        <input type="text" id="edit-movie-stream-id" readonly />
+        <input type="text" id="edit-movie-stream-id" readonly aria-label="ID do stream" />
       </div>
       <div class="form-group">
         <label for="edit-movie-stream-icon">Ícone do Stream (URL)</label>
-        <input type="text" id="edit-movie-stream-icon" required />
+        <input type="text" id="edit-movie-stream-icon" required aria-label="URL do ícone" />
       </div>
       <div class="form-group">
         <label for="edit-movie-genre">Gênero</label>
-        <input type="text" id="edit-movie-genre" required />
+        <input type="text" id="edit-movie-genre" required aria-label="Gênero do filme" />
       </div>
       <div class="form-group">
         <label for="edit-movie-tmdb-id">TMDB ID</label>
-        <input type="text" id="edit-movie-tmdb-id" required />
+        <input type="text" id="edit-movie-tmdb-id" required aria-label="ID TMDB" />
       </div>
       <div class="form-group">
         <label for="edit-movie-tmdb-name">Nome TMDB</label>
-        <input type="text" id="edit-movie-tmdb-name" required />
+        <input type="text" id="edit-movie-tmdb-name" required aria-label="Nome TMDB" />
       </div>
       <div class="form-group">
         <label for="edit-movie-tmdb-url">URL TMDB</label>
-        <input type="text" id="edit-movie-tmdb-url" required />
+        <input type="text" id="edit-movie-tmdb-url" required aria-label="URL TMDB" />
       </div>
-      <button class="save-btn" onclick="saveMovieEdit()">Salvar</button>
+      <button class="save-btn" onclick="saveMovieEdit()" aria-label="Salvar alterações">Salvar</button>
       <p class="success" id="edit-movie-success">Filme editado com sucesso!</p>
       <p class="error" id="edit-movie-error"></p>
     </div>
@@ -412,65 +446,69 @@
     const btnFilter = document.getElementById('btn-filter');
     const genreSelect = document.getElementById('genre-select');
     const applyFilterBtn = document.getElementById('apply-filter');
+    const loader = document.getElementById('loader');
+
+    let debounceTimeout;
+    function debounce(func, delay) {
+      return function (...args) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => func.apply(this, args), delay);
+      };
+    }
 
     btnSearch.addEventListener('click', () => {
       searchInput.classList.toggle('active');
-      if (searchInput.classList.contains('active')) {
-        searchInput.focus();
-      }
+      if (searchInput.classList.contains('active')) searchInput.focus();
     });
 
     document.addEventListener('click', (e) => {
-      if (!btnSearch.contains(e.target) && !searchInput.contains(e.target)) {
-        searchInput.classList.remove('active');
-      }
+      if (!btnSearch.contains(e.target) && !searchInput.contains(e.target)) searchInput.classList.remove('active');
     });
 
-    btnFilter.addEventListener('click', () => {
-      filterPanel.style.display = 'flex';
-    });
+    btnFilter.addEventListener('click', () => filterPanel.style.display = 'flex');
 
     document.addEventListener('click', (e) => {
-      if (!filterPanel.contains(e.target) && !btnFilter.contains(e.target)) {
-        filterPanel.style.display = 'none';
-      }
+      if (!filterPanel.contains(e.target) && !btnFilter.contains(e.target)) filterPanel.style.display = 'none';
     });
 
     applyFilterBtn.addEventListener('click', () => {
       const selectedGenre = genreSelect.value;
-      filmesFiltrados = selectedGenre
-        ? filmes.filter(f => f.genre.split(', ').includes(selectedGenre))
-        : filmes.slice();
+      filmesFiltrados = selectedGenre ? filmes.filter(f => f.genre.split(', ').includes(selectedGenre)) : filmes.slice();
       paginaAtual = 1;
       renderizarPagina(paginaAtual);
       criarPaginacao();
       filterPanel.style.display = 'none';
     });
 
-    searchInput.addEventListener('input', () => {
+    searchInput.addEventListener('input', debounce(() => {
       const termo = searchInput.value.trim().toLowerCase();
-      filmesFiltrados = termo
-        ? filmes.filter(f => f.title?.toLowerCase().includes(termo))
-        : filmes.slice();
+      filmesFiltrados = termo ? filmes.filter(f => f.title?.toLowerCase().includes(termo)) : filmes.slice();
       paginaAtual = 1;
       renderizarPagina(paginaAtual);
       criarPaginacao();
-    });
+    }, 300));
 
     async function carregarFilmes() {
-      const res = await fetch('catalogo.json');
-      const catalogo = await res.json();
-      filmes = catalogo.filter(f => f.tmdb_id);
-      filmesFiltrados = filmes.slice();
-      generos = [...new Set(filmes.flatMap(f => f.genre.split(', ')))];
-      generos.forEach(genre => {
-        const option = document.createElement('option');
-        option.value = genre;
-        option.textContent = genre;
-        genreSelect.appendChild(option);
-      });
-      renderizarPagina(paginaAtual);
-      criarPaginacao();
+      loader.classList.remove('hidden');
+      try {
+        const res = await fetch('catalogo.json');
+        const catalogo = await res.json();
+        filmes = catalogo.filter(f => f.tmdb_id);
+        filmesFiltrados = filmes.slice();
+        generos = [...new Set(filmes.flatMap(f => f.genre.split(', ')))];
+        generos.forEach(genre => {
+          const option = document.createElement('option');
+          option.value = genre;
+          option.textContent = genre;
+          genreSelect.appendChild(option);
+        });
+        renderizarPagina(paginaAtual);
+        criarPaginacao();
+      } catch (e) {
+        console.error('Erro ao carregar filmes:', e);
+      } finally {
+        loader.classList.add('hidden');
+      }
     }
 
     async function renderizarPagina(pagina) {
@@ -484,7 +522,7 @@
           div.className = 'movie-card';
           div.onclick = () => window.location.href = `detalhes.html?id=${filme.tmdb_id}`;
           div.innerHTML = `
-            <img src="${filme.stream_icon}" alt="${filme.title}" />
+            <img src="${filme.stream_icon}" alt="${filme.title}" loading="lazy" />
             <div class="movie-title">${filme.title}</div>
             <div class="info-overlay"><span>${filme.genre}</span></div>
             <div class="action-icons">
@@ -492,12 +530,10 @@
               <i data-lucide="play"></i>
             </div>
             <button class="edit-btn" onclick="event.stopPropagation(); openEditMovieModal(${filme.stream_id})">Editar</button>`;
-          if (!localStorage.getItem('isAdminLoggedIn')) {
-            div.querySelector('.edit-btn').style.display = 'none';
-          }
+          if (!localStorage.getItem('isAdminLoggedIn')) div.querySelector('.edit-btn').style.display = 'none';
           grid.appendChild(div);
         } catch (e) {
-          console.error("Erro ao carregar filme:", filme, e);
+          console.error('Erro ao carregar filme:', filme, e);
         }
       }
       lucide.createIcons();
@@ -520,7 +556,7 @@
       };
       pagination.appendChild(botaoVoltar);
 
-      const inicio = paginaAtual;
+      const inicio = Math.max(1, paginaAtual - 2);
       const fim = Math.min(inicio + 4, totalPaginas);
       for (let i = inicio; i <= fim; i++) {
         const btn = document.createElement('button');
