@@ -3,46 +3,216 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <title>Detalhes da Série</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #141414;
+      background-color: #0f0f0f;
       color: #fff;
       overflow-x: hidden;
-      padding-top: 60px;
+      padding-top: 80px;
+      transition: background-color 0.5s ease;
     }
 
-    /* Botão Assistir Episódio */
+    .loader {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    .loader.hidden { opacity: 0; pointer-events: none; }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 5px solid #ffffff20;
+      border-top: 5px solid #e50914;
+      border-radius: 50%;
+      animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .backdrop {
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      padding: 80px 60px;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      animation: backdropFadeIn 1.5s ease-in-out;
+    }
+
+    .backdrop::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #0f0f0f 0%, transparent 40%), linear-gradient(to right, #0f0f0f 30%, transparent 70%);
+      z-index: 1;
+      transition: background 0.5s ease;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 50px;
+      align-items: flex-start;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .poster img {
+      width: 300px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
+      animation: slideInLeft 1s ease-out;
+    }
+
+    .poster img:hover {
+      transform: scale(1.08) translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+    }
+
+    .info {
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .info h1 {
+      font-size: 3.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      animation: fadeInText 1.2s ease-in-out forwards;
+    }
+
+    .details {
+      color: #b3b3b3;
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      animation: fadeInText 1.4s ease-in-out forwards;
+    }
+
+    .socials {
+      display: flex;
+      gap: 15px;
+      margin: 10px 0;
+    }
+
+    .socials a {
+      color: #fff;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .socials a:hover {
+      color: #e50914;
+      transform: scale(1.2);
+    }
+
+    .overview {
+      line-height: 1.7;
+      font-size: 1.15rem;
+      color: #e0e0e0;
+      opacity: 0;
+      animation: fadeInText 1.6s ease-in-out 0.5s forwards;
+    }
+
+    .rating {
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .circle-rating {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: conic-gradient(#e50914 0% 66%, #333 66% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    .circle-rating:hover {
+      transform: scale(1.1);
+    }
+
+    .episode-selection {
+      margin-bottom: 20px;
+    }
+
+    .episode-selection select {
+      padding: 12px 20px;
+      font-size: 1.1rem;
+      background: linear-gradient(45deg, #222, #333);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      width: 250px;
+    }
+
+    .episode-selection select:hover,
+    .episode-selection select:focus {
+      transform: scale(1.05);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+      background: linear-gradient(45deg, #333, #444);
+    }
+
     .btn-assistir {
       display: inline-flex;
       align-items: center;
       background: linear-gradient(45deg, #e50914, #ff5f52);
       color: white;
       font-weight: 700;
-      padding: 12px 24px;
+      padding: 14px 28px;
       border-radius: 12px;
       text-decoration: none;
       font-size: 1.2rem;
-      transition: background 0.3s, transform 0.3s, box-shadow 0.3s, filter 0.3s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
-      text-align: center;
       cursor: pointer;
-      justify-content: center;
     }
 
     .btn-assistir i {
-      margin-right: 10px;
-      font-size: 1.4rem;
+      margin-right: 12px;
+      font-size: 1.5rem;
     }
 
     .btn-assistir:hover {
       background: linear-gradient(45deg, #ff5f52, #e50914);
-      transform: scale(1.05);
-      box-shadow: 0px 8px 20px rgba(255, 95, 82, 0.6);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 95, 82, 0.6);
     }
 
     .btn-assistir:focus {
@@ -50,232 +220,170 @@
       filter: brightness(1.1);
     }
 
-    /* Seleção de Temporada */
-    .episode-selection {
-      margin-bottom: 20px;
-    }
-
-    .episode-selection select {
-      padding: 12px 20px;
-      font-size: 1rem;
-      background-color: #222;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-      width: 200px;
-    }
-
-    .episode-selection select:hover,
-    .episode-selection select:focus {
-      transform: scale(1.05);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-      background-color: #444;
-    }
-
-    /* Loader */
-    .loader {
+    .btn-voltar {
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      top: 20px;
+      left: 20px;
+      width: 50px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 10000;
-    }
-
-    .loader.hidden { display: none; }
-
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid #ffffff30;
-      border-top: 4px solid #fff;
+      background: linear-gradient(45deg, #e50914, #ff4d4d);
+      color: #fff;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      text-decoration: none;
+      font-size: 1.8rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 9999;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .btn-voltar:hover {
+      background: linear-gradient(45deg, #c4060f, #e50914);
+      transform: scale(1.15) rotate(5deg);
+      box-shadow: 0 8px 20px rgba(229, 9, 20, 0.6);
     }
 
-    /* Backdrop */
-    .backdrop {
-      background-size: cover;
-      background-position: center;
-      position: relative;
-      padding: 60px 40px;
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    .backdrop::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to right, #141414 40%, transparent);
-    }
-
-    /* Content */
-    .content {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 40px;
-      align-items: flex-start;
-    }
-
-    .poster img {
-      width: 260px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
-      transition: transform 0.3s ease;
-    }
-
-    .poster img:hover { transform: scale(1.05); }
-
-    .info { max-width: 720px; }
-
-    .info h1 {
-      font-size: 2.8rem;
-      margin-bottom: 12px;
-      font-weight: 600;
-      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-      animation: fadeInText 1s ease-in-out forwards;
-    }
-
-    .details {
-      color: #ccc;
-      font-size: 1rem;
-      margin-bottom: 16px;
-      font-weight: 600;
-    }
-
-    .overview {
-      line-height: 1.6;
-      font-size: 1.1rem;
-      color: #ddd;
-      opacity: 0;
-      animation: fadeInText 1s ease-in-out 1.2s forwards;
-    }
-
-    /* Círculo de Avaliação */
-    .rating {
-      margin: 16px 0;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .circle-rating {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: conic-gradient(#e50914 0% 66%, #333 66% 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.4rem;
-      font-weight: bold;
-      text-align: center;
-      line-height: 1.1;
-    }
-
-    .circle-rating span {
-      z-index: 10;
-    }
-
-    /* Trailer Section */
     section {
-      padding: 40px;
-      animation: fadeIn 0.6s ease forwards;
+      padding: 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+      animation: slideInUp 1s ease-out;
     }
 
     h2 {
-      font-size: 1.6rem;
-      margin-bottom: 16px;
+      font-size: 2rem;
       font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e50914;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .trailer {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto 0;
+      z-index: 3;
+      overflow: visible;
+      background: #000; /* Fallback background to confirm container */
     }
 
     .trailer iframe {
       width: 100%;
-      max-width: 720px;
-      height: 400px;
+      height: 450px;
       border: none;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      animation: fadeIn 1s ease-out 0.3s forwards;
+      opacity: 1; /* Force visibility */
+      display: block;
+      position: relative; /* Ensure proper layering */
+      z-index: 4; /* Above all other content */
+    }
+
+    .cast {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding-bottom: 15px;
+      scroll-behavior: smooth;
+    }
+
+    .cast::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .cast::-webkit-scrollbar-thumb {
+      background: #e50914;
       border-radius: 10px;
     }
 
-    /* Cast and Keywords */
-    .cast {
-      display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-    }
-
-    .cast::-webkit-scrollbar { height: 8px; }
-
     .person {
-      width: 120px;
+      width: 140px;
       text-align: center;
-      transition: transform 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .person:hover { transform: translateY(-4px); }
+    .person:hover {
+      transform: translateY(-8px);
+      filter: brightness(1.2);
+    }
 
     .person img {
       width: 100%;
-      height: 160px;
+      height: 180px;
       object-fit: cover;
-      border-radius: 6px;
-      margin-bottom: 6px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .person p {
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: #e0e0e0;
+      margin-bottom: 4px;
     }
 
     .keywords {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
 
     .keyword {
-      background: #eee;
-      color: #222;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 0.9rem;
+      background: #2a2a2a;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.95rem;
       font-weight: 500;
+      transition: all 0.3s ease;
     }
 
-    /* Episódios */
+    .keyword:hover {
+      background: #e50914;
+      transform: scale(1.05);
+    }
+
     .episodes-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
       margin-top: 20px;
     }
 
     .episode-item {
-      background: #222;
+      background: #1a1a1a;
       border-radius: 12px;
       padding: 16px;
       text-align: center;
-      transition: transform 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
     }
 
     .episode-item:hover {
-      transform: scale(1.05);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
     }
 
     .episode-item img {
       width: 100%;
-      height: 150px;
+      height: 160px;
       object-fit: cover;
       border-radius: 6px;
       margin-bottom: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .episode-item:hover img {
+      transform: scale(1.05);
     }
 
     .episode-item h4 {
@@ -290,63 +398,98 @@
       margin-bottom: 12px;
     }
 
-    /* Filmes Relacionados */
     .related-films {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 20px;
-      justify-content: flex-start;
+      padding-top: 20px;
     }
 
     .movie-card {
-      background-color: #222;
-      width: 150px;
-      border-radius: 8px;
+      background: #1a1a1a;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-      transition: transform 0.3s ease;
-      text-align: center;
-      color: #fff;
-      font-size: 0.9rem;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      animation: slideInUp 1s ease-out;
     }
 
     .movie-card:hover {
-      transform: scale(1.05);
+      transform: translateY(-8px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     }
 
     .movie-card img {
       width: 100%;
-      height: 220px;
+      height: 260px;
       object-fit: cover;
-      border-bottom: 2px solid #333;
+      transition: transform 0.4s ease;
     }
 
-    .movie-card .movie-title {
-      padding: 10px;
-      font-weight: 600;
-      font-size: 1rem;
-      background-color: #333;
+    .movie-card:hover img {
+      transform: scale(1.15);
     }
 
-    .movie-card .movie-title:hover {
-      background-color: #e50914;
+    .movie-title {
+      padding: 12px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      transition: background 0.3s ease;
     }
 
-    .movie-card a {
-      color: inherit;
-      text-decoration: none;
+    .movie-card:hover .movie-title {
+      background: rgba(229, 9, 20, 0.9);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+    @keyframes backdropFadeIn {
+      from { opacity: 0; filter: blur(10px); }
+      to { opacity: 1; filter: blur(0); }
+    }
+
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes fadeInText {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .focusable:focus {
+      outline: 3px solid #e50914;
+      outline-offset: 2px;
+      z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+      .backdrop { padding: 40px 20px; }
+      .content { flex-direction: column; align-items: center; }
+      .poster img { width: 240px; }
+      .info h1 { font-size: 2.2rem; }
+      .trailer iframe { height: 200px; }
+      section { padding: 40px 20px; }
+      .episode-selection select { width: 180px; }
+    }
   </style>
 </head>
 <body>
@@ -354,7 +497,6 @@
     <div class="spinner"></div>
   </div>
 
-  <!-- Botão Voltar para a página Series -->
   <a href="series.html" class="btn-voltar" aria-label="Voltar">
     <i data-lucide="arrow-left"></i>
   </a>
@@ -433,23 +575,17 @@
         document.getElementById("poster").innerHTML = `<img src="https://image.tmdb.org/t/p/w500${serie.poster_path}" alt="${serie.name}">`;
         document.getElementById("backdrop").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${serie.backdrop_path})`;
 
-        // Avaliação
         const rating = serie.vote_average;
-        const ratingPercentage = Math.round((rating / 10) * 100); 
+        const ratingPercentage = Math.round((rating / 10) * 100);
         document.getElementById("rating-percent").textContent = `${ratingPercentage}%`;
         document.getElementById("rating-circle").style.background = `conic-gradient(#e50914 ${ratingPercentage}%, #333 ${ratingPercentage}% 100%)`;
 
-        // Atualizar os episódios
         const serieLocal = catalogo.find(s => s.tmdb_id == serie.id);
         if (serieLocal && serieLocal.episodes) {
-          // Adicionar Temporadas
           const temporadas = [...new Set(serieLocal.episodes.map(ep => ep.season))];
           const selectTemporada = document.getElementById("select-temporada");
 
-          // Limpar as opções anteriores
           selectTemporada.innerHTML = '';
-          
-          // Adicionar opções para cada temporada
           temporadas.forEach(temporada => {
             const option = document.createElement("option");
             option.value = temporada;
@@ -457,24 +593,37 @@
             selectTemporada.appendChild(option);
           });
 
-          // Exibir episódios ao selecionar uma temporada
           selectTemporada.addEventListener("change", (event) => {
             const temporadaSelecionada = event.target.value;
             const episodiosFiltrados = serieLocal.episodes.filter(ep => ep.season == temporadaSelecionada);
             exibirEpisodios(episodiosFiltrados);
           });
 
-          // Exibir os episódios da primeira temporada por padrão
           exibirEpisodios(serieLocal.episodes.filter(ep => ep.season == 1));
         }
 
-        // Trailer
         const trailer = videos.results.find(v => v.type === "Trailer" && v.site === "YouTube");
         if (trailer) {
-          document.getElementById("trailer").innerHTML = `<iframe src="https://www.youtube.com/embed/${trailer.key}" allowfullscreen></iframe>`;
+          document.getElementById("trailer").innerHTML = `
+            <iframe 
+              src="https://www.youtube.com/embed/${trailer.key}?rel=0&enablejsapi=1&allow=autoplay;encrypted-media;fullscreen" 
+              allowfullscreen 
+              allow="autoplay; encrypted-media; fullscreen" 
+              title="Trailer ${serie.name}"
+              id="trailer-iframe"
+            ></iframe>`;
+          console.log("Trailer URL:", `https://www.youtube.com/embed/${trailer.key}`);
+          // Force iframe to reload and check dimensions
+          const iframe = document.getElementById("trailer-iframe");
+          if (iframe) {
+            iframe.style.opacity = "1";
+            iframe.style.visibility = "visible";
+            console.log("Iframe dimensions:", iframe.offsetWidth, iframe.offsetHeight);
+          }
+        } else {
+          document.getElementById("trailer").innerHTML = '<p>Trailer não disponível.</p>';
         }
 
-        // Elenco
         const castContainer = document.getElementById("cast");
         creditos.cast.forEach(actor => {
           const personItem = document.createElement("div");
@@ -487,7 +636,6 @@
           castContainer.appendChild(personItem);
         });
 
-        // Filmes Relacionados
         relatedFilms.results.forEach(f => {
           const img = f.poster_path ? `https://image.tmdb.org/t/p/w185${f.poster_path}` : "https://via.placeholder.com/150x220?text=Sem+foto";
           const movieTitle = f.title || f.name;
@@ -505,18 +653,17 @@
           document.getElementById("related-films").appendChild(movieCard);
         });
 
-        // Ocultar o loader
         document.getElementById("loader").classList.add("hidden");
-
       } catch (error) {
         console.error("Erro ao carregar detalhes da série:", error);
+        document.getElementById("trailer").innerHTML = '<p>Erro ao carregar trailer.</p>';
+        document.getElementById("loader").classList.add("hidden");
       }
     }
 
-    // Função para exibir episódios filtrados
     function exibirEpisodios(episodios) {
       const episodioContainer = document.getElementById("episodios");
-      episodioContainer.innerHTML = ''; // Limpar episódios anteriores
+      episodioContainer.innerHTML = '';
 
       episodios.forEach(ep => {
         const episodioItem = document.createElement("div");
@@ -525,7 +672,7 @@
           <img src="${ep.movie_image}" alt="Imagem do Episódio">
           <h4>${ep.title}</h4>
           <p>${ep.plot}</p>
-          <a href="playerseries.html?id=${ep.id}&tmdb=${id}" class="btn-assistir">Assistir Episódio</a>
+          <a href="playerSeries.html?id=${ep.id}&tmdb=${id}" class="btn-assistir">🎬 Assistir Episódio</a>
         `;
         episodioContainer.appendChild(episodioItem);
       });
