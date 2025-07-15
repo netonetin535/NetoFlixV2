@@ -3,38 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <title>Detalhes do Filme</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;700&family=Creepster&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #141414;
+      background-color: #0f0f0f;
       color: #fff;
       overflow-x: hidden;
-      padding-top: 60px;
+      padding-top: 80px;
+      transition: background-color 0.5s ease;
     }
 
     .loader {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.8);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 10000;
+      opacity: 1;
+      transition: opacity 0.5s ease;
     }
 
-    .loader.hidden { display: none; }
+    .loader.hidden { opacity: 0; pointer-events: none; }
 
     .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid #ffffff30;
-      border-top: 4px solid #fff;
+      width: 60px;
+      height: 60px;
+      border: 5px solid #ffffff20;
+      border-top: 5px solid #e50914;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
     }
 
     @keyframes spin {
@@ -45,15 +50,20 @@
       background-size: cover;
       background-position: center;
       position: relative;
-      padding: 60px 40px;
-      animation: fadeIn 1s ease-in-out;
+      padding: 80px 60px;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      animation: backdropFadeIn 1.5s ease-in-out;
     }
 
-    .backdrop::after {
+    .backdrop::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(to right, #141414 40%, transparent);
+      background: linear-gradient(to top, #0f0f0f 0%, transparent 40%), linear-gradient(to right, #0f0f0f 30%, transparent 70%);
+      z-index: 0;
+      transition: background 0.5s ease;
     }
 
     .content {
@@ -61,254 +71,352 @@
       z-index: 1;
       display: flex;
       flex-wrap: wrap;
-      gap: 40px;
+      gap: 50px;
       align-items: flex-start;
+      max-width: 1400px;
+      margin: 0 auto;
     }
 
     .poster img {
-      width: 260px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
-      transition: transform 0.3s ease;
+      width: 300px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
+      animation: slideInLeft 1s ease-out;
     }
 
-    .poster img:hover { transform: scale(1.05); }
+    .poster img:hover {
+      transform: scale(1.08) translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+    }
 
-    .info { max-width: 720px; }
+    .info {
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
     .info h1 {
-      font-size: 2.8rem;
-      margin-bottom: 12px;
-      font-weight: 600;
-      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-      animation: fadeInText 1s ease-in-out forwards;
+      font-size: 3.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      animation: fadeInText 1.2s ease-in-out forwards;
     }
 
     .details {
-      color: #ccc;
-      font-size: 1rem;
-      margin-bottom: 16px;
-      font-weight: 600;
+      color: #b3b3b3;
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      animation: fadeInText 1.4s ease-in-out forwards;
+    }
+
+    .socials {
+      display: flex;
+      gap: 15px;
+      margin: 10px 0;
+    }
+
+    .socials a {
+      color: #fff;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .socials a:hover {
+      color: #e50914;
+      transform: scale(1.2);
     }
 
     .overview {
-      line-height: 1.6;
-      font-size: 1.1rem;
-      color: #ddd;
+      line-height: 1.7;
+      font-size: 1.15rem;
+      color: #e0e0e0;
       opacity: 0;
-      animation: fadeInText 1s ease-in-out 1.2s forwards;
+      animation: fadeInText 1.6s ease-in-out 0.5s forwards;
     }
 
     .rating {
-      margin: 16px 0;
+      margin: 20px 0;
       display: flex;
-      gap: 10px;
       align-items: center;
+      gap: 15px;
     }
 
     .circle-rating {
       position: relative;
-      width: 80px;
-      height: 80px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       background: conic-gradient(#e50914 0% 66%, #333 66% 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 1.4rem;
-      font-weight: bold;
-      text-align: center;
-      line-height: 1.1;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+      animation: pulse 2s infinite ease-in-out;
     }
 
-    .circle-rating span {
-      z-index: 10;
+    .circle-rating:hover {
+      transform: scale(1.1);
     }
 
     .botoes {
-      margin: 20px 0 10px;
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .btn-assistir, .btn-favoritar {
+      padding: 14px 30px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
     }
 
     .btn-assistir {
-      display: inline-block;
-      background-color: #e50914;
-      color: white;
-      font-weight: 600;
-      padding: 12px 25px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 1.2rem;
-      transition: background 0.3s, transform 0.2s;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(45deg, #e50914, #ff4d4d);
+      color: #fff;
+      box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
     }
 
     .btn-assistir:hover {
-      background-color: #c4060f;
-      transform: scale(1.05);
+      background: linear-gradient(45deg, #c4060f, #e50914);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(229, 9, 20, 0.6);
     }
 
     .btn-favoritar {
-      background-color: transparent;
+      background: transparent;
       border: 2px solid #e50914;
       color: #e50914;
-      font-weight: 600;
-      padding: 12px 25px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 1.2rem;
-      transition: background-color 0.3s, color 0.3s;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
 
     .btn-favoritar:hover {
-      background-color: #e50914;
-      color: white;
+      background: #e50914;
+      color: #fff;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(229, 9, 20, 0.5);
     }
 
     .btn-voltar {
       position: fixed;
       top: 20px;
       left: 20px;
+      width: 50px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #e50914;
-      color: white;
-      font-weight: bold;
-      padding: 12px;
+      background: linear-gradient(45deg, #e50914, #ff4d4d);
+      color: #fff;
       border-radius: 50%;
       text-decoration: none;
-      font-size: 1.5rem;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+      font-size: 1.8rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 9999;
     }
 
     .btn-voltar:hover {
-      background-color: #c4060f;
-      transform: scale(1.1);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(45deg, #c4060f, #e50914);
+      transform: scale(1.15) rotate(5deg);
+      box-shadow: 0 8px 20px rgba(229, 9, 20, 0.6);
     }
 
     section {
-      padding: 40px;
-      animation: fadeIn 0.6s ease forwards;
+      padding: 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+      animation: slideInUp 1s ease-out;
     }
 
     h2 {
-      font-size: 1.6rem;
-      margin-bottom: 16px;
+      font-size: 2rem;
       font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e50914;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .trailer iframe {
       width: 100%;
-      max-width: 720px;
-      height: 400px;
+      max-width: 800px;
+      height: 450px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      animation: fadeIn 1s ease-out 0.3s forwards;
+      opacity: 0;
     }
 
     .cast {
       display: flex;
-      gap: 16px;
+      gap: 20px;
       overflow-x: auto;
-      padding-bottom: 10px;
+      padding-bottom: 15px;
+      scroll-behavior: smooth;
     }
 
-    .cast::-webkit-scrollbar { height: 8px; }
+    .cast::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .cast::-webkit-scrollbar-thumb {
+      background: #e50914;
+      border-radius: 10px;
+    }
 
     .person {
-      width: 120px;
+      width: 140px;
       text-align: center;
-      transition: transform 0.3s ease encodings="utf-8";
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .person:hover { transform: translateY(-4px); }
+    .person:hover {
+      transform: translateY(-8px);
+      filter: brightness(1.2);
+    }
 
     .person img {
       width: 100%;
-      height: 160px;
+      height: 180px;
       object-fit: cover;
-      border-radius: 6px;
-      margin-bottom: 6px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .person div {
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: #e0e0e0;
     }
 
     .keywords {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
 
     .keyword {
-      background: #eee;
-      color: #222;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 0.9rem;
+      background: #2a2a2a;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.95rem;
       font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .keyword:hover {
+      background: #e50914;
+      transform: scale(1.05);
     }
 
     .related-films {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
       padding-top: 20px;
     }
 
     .movie-card {
-      background: #222;
+      background: #1a1a1a;
       border-radius: 12px;
       overflow: hidden;
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+      position: relative;
+      animation: slideInUp 1s ease-out;
     }
 
     .movie-card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      transform: translateY(-8px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     }
 
     .movie-card img {
       width: 100%;
-      height: 230px;
+      height: 260px;
       object-fit: cover;
-      transition: transform 0.3s ease;
-      border-radius: 12px;
+      transition: transform 0.4s ease;
     }
 
     .movie-card:hover img {
-      transform: scale(1.1);
+      transform: scale(1.15);
     }
 
     .movie-title {
-      padding: 10px;
-      font-size: 1.1em;
+      padding: 12px;
+      font-size: 1.1rem;
+      font-weight: 500;
       text-align: center;
-      color: white;
-      background: rgba(<EntityType>0, 0, 0, 0.7);
+      color: #fff;
+      background: rgba(0, 0, 0, 0.8);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      transition: background 0.3s ease;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+    .movie-card:hover .movie-title {
+      background: rgba(229, 9, 20, 0.9);
+    }
+
+    @keyframes backdropFadeIn {
+      from { opacity: 0; filter: blur(10px); }
+      to { opacity: 1; filter: blur(0); }
+    }
+
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes fadeInText {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
 
     .focusable:focus {
       outline: 3px solid #e50914;
-      outline-offset: -3px;
+      outline-offset: 2px;
       z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+      .backdrop { padding: 40px 20px; }
+      .content { flex-direction: column; align-items: center; }
+      .poster img { width: 240px; }
+      .info h1 { font-size: 2.2rem; }
+      .trailer iframe { height: 200px; }
+      section { padding: 40px 20px; }
     }
   </style>
 </head>
@@ -359,7 +467,7 @@
   </section>
 
   <section>
-    <h2><i data-lucide="film"></i> Filmes Relacionados</h/2>
+    <h2><i data-lucide="film"></i> Filmes Relacionados</h2>
     <div class="related-films" id="related-films"></div>
   </section>
 
@@ -367,6 +475,81 @@
     lucide.createIcons();
     const id = new URLSearchParams(location.search).get("id");
     const API_KEY = "5f331944166018e8f887957b773906d4";
+
+    function aplicarEstiloPorGenero(generos) {
+      const body = document.body;
+      const generoPrincipal = generos[0]?.name.toLowerCase() || "default";
+      let estilo;
+
+      switch (generoPrincipal) {
+        case "ação":
+        case "action":
+          estilo = {
+            fontFamily: "'Roboto', sans-serif",
+            backgroundColor: "#0f0f0f",
+            buttonColor: "#ff4500",
+            animacaoCSS: `
+              @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
+              }
+              .btn-assistir, .btn-favoritar { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+            `
+          };
+          break;
+        case "comédia":
+        case "comedy":
+          estilo = {
+            fontFamily: "'Poppins', sans-serif",
+            backgroundColor: "#0f0f0f",
+            buttonColor: "#ffd700",
+            animacaoCSS: `
+              @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              .btn-assistir, .btn-favoritar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+            `
+          };
+          break;
+        case "terror":
+        case "horror":
+          estilo = {
+            fontFamily: "'Creepster', cursive",
+            backgroundColor: "#080808",
+            buttonColor: "#8b0000",
+            animacaoCSS: `
+              @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(50px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              .btn-assistir, .btn-favoritar { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+            `
+          };
+          break;
+        default:
+          estilo = {
+            fontFamily: "'Poppins', sans-serif",
+            backgroundColor: "#0f0f0f",
+            buttonColor: "#e50914",
+            animacaoCSS: `
+              @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              .btn-assistir, .btn-favoritar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+            `
+          };
+      }
+
+      body.style.fontFamily = estilo.fontFamily;
+      body.style.backgroundColor = estilo.backgroundColor;
+      document.querySelector(".btn-assistir").style.background = `linear-gradient(45deg, ${estilo.buttonColor}, ${estilo.buttonColor}cc)`;
+      document.querySelector(".btn-favoritar").style.borderColor = estilo.buttonColor;
+      const styleSheet = document.createElement("style");
+      styleSheet.innerText = estilo.animacaoCSS;
+      document.head.appendChild(styleSheet);
+    }
 
     async function carregarDetalhes() {
       try {
@@ -382,13 +565,26 @@
         document.getElementById("titulo").textContent = `${filme.title} (${filme.release_date?.slice(0, 4)})`;
         document.getElementById("descricao").textContent = filme.overview || "Sem sinopse disponível.";
         document.getElementById("detalhes").textContent = `${filme.runtime} min • ${filme.genres.map(g => g.name).join(", ")}`;
-        document.getElementById("poster").innerHTML = `<img src="https://image.tmdb.org/t/p/w500${filme.poster_path}" alt="${filme.title}">`;
+        document.getElementById("poster").innerHTML = `<img src="https://image.tmdb.org/t/p/w500${filme.poster_path}" alt="${filme.title}" crossOrigin="Anonymous">`;
         document.getElementById("backdrop").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${filme.backdrop_path})`;
 
         const rating = filme.vote_average;
         const ratingPercentage = Math.round((rating / 10) * 100);
         document.getElementById("rating-percent").textContent = `${ratingPercentage}%`;
         document.getElementById("rating-circle").style.background = `conic-gradient(#e50914 ${ratingPercentage}%, #333 ${ratingPercentage}% 100%)`;
+
+        aplicarEstiloPorGenero(filme.genres);
+
+        const posterImg = document.querySelector(".poster img");
+        posterImg.onload = () => {
+          const colorThief = new ColorThief();
+          const palette = colorThief.getColor(posterImg);
+          const primaryColor = `rgb(${palette[0]}, ${palette[1]}, ${palette[2]})`;
+          document.querySelector(".backdrop::before").style.background = `linear-gradient(to top, ${primaryColor}cc 0%, transparent 40%), linear-gradient(to right, ${primaryColor}cc 30%, transparent 70%)`;
+          document.querySelector(".btn-assistir").style.background = `linear-gradient(45deg, ${primaryColor}, ${primaryColor}cc)`;
+          document.querySelector(".btn-favoritar").style.borderColor = primaryColor;
+          document.querySelector(".btn-favoritar:hover").style.background = primaryColor;
+        };
 
         const catalogo = await fetch("catalogo.json").then(r => r.json());
         const filmeLocal = catalogo.find(f => f.tmdb_id == filme.id);
