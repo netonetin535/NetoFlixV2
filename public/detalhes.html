@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
   <title>Detalhes do Filme</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;700&family=Creepster&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -77,6 +77,10 @@
       margin: 0 auto;
     }
 
+    .poster {
+      flex: 1;
+      min-width: 300px;
+    }
     .poster img {
       width: 300px;
       border-radius: 16px;
@@ -84,10 +88,20 @@
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
       animation: slideInLeft 1s ease-out;
     }
-
     .poster img:hover {
       transform: scale(1.08) translateY(-10px);
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+    }
+    .poster .fallback-image {
+      width: 300px;
+      height: 450px;
+      background: #333;
+      color: #ffffff80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      font-size: 1.1rem;
     }
 
     .info {
@@ -404,6 +418,11 @@
       50% { transform: scale(1.05); }
     }
 
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .focusable:focus {
       outline: 3px solid #e50914;
       outline-offset: 2px;
@@ -425,7 +444,7 @@
     <div class="spinner"></div>
   </div>
 
-  <a href="javascript:history.back()" class="btn-voltar" aria-label="Voltar">
+  <a href="javascript:history.back()" class="btn-voltar focusable" aria-label="Voltar">
     <i data-lucide="arrow-left"></i>
   </a>
 
@@ -552,8 +571,12 @@
     }
 
     async function carregarDetalhes() {
+      const loader = document.getElementById("loader");
+      const poster = document.getElementById("poster");
+      loader.style.display = "flex";
+
       try {
-        const [filme, creditos, videos, keywords, external, relatedFilms] = await Promise.all([
+        const [filme, creditos, videos, keywordsData, external, relatedFilms] = await Promise.all([
           fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json()),
           fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${API_KEY}&language=pt-BR`).then(r => r.json()),
           fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=pt-BR`).then(r => r.json()),
@@ -562,10 +585,23 @@
           fetch(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${API_KEY}&language=pt-BR`).then(r => r.json())
         ]);
 
+        // Configuração da capa
+        const posterImg = document.createElement("img");
+        posterImg.alt = `${filme.title} Poster`;
+        if (filme.poster_path) {
+          posterImg.src = `https://image.tmdb.org/t/p/w500${filme.poster_path}`;
+          posterImg.onerror = () => {
+            poster.innerHTML = '<div class="fallback-image">Imagem não disponível</div>';
+          };
+        } else {
+          poster.innerHTML = '<div class="fallback-image">Imagem não disponível</div>';
+        }
+        poster.appendChild(posterImg);
+
+        // Outros detalhes
         document.getElementById("titulo").textContent = `${filme.title} (${filme.release_date?.slice(0, 4)})`;
         document.getElementById("descricao").textContent = filme.overview || "Sem sinopse disponível.";
         document.getElementById("detalhes").textContent = `${filme.runtime} min • ${filme.genres.map(g => g.name).join(", ")}`;
-        document.getElementById("poster").innerHTML = `<img src="https://image.tmdb.org/t/p/w500${filme.poster_path}" alt="${filme.title}" crossOrigin="Anonymous">`;
         document.getElementById("backdrop").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${filme.backdrop_path})`;
 
         const rating = filme.vote_average;
@@ -575,7 +611,6 @@
 
         aplicarEstiloPorGenero(filme.genres);
 
-        const posterImg = document.querySelector(".poster img");
         posterImg.onload = () => {
           const colorThief = new ColorThief();
           const palette = colorThief.getColor(posterImg);
@@ -590,11 +625,7 @@
         const filmeLocal = catalogo.find(f => f.tmdb_id == filme.id);
         if (filmeLocal && filmeLocal.stream_id) {
           const btn = document.getElementById("btn-assistir");
-          btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            history.pushState(null, "", `player.html?stream_id=${filmeLocal.stream_id}&tmdb_id=${filme.id}`);
-            window.location.href = `player.html?stream_id=${filmeLocal.stream_id}&tmdb_id=${filme.id}`;
-          });
+          btn.href = `player.html?stream_id=${filmeLocal.stream_id}&tmdb_id=${filme.id}`;
         } else {
           document.getElementById("btn-assistir").style.display = "none";
         }
@@ -635,15 +666,20 @@
             </div>`;
         });
 
-        keywords.keywords.forEach(k => {
+        keywordsData.keywords.forEach(k => {
           document.getElementById("keywords").innerHTML += `<span class="keyword">${k.name}</span>`;
         });
 
       } catch (e) {
         console.error("Erro ao carregar dados:", e);
+        poster.innerHTML = '<div class="fallback-image">Imagem não disponível</div>';
+        document.getElementById("titulo").textContent = "Erro ao carregar título";
+        document.getElementById("descricao").textContent = "Não foi possível carregar a sinopse.";
+        document.getElementById("detalhes").textContent = "";
+        document.getElementById("extra").innerHTML = "";
         alert("Erro ao carregar detalhes do filme.");
       } finally {
-        document.getElementById("loader").classList.add("hidden");
+        loader.classList.add("hidden");
       }
     }
 
