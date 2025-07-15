@@ -639,7 +639,7 @@
         relatedFilms.results.forEach(f => {
           const img = f.poster_path ? `https://image.tmdb.org/t/p/w185${f.poster_path}` : "https://via.placeholder.com/150x220?text=Sem+foto";
           const movieTitle = f.title || f.name;
-          const movieLink = `detalhes.html?id=${f.id}`;
+          const movieLink = `detalhes_series.html?id=${f.id}`;
           
           const movieCard = document.createElement("a");
           movieCard.href = movieLink;
