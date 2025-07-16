@@ -1,8 +1,8 @@
-// server.js
 const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const cookieParser = require('cookie-parser');
+const { createProxyMiddleware } = require('http-proxy-middleware'); // Adicionado
 const { scrapeGames, saveToJson } = require('./scraper');
 const app = express();
 const PORT = 8000;
@@ -11,6 +11,24 @@ const PORT = 8000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Configurar o proxy para vídeos
+app.use('/video', createProxyMiddleware({
+  target: 'http://hsgbola1.xyz:80', // Servidor de vídeo HTTP
+  changeOrigin: true,
+  pathRewrite: {
+    '^/video': '/movie/879446467/771463126', // Reescrita do caminho
+  },
+  onProxyRes: (proxyRes, req, res) => {
+    // Configurar cabeçalhos CORS
+    proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+    proxyRes.headers['Access-Control-Allow-Methods'] = 'GET';
+    proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type';
+    // Garantir que o tipo de conteúdo seja correto
+    proxyRes.headers['Content-Type'] = 'video/mp4';
+  },
+  secure: false, // Ignorar verificação de certificado (necessário para servidor sem HTTPS)
+}));
 
 // Servir favicon
 app.get('/favicon.ico', (req, res) => {
@@ -194,7 +212,9 @@ app.post('/api/series', isAuthenticated, async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: 'Series ID já existe' });
-    if (newS.episodes && !Array.isArray(newS.episodes))
+    if (newS.episodes &&部分
+
+System: odios && !Array.isArray(newS.episodes))
       return res
         .status(400)
         .json({ success: false, message: 'Episódios devem ser array' });
@@ -245,7 +265,7 @@ app.delete('/api/series/:series_id', isAuthenticated, async (req, res) => {
     const sid = parseInt(req.params.series_id);
     const caminho = path.join(__dirname, 'public', 'series.json');
     const dados = JSON.parse(await fs.readFile(caminho, 'utf8') || '[]');
-    const filtrados = dados.filter(s => s.series_id !== sid);
+    const filtrados = dados.filter(s => s.series_id !== sid;
     if (filtrados.length === dados.length)
       return res
         .status(404)
@@ -265,7 +285,9 @@ app.put(
     try {
       const sid = parseInt(req.params.series_id);
       const eid = parseInt(req.params.episode_id);
-      const caminho = path.join(__dirname, 'public', 'series.json');
+      const caminho = path.join(__dirname, 'public', 'series.json %
+
+System: '));
       const dados = JSON.parse(await fs.readFile(caminho, 'utf8') || '[]');
       const serie = dados.find(s => s.series_id === sid);
       if (!serie)
