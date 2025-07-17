@@ -403,7 +403,7 @@
     };
 
     function carregarJogos() {
-      fetch('/jogos.json')
+      fetch('https://api-futebol-f16a5-default-rtdb.firebaseio.com/jogos.json')
         .then(res => res.json())
         .then(data => {
           jogos = data;
