@@ -17,7 +17,6 @@
       padding-top: 80px;
       transition: background-color 0.5s ease;
     }
-
     .loader {
       position: fixed;
       inset: 0;
@@ -29,9 +28,7 @@
       opacity: 1;
       transition: opacity 0.5s ease;
     }
-
     .loader.hidden { opacity: 0; pointer-events: none; }
-
     .spinner {
       width: 60px;
       height: 60px;
@@ -40,11 +37,9 @@
       border-radius: 50%;
       animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
     }
-
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-
     .backdrop {
       background-size: cover;
       background-position: center;
@@ -55,7 +50,6 @@
       align-items: center;
       animation: backdropFadeIn 1.5s ease-in-out;
     }
-
     .backdrop::before {
       content: "";
       position: absolute;
@@ -64,7 +58,6 @@
       z-index: 1;
       transition: background 0.5s ease;
     }
-
     .content {
       position: relative;
       z-index: 2;
@@ -75,7 +68,6 @@
       max-width: 1400px;
       margin: 0 auto;
     }
-
     .poster img {
       width: 300px;
       border-radius: 16px;
@@ -83,19 +75,16 @@
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
       animation: slideInLeft 1s ease-out;
     }
-
     .poster img:hover {
       transform: scale(1.08) translateY(-10px);
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
     }
-
     .info {
       max-width: 800px;
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
-
     .info h1 {
       font-size: 3.2rem;
       font-weight: 700;
@@ -103,7 +92,6 @@
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
       animation: fadeInText 1.2s ease-in-out forwards;
     }
-
     .details {
       color: #b3b3b3;
       font-size: 1.1rem;
@@ -112,23 +100,19 @@
       margin-bottom: 10px;
       animation: fadeInText 1.4s ease-in-out forwards;
     }
-
     .socials {
       display: flex;
       gap: 15px;
       margin: 10px 0;
     }
-
     .socials a {
       color: #fff;
       transition: color 0.3s ease, transform 0.3s ease;
     }
-
     .socials a:hover {
       color: #e50914;
       transform: scale(1.2);
     }
-
     .overview {
       line-height: 1.7;
       font-size: 1.15rem;
@@ -136,14 +120,12 @@
       opacity: 0;
       animation: fadeInText 1.6s ease-in-out 0.5s forwards;
     }
-
     .rating {
       margin: 20px 0;
       display: flex;
       align-items: center;
       gap: 15px;
     }
-
     .circle-rating {
       position: relative;
       width: 90px;
@@ -160,15 +142,12 @@
       transition: transform 0.3s ease;
       animation: pulse 2s infinite ease-in-out;
     }
-
     .circle-rating:hover {
       transform: scale(1.1);
     }
-
     .episode-selection {
       margin-bottom: 20px;
     }
-
     .episode-selection select {
       padding: 12px 20px;
       font-size: 1.1rem;
@@ -181,14 +160,12 @@
       cursor: pointer;
       width: 250px;
     }
-
     .episode-selection select:hover,
     .episode-selection select:focus {
       transform: scale(1.05);
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
       background: linear-gradient(45deg, #333, #444);
     }
-
     .btn-assistir {
       display: inline-flex;
       align-items: center;
@@ -203,23 +180,19 @@
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
       cursor: pointer;
     }
-
     .btn-assistir i {
       margin-right: 12px;
       font-size: 1.5rem;
     }
-
     .btn-assistir:hover {
       background: linear-gradient(45deg, #ff5f52, #e50914);
       transform: translateY(-3px);
       box-shadow: 0 8px 20px rgba(255, 95, 82, 0.6);
     }
-
     .btn-assistir:focus {
       outline: none;
       filter: brightness(1.1);
     }
-
     .btn-voltar {
       position: fixed;
       top: 20px;
@@ -238,20 +211,17 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 9999;
     }
-
     .btn-voltar:hover {
       background: linear-gradient(45deg, #c4060f, #e50914);
       transform: scale(1.15) rotate(5deg);
       box-shadow: 0 8px 20px rgba(229, 9, 20, 0.6);
     }
-
     section {
       padding: 60px;
       max-width: 1400px;
       margin: 0 auto;
       animation: slideInUp 1s ease-out;
     }
-
     h2 {
       font-size: 2rem;
       font-weight: 600;
@@ -263,7 +233,6 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-
     .trailer {
       position: relative;
       width: 100%;
@@ -271,9 +240,8 @@
       margin: 20px auto 0;
       z-index: 3;
       overflow: visible;
-      background: #000; /* Fallback background to confirm container */
+      background: #000;
     }
-
     .trailer iframe {
       width: 100%;
       height: 450px;
@@ -281,12 +249,11 @@
       border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
       animation: fadeIn 1s ease-out 0.3s forwards;
-      opacity: 1; /* Force visibility */
+      opacity: 1;
       display: block;
-      position: relative; /* Ensure proper layering */
-      z-index: 4; /* Above all other content */
+      position: relative;
+      z-index: 4;
     }
-
     .cast {
       display: flex;
       gap: 20px;
@@ -294,27 +261,22 @@
       padding-bottom: 15px;
       scroll-behavior: smooth;
     }
-
     .cast::-webkit-scrollbar {
       height: 10px;
     }
-
     .cast::-webkit-scrollbar-thumb {
       background: #e50914;
       border-radius: 10px;
     }
-
     .person {
       width: 140px;
       text-align: center;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
     .person:hover {
       transform: translateY(-8px);
       filter: brightness(1.2);
     }
-
     .person img {
       width: 100%;
       height: 180px;
@@ -323,20 +285,17 @@
       margin-bottom: 8px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     }
-
     .person p {
       font-size: 0.95rem;
       font-weight: 400;
       color: #e0e0e0;
       margin-bottom: 4px;
     }
-
     .keywords {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
     }
-
     .keyword {
       background: #2a2a2a;
       color: #fff;
@@ -346,19 +305,16 @@
       font-weight: 500;
       transition: all 0.3s ease;
     }
-
     .keyword:hover {
       background: #e50914;
       transform: scale(1.05);
     }
-
     .episodes-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 25px;
       margin-top: 20px;
     }
-
     .episode-item {
       background: #1a1a1a;
       border-radius: 12px;
@@ -367,12 +323,10 @@
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
     }
-
     .episode-item:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
     }
-
     .episode-item img {
       width: 100%;
       height: 160px;
@@ -381,30 +335,25 @@
       margin-bottom: 12px;
       transition: transform 0.3s ease;
     }
-
     .episode-item:hover img {
       transform: scale(1.05);
     }
-
     .episode-item h4 {
       font-size: 1.2rem;
       color: #fff;
       margin-bottom: 8px;
     }
-
     .episode-item p {
       font-size: 0.9rem;
       color: #ccc;
       margin-bottom: 12px;
     }
-
     .related-films {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 20px;
       padding-top: 20px;
     }
-
     .movie-card {
       background: #1a1a1a;
       border-radius: 12px;
@@ -414,23 +363,19 @@
       position: relative;
       animation: slideInUp 1s ease-out;
     }
-
     .movie-card:hover {
       transform: translateY(-8px);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     }
-
     .movie-card img {
       width: 100%;
       height: 260px;
       object-fit: cover;
       transition: transform 0.4s ease;
     }
-
     .movie-card:hover img {
       transform: scale(1.15);
     }
-
     .movie-title {
       padding: 12px;
       font-size: 1.1rem;
@@ -445,42 +390,34 @@
       width: 100%;
       transition: background 0.3s ease;
     }
-
     .movie-card:hover .movie-title {
       background: rgba(229, 9, 20, 0.9);
     }
-
     @keyframes backdropFadeIn {
       from { opacity: 0; filter: blur(10px); }
       to { opacity: 1; filter: blur(0); }
     }
-
     @keyframes slideInLeft {
       from { opacity: 0; transform: translateX(-50px); }
       to { opacity: 1; transform: translateX(0); }
     }
-
     @keyframes slideInUp {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes fadeInText {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.05); }
     }
-
     .focusable:focus {
       outline: 3px solid #e50914;
       outline-offset: 2px;
       z-index: 1000;
     }
-
     @media (max-width: 768px) {
       .backdrop { padding: 40px 20px; }
       .content { flex-direction: column; align-items: center; }
@@ -496,11 +433,9 @@
   <div class="loader" id="loader">
     <div class="spinner"></div>
   </div>
-
   <a href="series.html" class="btn-voltar" aria-label="Voltar">
     <i data-lucide="arrow-left"></i>
   </a>
-
   <div class="backdrop" id="backdrop">
     <div class="content">
       <div class="poster" id="poster"></div>
@@ -526,32 +461,26 @@
       </div>
     </div>
   </div>
-
   <section>
     <h2><i data-lucide="tv"></i> Episódios</h2>
     <div class="episodes-container" id="episodios"></div>
   </section>
-
   <section>
     <h2><i data-lucide="film"></i> Trailer</h2>
     <div class="trailer" id="trailer"></div>
   </section>
-
   <section>
     <h2><i data-lucide="users"></i> Elenco</h2>
     <div class="cast" id="cast"></div>
   </section>
-
   <section>
     <h2><i data-lucide="tag"></i> Palavras-chave</h2>
     <div class="keywords" id="keywords"></div>
   </section>
-
   <section>
-    <h2><i data-lucide="film"></i> Series Relacionados</h2>
+    <h2><i data-lucide="film"></i> Filmes Relacionados</h2>
     <div class="related-films" id="related-films"></div>
   </section>
-
   <script>
     lucide.createIcons();
     const id = new URLSearchParams(location.search).get("id");
@@ -566,9 +495,10 @@
           fetch(`https://api.themoviedb.org/3/tv/${id}/keywords?api_key=${API_KEY}`).then(r => r.json()),
           fetch(`https://api.themoviedb.org/3/tv/${id}/external_ids?api_key=${API_KEY}`).then(r => r.json()),
           fetch(`https://api.themoviedb.org/3/tv/${id}/recommendations?api_key=${API_KEY}&language=pt-BR`).then(r => r.json()),
-          fetch("series.json").then(r => r.json())
+          fetch("https://series-e8008-default-rtdb.firebaseio.com/.json").then(r => r.json())
         ]);
 
+        const seriesArray = Object.values(catalogo); // Convert object to array
         document.getElementById("titulo").textContent = `${serie.name} (${serie.first_air_date?.slice(0, 4)})`;
         document.getElementById("descricao").textContent = serie.overview || "Sem sinopse disponível.";
         document.getElementById("detalhes").textContent = `Temporadas: ${serie.number_of_seasons} • Episódios: ${serie.number_of_episodes}`;
@@ -580,7 +510,7 @@
         document.getElementById("rating-percent").textContent = `${ratingPercentage}%`;
         document.getElementById("rating-circle").style.background = `conic-gradient(#e50914 ${ratingPercentage}%, #333 ${ratingPercentage}% 100%)`;
 
-        const serieLocal = catalogo.find(s => s.tmdb_id == serie.id);
+        const serieLocal = seriesArray.find(s => s.tmdb_id == serie.id);
         if (serieLocal && serieLocal.episodes) {
           const temporadas = [...new Set(serieLocal.episodes.map(ep => ep.season))];
           const selectTemporada = document.getElementById("select-temporada");
@@ -613,7 +543,6 @@
               id="trailer-iframe"
             ></iframe>`;
           console.log("Trailer URL:", `https://www.youtube.com/embed/${trailer.key}`);
-          // Force iframe to reload and check dimensions
           const iframe = document.getElementById("trailer-iframe");
           if (iframe) {
             iframe.style.opacity = "1";
@@ -639,7 +568,7 @@
         relatedFilms.results.forEach(f => {
           const img = f.poster_path ? `https://image.tmdb.org/t/p/w185${f.poster_path}` : "https://via.placeholder.com/150x220?text=Sem+foto";
           const movieTitle = f.title || f.name;
-          const movieLink = `detalhes_series.html?id=${f.id}`;
+          const movieLink = `detalhes.html?id=${f.id}`;
           
           const movieCard = document.createElement("a");
           movieCard.href = movieLink;
@@ -672,7 +601,7 @@
           <img src="${ep.movie_image}" alt="Imagem do Episódio">
           <h4>${ep.title}</h4>
           <p>${ep.plot}</p>
-          <a href="playerseries.html?id=${ep.id}&tmdb=${id}" class="btn-assistir">🎬 Assistir Episódio</a>
+          <a href="playerSeries.html?id=${ep.id}&tmdb=${id}" class="btn-assistir">🎬 Assistir Episódio</a>
         `;
         episodioContainer.appendChild(episodioItem);
       });
