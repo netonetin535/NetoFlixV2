@@ -487,9 +487,9 @@
     async function carregarSeries() {
       loader.classList.remove('hidden');
       try {
-        const res = await fetch('series.json');
+        const res = await fetch('https://series-e8008-default-rtdb.firebaseio.com/.json');
         const catalogo = await res.json();
-        series = catalogo.filter(f => f.tmdb_id);
+        series = Object.values(catalogo).filter(f => f.tmdb_id); // Convert object to array if needed
         seriesFiltradas = series.slice();
         generos = [...new Set(series.flatMap(f => f.genre.split(', ')))];
         generos.forEach(genre => {
