@@ -1,0 +1,80 @@
+[
+  {
+    "id": "3490525",
+    "season": "1",
+    "episode_num": "1",
+    "title": "Dia Zero - S01E01 - Episódio 1",
+    "movie_image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/21g2S1IetHHgNiDnFLfmMskat9I.jpg",
+    "cover_big": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/21g2S1IetHHgNiDnFLfmMskat9I.jpg",
+    "duration": "00:49:09",
+    "release_date": "2025-02-20",
+    "plot": "O ex-presidente George Mullen sai da aposentadoria para cuidar de uma missão: liderar as investigações de um ataque cibernético terrível.",
+    "series_id": 105157,
+    "series_name": "Dia Zero"
+  },
+  {
+    "id": "3490526",
+    "season": "1",
+    "episode_num": "2",
+    "title": "Dia Zero - S01E02 - Episódio 2",
+    "movie_image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/mqWDwTtNYVPYRKnb0RmMu9XtRcu.jpg",
+    "cover_big": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/mqWDwTtNYVPYRKnb0RmMu9XtRcu.jpg",
+    "duration": "00:58:54",
+    "release_date": "2025-02-20",
+    "plot": "A comissão de Mullen investiga um grupo de hackers. A presidente Mitchell pensa em retaliação. Uma figura poderosa faz exigências a Roger.",
+    "series_id": 105157,
+    "series_name": "Dia Zero"
+  },
+  {
+    "id": "3490527",
+    "season": "1",
+    "episode_num": "3",
+    "title": "Dia Zero - S01E03 - Episódio 3",
+    "movie_image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/3skvIi6EKl86Ftybyih7KftgL8i.jpg",
+    "cover_big": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/3skvIi6EKl86Ftybyih7KftgL8i.jpg",
+    "duration": "00:50:04",
+    "release_date": "2025-02-20",
+    "plot": "As prisões iniciais de Mullen não são aceitas pelo público. O comentarista de TV Evan Green taca lenha na fogueira e Alex sofre pressão para investigar o pai.",
+    "series_id": 105157,
+    "series_name": "Dia Zero"
+  },
+  {
+    "id": "3490528",
+    "season": "1",
+    "episode_num": "4",
+    "title": "Dia Zero - S01E04 - Episódio 4",
+    "movie_image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/wefzP0WGXGSWfHHexWWHrmb3r2l.jpg",
+    "cover_big": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/wefzP0WGXGSWfHHexWWHrmb3r2l.jpg",
+    "duration": "00:53:39",
+    "release_date": "2025-02-20",
+    "plot": "Um abalo no sistema financeiro deixa a comissão de Mullen no olho do furacão. Valerie investiga o Proteus. Roger precisa tomar uma decisão difícil.",
+    "series_id": 105157,
+    "series_name": "Dia Zero"
+  },
+  {
+    "id": "3490529",
+    "season": "1",
+    "episode_num": "5",
+    "title": "Dia Zero - S01E05 - Episódio 5",
+    "movie_image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/ge0hY7Me2ivvSz4dfBwT7dEwt8I.jpg",
+    "cover_big": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/ge0hY7Me2ivvSz4dfBwT7dEwt8I.jpg",
+    "duration": "00:43:35",
+    "release_date": "2025-02-20",
+    "plot": "Uma tragédia pessoal reabre antigas feridas na família Mullen. Dreyer tenta fazer uma mudança. Sheila depõe no Congresso.",
+    "series_id": 105157,
+    "series_name": "Dia Zero"
+  },
+  {
+    "id": "3490530",
+    "season": "1",
+    "episode_num": "6",
+    "title": "Dia Zero - S01E06 - Episódio 6",
+    "movie_image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/m1bQkshHQU9WhSxY29xTiqIZYQx.jpg",
+    "cover_big": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/m1bQkshHQU9WhSxY29xTiqIZYQx.jpg",
+    "duration": "00:53:30",
+    "release_date": "2025-02-20",
+    "plot": "Uma nova ameaça espalha ainda mais inquietação pelo país. Mullen começa a fechar o cerco, mas precisa encarar uma decisão angustiante.",
+    "series_id": 105157,
+    "series_name": "Dia Zero"
+  }
+]
