@@ -49,20 +49,20 @@
       height: 18px;
     }
     .container {
-      padding: 40px 40px 40px 90px; /* Aumentado para mais espaço */
+      padding: 40px 40px 40px 90px;
       width: 100%;
       max-width: 1200px;
       margin: 0 auto;
     }
     h1 {
-      font-size: 2.5rem; /* Aumentado para destaque */
+      font-size: 2.5rem;
       margin-bottom: 30px;
       text-align: center;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Aumentado de 200px para 250px */
-      gap: 25px; /* Aumentado o espaçamento entre cards */
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 25px;
       animation: fadeIn 0.6s forwards;
     }
     @keyframes fadeIn {
@@ -75,15 +75,15 @@
     }
     .game-card {
       background: #222;
-      border-radius: 10px; /* Aumentado para borda mais suave */
+      border-radius: 10px;
       overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       cursor: pointer;
       position: relative;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5); /* Sombra mais pronunciada */
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
       opacity: 0;
       animation: fadeInCard 0.6s forwards;
-      height: 300px; /* Altura mínima fixa para consistência */
+      height: 300px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -95,12 +95,12 @@
     .teams {
       display: flex;
       justify-content: space-between;
-      padding: 15px; /* Aumentado para mais espaço interno */
+      padding: 15px;
       background: #222;
       flex-shrink: 0;
     }
     .teams img {
-      width: 70px; /* Aumentado para melhor visualização */
+      width: 70px;
       height: 70px;
       object-fit: contain;
       background-color: #fff;
@@ -109,7 +109,7 @@
     }
     .game-title {
       padding: 15px;
-      font-size: 1.1em; /* Aumentado para legibilidade */
+      font-size: 1.1em;
       text-align: center;
       background: rgba(0, 0, 0, 0.7);
       position: absolute;
@@ -138,19 +138,19 @@
       opacity: 1;
     }
     .info-overlay span {
-      font-size: 1rem; /* Aumentado para legibilidade */
+      font-size: 1rem;
       color: #fff;
       text-align: center;
       margin: 5px 0;
     }
     .action-icons {
       position: absolute;
-      bottom: 60px; /* Ajustado para evitar sobreposição com o título */
+      bottom: 60px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 15px; /* Aumentado o espaçamento entre ícones */
-      opacity: 1; /* Garantir visibilidade inicial */
+      gap: 15px;
+      opacity: 1;
       transition: opacity 0.3s ease;
       z-index: 15;
     }
@@ -160,9 +160,9 @@
     .action-icons i {
       background-color: rgba(255, 255, 255, 0.3);
       border-radius: 50%;
-      padding: 12px; /* Aumentado para ícone maior */
+      padding: 12px;
       color: #fff;
-      font-size: 1.5em; /* Aumentado para destaque */
+      font-size: 1.5em;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
@@ -175,7 +175,7 @@
       right: 10px;
       background: #e50914;
       border: none;
-      padding: 8px 15px; /* Aumentado para botão maior */
+      padding: 8px 15px;
       border-radius: 6px;
       color: #fff;
       cursor: pointer;
@@ -258,7 +258,7 @@
         padding: 20px 20px 20px 70px;
       }
       .grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Ajustado para telas menores */
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       }
       .game-title {
         font-size: 0.95em;
@@ -338,6 +338,9 @@
     let jogos = [];
     let editarIndex = null;
 
+    // Placeholder image for broken or missing logos
+    const placeholderLogo = "https://via.placeholder.com/70?text=Logo";
+
     function isAdmin() {
       return localStorage.getItem("isAdmin") === "true";
     }
@@ -363,15 +366,20 @@
           localStorage.removeItem("isAdmin");
         }
         updateAdminUI();
+      })
+      .catch(err => {
+        console.error("Erro ao verificar admin:", err);
+        updateAdminUI();
       });
 
     btnLoginAdmin.onclick = () => {
       if (isAdmin()) {
-        fetch('/logout', { method: 'POST' })
+        fetch('/api/logout', { method: 'POST' })
           .then(() => {
             localStorage.removeItem("isAdmin");
             updateAdminUI();
-          });
+          })
+          .catch(err => console.error("Erro ao fazer logout:", err));
       } else {
         window.location.href = "loginjogos.html";
       }
@@ -404,18 +412,21 @@
 
     function carregarJogos() {
       fetch('https://api-futebol-f16a5-default-rtdb.firebaseio.com/jogos.json')
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error("Falha ao carregar jogos.json");
+          return res.json();
+        })
         .then(data => {
           jogos = data;
           const linksSalvos = JSON.parse(localStorage.getItem("linksJogos") || "{}");
           jogos = jogos.map(jogo => {
-            const chave = jogo.match;
+            const chave = jogo.partida;
             if (linksSalvos[chave]) {
               return { ...jogo, link_m3u8: linksSalvos[chave].link_m3u8 || null, ativo: linksSalvos[chave].ativo || false };
             }
             return { ...jogo, link_m3u8: null, ativo: false };
           });
-          console.log("Jogos carregados:", jogos); // Depuração
+          console.log("Jogos carregados:", jogos); // Debugging
           renderJogos();
         })
         .catch(err => {
@@ -436,19 +447,18 @@
         card.className = "game-card";
         let actionHtml = "";
         if (jogo.ativo && jogo.link_m3u8 && jogo.link_m3u8.trim() !== "") {
-          actionHtml = `<a href="playerjogos.html?link=${encodeURIComponent(jogo.link_m3u8)}&nome=${encodeURIComponent(jogo.match)}"><i data-lucide="play"></i></a>`;
+          actionHtml = `<a href="playerjogos.html?link=${encodeURIComponent(jogo.link_m3u8)}&nome=${encodeURIComponent(jogo.partida)}"><i data-lucide="play"></i></a>`;
         } else {
           actionHtml = `<span style="color: #666; font-size: 0.9rem;">Sem transmissão</span>`;
         }
         card.innerHTML = `
           <div class="teams">
-            <img src="${jogo.logo_a}" alt="Logo time A">
-            <img src="${jogo.logo_b}" alt="Logo time B">
+            <img src="${jogo.escudo_a || placeholderLogo}" alt="Logo time A" onerror="this.src='${placeholderLogo}'">
+            <img src="${jogo.escudo_b || placeholderLogo}" alt="Logo time B" onerror="this.src='${placeholderLogo}'">
           </div>
-          <div class="game-title">${jogo.match}</div>
+          <div class="game-title">${jogo.partida}</div>
           <div class="info-overlay">
-            <span>⏰ ${jogo.time}</span>
-            <span>${jogo.channel || "Não informado"}</span>
+            <span>⏰ ${jogo.horario}</span>
           </div>
           <div class="action-icons">
             ${actionHtml}
@@ -462,7 +472,7 @@
           card.appendChild(btnEditar);
         }
         if (jogo.ativo && jogo.link_m3u8 && jogo.link_m3u8.trim() !== "") {
-          card.onclick = () => window.location.href = `playerjogos.html?link=${encodeURIComponent(jogo.link_m3u8)}&nome=${encodeURIComponent(jogo.match)}`;
+          card.onclick = () => window.location.href = `playerjogos.html?link=${encodeURIComponent(jogo.link_m3u8)}&nome=${encodeURIComponent(jogo.partida)}`;
         }
         jogosContainer.appendChild(card);
       });
@@ -495,7 +505,7 @@
       jogos[editarIndex].link_m3u8 = novoLink || null;
       jogos[editarIndex].ativo = ativo && novoLink.length > 0;
 
-      const chave = jogos[editarIndex].match;
+      const chave = jogos[editarIndex].partida;
       let linksSalvos = JSON.parse(localStorage.getItem("linksJogos") || "{}");
       linksSalvos[chave] = {
         link_m3u8: jogos[editarIndex].link_m3u8,
