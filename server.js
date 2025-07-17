@@ -2,8 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const cookieParser = require('cookie-parser');
-const { createProxyMiddleware } = require('http-proxy-middleware'); // Adicionado
-const { scrapeGames, saveToJson } = require('./scraper');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const PORT = 8000;
 
@@ -42,9 +41,6 @@ const adminCredentials = { username: 'admin', password: 'admin123' };
 app.get('/', (req, res) =>
   res.sendFile(path.join(__dirname, 'public', 'netflix.html'))
 );
-app.get('/jogos.json', (req, res) =>
-  res.sendFile(path.join(__dirname, 'public', 'jogos.json'))
-);
 app.get('/catalogo.json', (req, res) =>
   res.sendFile(path.join(__dirname, 'public', 'catalogo.json'))
 );
@@ -56,7 +52,7 @@ app.get('/check-admin', (req, res) =>
 );
 
 // Login / Logout
-app.post('/api/login', (req, res) => {
+app.post ('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (
     username === adminCredentials.username &&
@@ -83,24 +79,6 @@ const isAuthenticated = (req, res, next) => {
   if (req.cookies.adminToken === 'true') return next();
   res.status(403).json({ success: false, message: 'Acesso não autorizado' });
 };
-
-// Atualizar jogos (scraping)
-app.post('/api/update-jogos', isAuthenticated, async (req, res) => {
-  try {
-    const file = path.join(__dirname, 'public', 'jogos.json');
-    await fs.unlink(file).catch(e => {
-      if (e.code !== 'ENOENT') throw e;
-    });
-    const games = await scrapeGames('https://ge.globo.com/agenda');
-    await saveToJson(games);
-    await fs.access(file);
-    res.json({ success: true, message: 'Jogos atualizados com sucesso' });
-  } catch (e) {
-    res
-      .status(500)
-      .json({ success: false, message: 'Erro ao atualizar jogos: ' + e.message });
-  }
-});
 
 // CRUD de filmes
 app.post('/api/filmes', isAuthenticated, async (req, res) => {
@@ -212,9 +190,7 @@ app.post('/api/series', isAuthenticated, async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: 'Series ID já existe' });
-    if (newS.episodes &&部分
-
-System: odios && !Array.isArray(newS.episodes))
+    if (newS.episodes && !Array.isArray(newS.episodes))
       return res
         .status(400)
         .json({ success: false, message: 'Episódios devem ser array' });
@@ -265,7 +241,7 @@ app.delete('/api/series/:series_id', isAuthenticated, async (req, res) => {
     const sid = parseInt(req.params.series_id);
     const caminho = path.join(__dirname, 'public', 'series.json');
     const dados = JSON.parse(await fs.readFile(caminho, 'utf8') || '[]');
-    const filtrados = dados.filter(s => s.series_id !== sid;
+    const filtrados = dados.filter(s => s.series_id !== sid);
     if (filtrados.length === dados.length)
       return res
         .status(404)
@@ -278,71 +254,61 @@ app.delete('/api/series/:series_id', isAuthenticated, async (req, res) => {
       .json({ success: false, message: 'Erro ao remover série: ' + e.message });
   }
 });
-app.put(
-  '/api/series/:series_id/episodios/:episode_id',
-  isAuthenticated,
-  async (req, res) => {
-    try {
-      const sid = parseInt(req.params.series_id);
-      const eid = parseInt(req.params.episode_id);
-      const caminho = path.join(__dirname, 'public', 'series.json %
-
-System: '));
-      const dados = JSON.parse(await fs.readFile(caminho, 'utf8') || '[]');
-      const serie = dados.find(s => s.series_id === sid);
-      if (!serie)
-        return res
-          .status(404)
-          .json({ success: false, message: 'Série não encontrada' });
-      const epIdx = serie.episodes?.findIndex(ep => ep.id === eid);
-      if (epIdx == null || epIdx < 0)
-        return res
-          .status(404)
-          .json({ success: false, message: 'Episódio não encontrado' });
-      serie.episodes[epIdx] = { ...serie.episodes[epIdx], ...req.body };
-      const ep = serie.episodes[epIdx];
-      if (!ep.id || !ep.season || !ep.episode_num || !ep.title)
-        return res
-          .status(400)
-          .json({ success: false, message: 'Campos obrigatórios ausentes' });
-      await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
-      res.json({ success: true, message: 'Episódio editado com sucesso' });
-    } catch (e) {
-      res
-        .status(500)
-        .json({ success: false, message: 'Erro ao editar episódio: ' + e.message });
-    }
+app.put('/api/series/:series_id/episodios/:episode_id', isAuthenticated, async (req, res) => {
+  try {
+    const sid = parseInt(req.params.series_id);
+    const eid = parseInt(req.params.episode_id);
+    const caminho = path.join(__dirname, 'public', 'series.json');
+    const dados = JSON.parse(await fs.readFile(caminho, 'utf8') || '[]');
+    const serie = dados.find(s => s.series_id === sid);
+    if (!serie)
+      return res
+        .status(404)
+        .json({ success: false, message: 'Série não encontrada' });
+    const epIdx = serie.episodes?.findIndex(ep => ep.id === eid);
+    if (epIdx == null || epIdx < 0)
+      return res
+        .status(404)
+        .json({ success: false, message: 'Episódio não encontrado' });
+    serie.episodes[epIdx] = { ...serie.episodes[epIdx], ...req.body };
+    const ep = serie.episodes[epIdx];
+    if (!ep.id || !ep.season || !ep.episode_num || !ep.title)
+      return res
+        .status(400)
+        .json({ success: false, message: 'Campos obrigatórios ausentes' });
+    await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
+    res.json({ success: true, message: 'Episódio editado com sucesso' });
+  } catch (e) {
+    res
+      .status(500)
+      .json({ success: false, message: 'Erro ao editar episódio: ' + e.message });
   }
-);
-app.delete(
-  '/api/series/:series_id/episodios/:episode_id',
-  isAuthenticated,
-  async (req, res) => {
-    try {
-      const sid = parseInt(req.params.series_id);
-      const eid = parseInt(req.params.episode_id);
-      const caminho = path.join(__dirname, 'public', 'series.json');
-      const dados = JSON.parse(await fs.readFile(caminho, 'utf8') || '[]');
-      const serie = dados.find(s => s.series_id === sid);
-      if (!serie)
-        return res
-          .status(404)
-          .json({ success: false, message: 'Série não encontrada' });
-      const prevLen = serie.episodes?.length || 0;
-      serie.episodes = serie.episodes?.filter(ep => ep.id !== eid) || [];
-      if (serie.episodes.length === prevLen)
-        return res
-          .status(404)
-          .json({ success: false, message: 'Episódio não encontrado' });
-      await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
-      res.json({ success: true, message: 'Episódio removido com sucesso' });
-    } catch (e) {
-      res
-        .status(500)
-        .json({ success: false, message: 'Erro ao remover episódio: ' + e.message });
-    }
+});
+app.delete('/api/series/:series_id/episodios/:episode_id', isAuthenticated, async (req, res) => {
+  try {
+    const sid = parseInt(req.params.series_id);
+    const eid = parseInt(req.params.episode_id);
+    const caminho = path.join(__dirname, 'public', 'series.json');
+    const dados = JSON.parse(await fs.readFile(caminho, 'utf8') || '[]');
+    const serie = dados.find(s => s.series_id === sid);
+    if (!serie)
+      return res
+        .status(404)
+        .json({ success: false, message: 'Série não encontrada' });
+    const prevLen = serie.episodes?.length || 0;
+    serie.episodes = serie.episodes?.filter(ep => ep.id !== eid) || [];
+    if (serie.episodes.length === prevLen)
+      return res
+        .status(404)
+        .json({ success: false, message: 'Episódio não encontrado' });
+    await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
+    res.json({ success: true, message: 'Episódio removido com sucesso' });
+  } catch (e) {
+    res
+      .status(500)
+      .json({ success: false, message: 'Erro ao remover episódio: ' + e.message });
   }
-);
+});
 
 // Inicia o servidor
 app.listen(PORT, () =>
