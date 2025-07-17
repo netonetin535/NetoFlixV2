@@ -1,0 +1,41 @@
+[
+  {
+    "id": "3485229",
+    "season": "1",
+    "episode_num": "1",
+    "title": "Medicina do Amanhã - S01E01 - Episódio 1",
+    "movie_image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/uyIVyNvbDcP41EAyfFAae1Ch5Ns.jpg",
+    "cover_big": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/uyIVyNvbDcP41EAyfFAae1Ch5Ns.jpg",
+    "duration": "01:23:30",
+    "release_date": "2017-08-10",
+    "plot": "",
+    "series_id": 105112,
+    "series_name": "Medicina do Amanhã"
+  },
+  {
+    "id": "3485230",
+    "season": "1",
+    "episode_num": "2",
+    "title": "Medicina do Amanhã - S01E02 - Episódio 2",
+    "movie_image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/kEd7rpL4D8BQplfjPFA3SAEC6ya.jpg",
+    "cover_big": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/kEd7rpL4D8BQplfjPFA3SAEC6ya.jpg",
+    "duration": "01:23:35",
+    "release_date": "2017-08-17",
+    "plot": "",
+    "series_id": 105112,
+    "series_name": "Medicina do Amanhã"
+  },
+  {
+    "id": "3485231",
+    "season": "1",
+    "episode_num": "3",
+    "title": "Medicina do Amanhã - S01E03 - Episódio 3",
+    "movie_image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/lLRWRhDiASEpn9SLgpnMMlAcl2w.jpg",
+    "cover_big": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/lLRWRhDiASEpn9SLgpnMMlAcl2w.jpg",
+    "duration": "01:23:25",
+    "release_date": "2017-08-24",
+    "plot": "",
+    "series_id": 105112,
+    "series_name": "Medicina do Amanhã"
+  }
+]
