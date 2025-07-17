@@ -250,7 +250,6 @@
     #currentTime, #duration {
       color: #fff;
     }
-    /* Classe para esconder interface */
     .hidden-interface {
       transform: translateY(-100%) !important;
       opacity: 0 !important;
@@ -328,12 +327,12 @@
       player.src = videoUrl;
       player.currentTime = lastTime;
 
-      // Buscar informações da série e do episódio
       Promise.all([
         fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => res.json()),
-        fetch("series.json").then(res => res.json())
+        fetch("https://series-e8008-default-rtdb.firebaseio.com/.json").then(res => res.json())
       ])
-        .then(([serieInfo, series]) => {
+        .then(([serieInfo, catalogo]) => {
+          const series = Object.values(catalogo); // Convert object to array
           const serie = series.find(s => s.tmdb_id == tmdbId);
           if (!serie) return;
           const episodio = serie.episodes.find(e => e.id == streamId);
@@ -344,7 +343,6 @@
           document.title = `${serieTitle} - ${title}`;
           titleEl.innerText = `${serieTitle} - ${title}`;
 
-          // Salvar no histórico de séries
           const historicoSeries = JSON.parse(localStorage.getItem("historicoSeries")) || [];
           const existingIndex = historicoSeries.findIndex(s => s.stream_id === streamId);
           const serieData = {
@@ -447,7 +445,6 @@
     });
 
     function mostrarControles() {
-      // Mostrar interface (retornar à posição original)
       controlsOverlay.classList.remove('hidden-interface');
       progressContainer.classList.remove('bottom-hidden');
       bottomBar.classList.remove('bottom-hidden');
@@ -460,7 +457,6 @@
 
       clearTimeout(controlesTimeout);
       controlesTimeout = setTimeout(() => {
-        // Esconder interface (mover para fora da tela)
         controlsOverlay.classList.add('hidden-interface');
         progressContainer.classList.add('bottom-hidden');
         bottomBar.classList.add('bottom-hidden');
@@ -482,9 +478,10 @@
 
     function abrirListaEpisodios() {
       if (!tmdbId) return alert("TMDb ID ausente da URL.");
-      fetch("series.json")
+      fetch("https://series-e8008-default-rtdb.firebaseio.com/.json")
         .then(res => res.json())
-        .then(series => {
+        .then(catalogo => {
+          const series = Object.values(catalogo); // Convert object to array
           const serie = series.find(s => s.tmdb_id == tmdbId);
           if (!serie || !serie.episodes) return alert("Episódios não encontrados.");
           const container = document.getElementById("lista-episodios");
@@ -513,9 +510,10 @@
 
     function irParaProximoEpisodio() {
       if (!tmdbId) return;
-      fetch("series.json")
+      fetch("https://series-e8008-default-rtdb.firebaseio.com/.json")
         .then(res => res.json())
-        .then(series => {
+        .then(catalogo => {
+          const series = Object.values(catalogo); // Convert object to array
           const serie = series.find(s => s.tmdb_id == tmdbId);
           if (!serie || !serie.episodes) return;
           const idx = serie.episodes.findIndex(e => e.id == streamId);
