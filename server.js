@@ -13,17 +13,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Proxy dinâmico para filmes e séries
 app.use('/video/:type', createProxyMiddleware({
-  target: 'http://hsgbola1.xyz:80',
+  target: 'http://65.109.31.123',
   changeOrigin: true,
   pathRewrite: (path, req) => {
     const type = req.params.type === 'series' ? 'series' : 'movie';
-    return `/${type}/879446467/771463126${path.replace(`/video/${req.params.type}`, '')}`;
+    const streamId = path.replace(`/video/${req.params.type}/`, '');
+    // Manter o token de autenticação na URL
+    return `/vauth/hKp29-74ledThOgXcmOYW4u1WHefcTvObdWj0TG_AKYJtATGaSsol1sBW-be_3tMQ3tZnRtQBqb8HMo1ZZhCF1eOvV-9aY3vfBW3vF1ir-kuVCMMR44N-waxZT6RBkHdOll5fwlpHTOcxxceSdnNIHbzavtyppAT2hXNB2-p7HL_aeAOifbQDWZ5AoNeehki7hyLa-75W_7aHHoiqIIF46GMXfh5SDD0zR4eZ99_em30Z14wux5fX8o5r9hZj9Fr8xg6NNFzCZks5eyFYx9_72h77JDnEiaj-JZxN1fEx3GytBnulc2St2g_b5P7hdAIkXZML7AXt8U1KydkqMQc8Q4WWj-le09JhbIFwjh386H3jwnV90mi-3FevNLkARmF42s0p0UliwlZJMotGmY1T4q33RTrg-CDSgGLkwX1D21ZX5Em2syPfqvcmh2GAxk04sQu3XqVB3exX1yz6KKzfmG1LbqzET5jq2OUk2VJ3i9cq6fE_bGesPZZAYA3p9Bimbm6OSeD566KpsEgHr_nwprayBp9v9Gm3palnMWusidgv3ayd4LftcPuvoHUuiUFG7bmCmBk9b8wf39OFCYyaXYbX0aIzrTGP1GYWarvi8rKh9T_AJb15c9PetQ21XniBwnpk2UNkkhPXT6oZqfcLg/${streamId}`;
   },
   onProxyReq: (proxyReq, req, res) => {
     if (req.headers.range) {
       proxyReq.setHeader('Range', req.headers.range);
     }
-    console.log(`Proxying request to: ${proxyReq.path}`);
+    console.log(`Proxying request to: http://65.109.31.123${proxyReq.path}`);
   },
   onProxyRes: (proxyRes, req, res) => {
     proxyRes.headers['Access-Control-Allow-Origin'] = process.env.NODE_ENV === 'production' ? 'https://yourdomain.com' : '*';
@@ -194,7 +196,7 @@ app.post('/api/series', isAuthenticated, async (req, res) => {
       !newS.title ||
       !newS.year ||
       !newS.series_id ||
-      !newS.cover ||
+      !newS.image ||
       !newS.genre ||
       !newS.tmdb_id ||
       !newS.tmdb_name
@@ -236,7 +238,7 @@ app.put('/api/series/:series_id', isAuthenticated, async (req, res) => {
       !s.title ||
       !s.year ||
       !s.series_id ||
-      !s.cover ||
+      !s.image ||
       !s.genre ||
       !s.tmdb_id ||
       !s.tmdb_name
