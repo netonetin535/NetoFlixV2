@@ -336,14 +336,20 @@
       try {
         // Carregar dados da série e episódios
         const [serieTMDB, seriesLocal, cachedData] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => res.json()),
-          fetch("series_only.json").then(res => res.json()),
+          fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => {
+            if (!res.ok) throw new Error(`Erro ao buscar série no TMDB: ${res.status}`);
+            return res.json();
+          }),
+          fetch("/series_only.json").then(res => {
+            if (!res.ok) throw new Error(`Erro ao carregar series_only.json: ${res.status}`);
+            return res.json();
+          }),
           Promise.resolve(JSON.parse(localStorage.getItem(CACHE_KEY)))
         ]);
 
         if (!seriesLocal) {
-          console.error("Série não encontrada em series_only.json", tmdbId);
-          throw new Error("Série não encontrada em series_only.json");
+          console.error("Nenhum dado encontrado em series_only.json para tmdbId:", tmdbId);
+          throw new Error("Nenhum dado encontrado em series_only.json");
         }
 
         const serieLocal = seriesLocal.find(s => s.tmdb_id == tmdbId);
@@ -360,6 +366,7 @@
 
         if (episodios.length === 0) {
           const response = await fetch(`https://episodios-24c25-default-rtdb.firebaseio.com/.json?orderBy="series_id"&equalTo=${serieLocal.series_id}`);
+          if (!response.ok) throw new Error(`Erro ao buscar episódios no Firebase: ${response.status}`);
           const data = await response.json();
           console.log("Resposta bruta do Firebase:", JSON.stringify(data, null, 2));
 
@@ -373,6 +380,7 @@
               console.log("Episódios salvos no cache:", episodios);
             } else {
               console.warn("Nenhum episódio encontrado no Firebase para series_id:", serieLocal.series_id);
+              throw new Error("Nenhum episódio encontrado no Firebase");
             }
           } else {
             console.error("Erro ou dados inválidos na resposta do Firebase:", data);
@@ -388,6 +396,7 @@
 
         // Configurar o player com a URL do proxy
         const videoUrl = `/video/series/${streamId}.mp4`;
+        console.log("Configurando vídeo com URL:", videoUrl);
         player.src = videoUrl;
         player.currentTime = lastTime;
 
@@ -416,6 +425,7 @@
 
         // Configurar eventos do player
         player.addEventListener("loadeddata", () => {
+          console.log("Vídeo carregado com sucesso");
           loading.style.display = "none";
           durationDisplay.innerText = formatTime(player.duration);
         });
@@ -434,14 +444,14 @@
 
         player.addEventListener("error", (e) => {
           console.error("Erro no player:", e);
-          showError("Não foi possível carregar o vídeo. Verifique sua conexão ou tente outro episódio.");
+          showError(`Não foi possível carregar o vídeo. Erro: ${e.message || 'Desconhecido'}. Tente outro episódio.`);
         });
 
         // Configurar lista de episódios
         btnEpisodios.addEventListener("click", () => abrirListaEpisodios(episodios, serieLocal.series_id));
       } catch (error) {
         console.error("Erro ao inicializar o player:", error);
-        showError("Erro ao carregar o episódio. Tente novamente mais tarde.");
+        showError(`Erro ao carregar o episódio: ${error.message}. Tente novamente mais tarde.`);
       }
     }
 
@@ -469,7 +479,7 @@
       if (player.paused) {
         player.play().catch(e => {
           console.error("Erro ao reproduzir vídeo:", e);
-          showError("Não foi possível iniciar a reprodução. Tente novamente.");
+          showError(`Não foi possível iniciar a reprodução: ${e.message}. Tente novamente.`);
         });
         playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
       } else {
