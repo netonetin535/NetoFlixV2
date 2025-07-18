@@ -327,9 +327,19 @@
     let lastTime = parseFloat(localStorage.getItem(`pos_${streamId}`)) || 0;
     let controlesTimeout;
 
+    async function verificarVideoExiste(videoUrl) {
+      try {
+        const response = await fetch(videoUrl, { method: 'HEAD' });
+        return response.ok;
+      } catch (error) {
+        console.error("Erro ao verificar vídeo:", error);
+        return false;
+      }
+    }
+
     async function inicializarPlayer() {
       if (!streamId || !tmdbId) {
-        showError("ID do episódio ou TMDb ausente na URL.");
+        showError("ID do episódio ou TMDb ausente na URL.", true);
         return;
       }
 
@@ -375,7 +385,11 @@
         if (!episodio) throw new Error("Episódio não encontrado.");
 
         // Configurar o player
-        const videoUrl = `https://hsgbola1.xyz/movie/879446467/771463126/${streamId}.mp4`;
+        const videoUrl = episodio.video_url || `http://hsgbola1.xyz:80/movie/879446467/771463126/${streamId}.mp4`;
+        const videoExiste = await verificarVideoExiste(videoUrl);
+        if (!videoExiste) {
+          throw new Error("Vídeo não encontrado no servidor ou erro de conexão.");
+        }
         player.src = videoUrl;
         player.currentTime = lastTime;
 
@@ -421,24 +435,31 @@
         });
 
         player.addEventListener("error", () => {
-          showError("Não foi possível carregar o vídeo. Verifique sua conexão ou tente outro episódio.");
+          showError("Não foi possível carregar o vídeo. Tente outro episódio ou verifique sua conexão.", true);
         });
 
         // Configurar lista de episódios
         btnEpisodios.addEventListener("click", () => abrirListaEpisodios(episodios, serieLocal.series_id));
       } catch (error) {
         console.error("Erro ao inicializar o player:", error);
-        showError("Erro ao carregar o episódio. Tente novamente mais tarde.");
+        showError(`Erro ao carregar o episódio: ${error.message}. Tente novamente ou escolha outro episódio.`, true);
       }
     }
 
-    function showError(message) {
+    function showError(message, showEpisodesButton = false) {
       loading.style.display = "none";
-      document.getElementById("player-container").innerHTML = `
+      let html = `
         <div class="error-message">${message}</div>
         <button class="btn-voltar" onclick="history.back()" style="position: absolute; top: 20px; left: 20px;">
           <i class="fas fa-arrow-left"></i> Voltar
         </button>`;
+      if (showEpisodesButton) {
+        html += `
+          <button class="btn-voltar" onclick="document.getElementById('btn-episodios').click()" style="position: absolute; top: 20px; left: 80px;">
+            <i class="fas fa-list"></i> Escolher outro episódio
+          </button>`;
+      }
+      document.getElementById("player-container").innerHTML = html;
     }
 
     function formatTime(sec) {
@@ -454,7 +475,9 @@
 
     function togglePlay() {
       if (player.paused) {
-        player.play();
+        player.play().catch(() => {
+          showError("Não foi possível reproduzir o vídeo. Tente outro episódio.", true);
+        });
         playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
       } else {
         player.pause();
@@ -548,19 +571,26 @@
       episodiosJanela.style.display = "none";
     }
 
-    function irParaProximoEpisodio(episodios, seriesId) {
+    async function irParaProximoEpisodio(episodios, seriesId) {
       if (!episodios || !seriesId) return;
       const eps = episodios.sort((a, b) => a.id - b.id);
       const idx = eps.findIndex(e => e.id == streamId);
       if (idx !== -1 && idx + 1 < eps.length) {
         const proximo = eps[idx + 1];
-        location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
+        const videoUrl = proximo.video_url || `http://hsgbola1.xyz:80/movie/879446467/771463126/${proximo.id}.mp4`;
+        const videoExiste = await verificarVideoExiste(videoUrl);
+        if (videoExiste) {
+          location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
+        } else {
+          console.log("Próximo episódio não disponível:", proximo.id);
+          showError("O próximo episódio não está disponível. Escolha outro episódio.", true);
+        }
       } else {
         console.log("Não há próximo episódio disponível.");
+        showError("Não há mais episódios disponíveis nesta temporada.", true);
       }
     }
 
-    // Configurar eventos
     window.onbeforeunload = () => {
       if (player) localStorage.setItem(`pos_${streamId}`, player.currentTime);
     };
@@ -577,7 +607,6 @@
     document.addEventListener('keydown', mostrarControles);
     btnFecharEpisodios.addEventListener("click", fecharListaEpisodios);
 
-    // Iniciar o player
     inicializarPlayer();
     mostrarControles();
   </script>
