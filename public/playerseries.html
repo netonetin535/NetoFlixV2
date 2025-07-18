@@ -337,7 +337,7 @@
         // Carregar dados da série e episódios
         const [serieTMDB, seriesLocal, cachedData] = await Promise.all([
           fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => {
-            if (!res.ok) throw new Error(`Erro ao buscar série no TMDB: ${res.status}`);
+            if (!res.ok) throw new Error(`Erro ao buscar série no TMDb: ${res.status}`);
             return res.json();
           }),
           fetch("/series_only.json").then(res => {
@@ -444,7 +444,6 @@
 
         player.addEventListener("error", async (e) => {
           console.error("Erro no player:", e);
-          // Verificar o status da resposta do proxy
           try {
             const response = await fetch(videoUrl, { method: 'HEAD' });
             let errorMessage = `Não foi possível carregar o vídeo. Erro: ${response.status} (${response.statusText}).`;
