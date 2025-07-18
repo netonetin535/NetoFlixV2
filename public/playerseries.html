@@ -326,6 +326,8 @@
 
     let lastTime = parseFloat(localStorage.getItem(`pos_${streamId}`)) || 0;
     let controlesTimeout;
+    let episodios = [];
+    let seriesId = null;
 
     async function inicializarPlayer() {
       if (!streamId || !tmdbId) {
@@ -357,8 +359,8 @@
           console.error("Série não encontrada em series_only.json para tmdbId:", tmdbId);
           throw new Error("Série não encontrada em series_only.json");
         }
+        seriesId = serieLocal.series_id;
 
-        let episodios = [];
         if (cachedData && cachedData.timestamp > Date.now() - CACHE_DURATION && Array.isArray(cachedData.episodios)) {
           episodios = cachedData.episodios.filter(ep => ep && typeof ep === 'object' && ep.series_id === Number(serieLocal.series_id));
           console.log("Usando cache para episódios:", episodios);
@@ -394,8 +396,31 @@
           throw new Error("Episódio não encontrado.");
         }
 
-        // Configurar o player com a URL do proxy
-        const videoUrl = `/video/series/${streamId}.mp4`;
+        // Tentar URLs de vídeo
+        const videoUrls = [
+          `/video/series/${streamId}.mp4`, // Proxy principal
+          `http://hsgbola1.xyz:80/series/879446467/771463126/${streamId}.mp4` // Fallback para o servidor de filmes
+        ];
+
+        let videoUrl = null;
+        for (const url of videoUrls) {
+          console.log(`Testando URL: ${url}`);
+          try {
+            const response = await fetch(url, { method: 'HEAD' });
+            if (response.ok) {
+              videoUrl = url;
+              break;
+            }
+            console.warn(`URL ${url} retornou status: ${response.status}`);
+          } catch (e) {
+            console.warn(`Erro ao testar URL ${url}:`, e);
+          }
+        }
+
+        if (!videoUrl) {
+          throw new Error(`Nenhuma URL válida encontrada para o episódio (ID: ${streamId}).`);
+        }
+
         console.log("Configurando vídeo com URL:", videoUrl);
         player.src = videoUrl;
         player.currentTime = lastTime;
@@ -448,14 +473,19 @@
             const response = await fetch(videoUrl, { method: 'HEAD' });
             let errorMessage = `Não foi possível carregar o vídeo. Erro: ${response.status} (${response.statusText}).`;
             if (response.status === 404) {
-              errorMessage = `Vídeo não encontrado no servidor (ID: ${streamId}). Verifique o ID do episódio ou tente outro.`;
+              errorMessage = `Vídeo não encontrado no servidor (ID: ${streamId}). Tentando próximo episódio...`;
+              showError(errorMessage);
+              setTimeout(() => irParaProximoEpisodio(episodios, serieLocal.series_id), 2000);
             } else if (response.status >= 500) {
               errorMessage = `Erro no servidor ao carregar o vídeo (ID: ${streamId}). Tente novamente mais tarde.`;
+              showError(errorMessage);
+            } else {
+              showError(errorMessage);
             }
-            showError(errorMessage);
           } catch (fetchError) {
             console.error("Erro ao verificar URL do vídeo:", fetchError);
             showError(`Não foi possível carregar o vídeo (ID: ${streamId}). Tente outro episódio ou verifique sua conexão.`);
+            setTimeout(() => irParaProximoEpisodio(episodios, serieLocal.series_id), 2000);
           }
         });
 
@@ -463,7 +493,8 @@
         btnEpisodios.addEventListener("click", () => abrirListaEpisodios(episodios, serieLocal.series_id));
       } catch (error) {
         console.error("Erro ao inicializar o player:", error);
-        showError(`Erro ao carregar o episódio: ${error.message}. Tente novamente mais tarde.`);
+        showError(`Erro ao carregar o episódio: ${error.message}. Tente outro episódio ou verifique sua conexão.`);
+        setTimeout(() => irParaProximoEpisodio(episodios, seriesId), 2000);
       }
     }
 
@@ -473,6 +504,9 @@
         <div class="error-message">${message}</div>
         <button class="btn-voltar" onclick="history.back()" style="position: absolute; top: 20px; left: 20px;">
           <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+        <button class="btn-voltar" onclick="abrirListaEpisodios(episodios, seriesId)" style="position: absolute; top: 20px; left: 100px;">
+          <i class="fas fa-list"></i> Escolher outro episódio
         </button>`;
     }
 
@@ -587,14 +621,19 @@
     }
 
     function irParaProximoEpisodio(episodios, seriesId) {
-      if (!episodios || !seriesId) return;
+      if (!episodios || !seriesId) {
+        console.log("Nenhum episódio ou seriesId disponível para navegação.");
+        return;
+      }
       const eps = episodios.sort((a, b) => a.id - b.id);
       const idx = eps.findIndex(e => e.id == streamId);
       if (idx !== -1 && idx + 1 < eps.length) {
         const proximo = eps[idx + 1];
+        console.log(`Indo para o próximo episódio: ${proximo.id}`);
         location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
       } else {
         console.log("Não há próximo episódio disponível.");
+        showError("Você chegou ao último episódio desta série. Escolha outro episódio.");
       }
     }
 
