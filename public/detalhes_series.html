@@ -544,7 +544,7 @@
         document.getElementById("detalhes").textContent = `Temporadas: ${serieTMDB.number_of_seasons || 1} • Episódios: ${episodios.length}`;
         document.getElementById("poster").innerHTML = `<img src="${serieLocal.cover}" alt="${serieLocal.title}">`;
         document.getElementById("backdrop").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${serieTMDB.backdrop_path})`;
-        document.getElementById("btn-assistir").href = episodios.length > 0 ? `playerSeries.html?id=${episodios[0].id}&tmdb=${tmdbId}` : "#";
+        document.getElementById("btn-assistir").href = episodios.length > 0 ? `playerseries.html?id=${episodios[0].id}&tmdb=${tmdbId}` : "#";
 
         const rating = serieTMDB.vote_average;
         const ratingPercentage = Math.round((rating / 10) * 100);
