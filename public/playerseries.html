@@ -341,8 +341,16 @@
           Promise.resolve(JSON.parse(localStorage.getItem(CACHE_KEY)))
         ]);
 
+        if (!seriesLocal) {
+          console.error("Série não encontrada em series_only.json", tmdbId);
+          throw new Error("Série não encontrada em series_only.json");
+        }
+
         const serieLocal = seriesLocal.find(s => s.tmdb_id == tmdbId);
-        if (!serieLocal) throw new Error("Série não encontrada em series_only.json");
+        if (!serieLocal) {
+          console.error("Série não encontrada em series_only.json para tmdbId:", tmdbId);
+          throw new Error("Série não encontrada em series_only.json");
+        }
 
         let episodios = [];
         if (cachedData && cachedData.timestamp > Date.now() - CACHE_DURATION && Array.isArray(cachedData.episodios)) {
@@ -367,15 +375,19 @@
               console.warn("Nenhum episódio encontrado no Firebase para series_id:", serieLocal.series_id);
             }
           } else {
-            console.warn("Erro ou dados inválidos na resposta do Firebase:", data);
+            console.error("Erro ou dados inválidos na resposta do Firebase:", data);
+            throw new Error("Erro ao buscar episódios no Firebase");
           }
         }
 
         const episodio = episodios.find(e => e.id == streamId);
-        if (!episodio) throw new Error("Episódio não encontrado.");
+        if (!episodio) {
+          console.error("Episódio não encontrado para streamId:", streamId);
+          throw new Error("Episódio não encontrado.");
+        }
 
         // Configurar o player com a URL do proxy
-        const videoUrl = `/video/${streamId}.mp4`; // Use the proxy endpoint
+        const videoUrl = `/video/series/${streamId}.mp4`;
         player.src = videoUrl;
         player.currentTime = lastTime;
 
