@@ -181,9 +181,7 @@
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
     #volume-slider {
       width: 100px;
       height: 6px;
@@ -239,6 +237,7 @@
       margin: 4px 0;
       cursor: pointer;
       text-align: left;
+      width: 100%;
     }
     #lista-episodios button:hover {
       background: #e50914;
@@ -250,7 +249,6 @@
     #currentTime, #duration {
       color: #fff;
     }
-    /* Classe para esconder interface */
     .hidden-interface {
       transform: translateY(-100%) !important;
       opacity: 0 !important;
@@ -260,6 +258,12 @@
       transform: translateY(100%) !important;
       opacity: 0 !important;
       pointer-events: none !important;
+    }
+    .error-message {
+      color: #e50914;
+      text-align: center;
+      padding: 30px;
+      font-size: 1.2rem;
     }
   </style>
 </head>
@@ -301,6 +305,8 @@
     const streamId = params.get("id");
     const tmdbId = params.get("tmdb");
     const API_KEY = "5f331944166018e8f887957b773906d4";
+    const CACHE_KEY = `series_${tmdbId}`;
+    const CACHE_DURATION = 60 * 60 * 1000; // 1 hora
     const player = document.getElementById("player");
     const progress = document.getElementById("progress");
     const currentTimeDisplay = document.getElementById("currentTime");
@@ -321,82 +327,130 @@
     let lastTime = parseFloat(localStorage.getItem(`pos_${streamId}`)) || 0;
     let controlesTimeout;
 
-    if (!streamId || !tmdbId) {
-      document.getElementById("player-container").innerHTML = "<div style='color:#fff;padding:30px;text-align:center;'>ID do episódio ou TMDb ausente na URL.</div>";
-    } else {
-      const videoUrl = `http://hsgbola1.xyz:80/movie/879446467/771463126/${streamId}.mp4`;
-      player.src = videoUrl;
-      player.currentTime = lastTime;
+    async function inicializarPlayer() {
+      if (!streamId || !tmdbId) {
+        showError("ID do episódio ou TMDb ausente na URL.");
+        return;
+      }
 
-      // Buscar informações da série e do episódio
-      Promise.all([
-        fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => res.json()),
-        fetch("series.json").then(res => res.json())
-      ])
-        .then(([serieInfo, series]) => {
-          const serie = series.find(s => s.tmdb_id == tmdbId);
-          if (!serie) return;
-          const episodio = serie.episodes.find(e => e.id == streamId);
-          let title = episodio ? episodio.title : "Episódio";
-          let serieTitle = serieInfo.name || "Série";
-          let poster = serieInfo.poster_path ? `https://image.tmdb.org/t/p/w500${serieInfo.poster_path}` : "https://via.placeholder.com/300x450?text=Sem+Capa";
-          
-          document.title = `${serieTitle} - ${title}`;
-          titleEl.innerText = `${serieTitle} - ${title}`;
+      try {
+        // Carregar dados da série e episódios
+        const [serieTMDB, seriesLocal, cachedData] = await Promise.all([
+          fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => res.json()),
+          fetch("series_only.json").then(res => res.json()),
+          Promise.resolve(JSON.parse(localStorage.getItem(CACHE_KEY)))
+        ]);
 
-          // Salvar no histórico de séries
-          const historicoSeries = JSON.parse(localStorage.getItem("historicoSeries")) || [];
-          const existingIndex = historicoSeries.findIndex(s => s.stream_id === streamId);
-          const serieData = {
-            stream_id: streamId,
-            tmdb_id: tmdbId,
-            title: `${serieTitle} - ${title}`,
-            poster_path: poster,
-            type: "serie"
-          };
+        const serieLocal = seriesLocal.find(s => s.tmdb_id == tmdbId);
+        if (!serieLocal) throw new Error("Série não encontrada em series_only.json");
 
-          if (existingIndex >= 0) {
-            historicoSeries[existingIndex] = serieData;
+        let episodios = [];
+        if (cachedData && cachedData.timestamp > Date.now() - CACHE_DURATION && Array.isArray(cachedData.episodios)) {
+          episodios = cachedData.episodios.filter(ep => ep && typeof ep === 'object' && ep.series_id === Number(serieLocal.series_id));
+          console.log("Usando cache para episódios:", episodios);
+        }
+
+        if (episodios.length === 0) {
+          const response = await fetch(`https://episodios-24c25-default-rtdb.firebaseio.com/.json?orderBy="series_id"&equalTo=${serieLocal.series_id}`);
+          const data = await response.json();
+          console.log("Resposta bruta do Firebase:", JSON.stringify(data, null, 2));
+
+          if (data && typeof data === 'object' && !data.hasOwnProperty('error')) {
+            episodios = Object.keys(data).reduce((acc, key) => {
+              const episodes = Object.values(data[key]).filter(ep => ep.series_id === Number(serieLocal.series_id));
+              return acc.concat(episodes);
+            }, []);
+            if (episodios.length > 0) {
+              localStorage.setItem(CACHE_KEY, JSON.stringify({ episodios, timestamp: Date.now() }));
+              console.log("Episódios salvos no cache:", episodios);
+            } else {
+              console.warn("Nenhum episódio encontrado no Firebase para series_id:", serieLocal.series_id);
+            }
           } else {
-            historicoSeries.push(serieData);
+            console.warn("Erro ou dados inválidos na resposta do Firebase:", data);
           }
-          localStorage.setItem("historicoSeries", JSON.stringify(historicoSeries));
-        })
-        .catch(e => {
-          console.error("Erro ao carregar dados:", e);
-          titleEl.innerText = "Episódio";
+        }
+
+        const episodio = episodios.find(e => e.id == streamId);
+        if (!episodio) throw new Error("Episódio não encontrado.");
+
+        // Configurar o player
+        const videoUrl = `http://hsgbola1.xyz:80/movie/879446467/771463126/${streamId}.mp4`;
+        player.src = videoUrl;
+        player.currentTime = lastTime;
+
+        // Atualizar título
+        const title = episodio.title || "Episódio";
+        const serieTitle = serieLocal.name || serieTMDB.name || "Série";
+        document.title = `${serieTitle} - ${title}`;
+        titleEl.innerText = `${serieTitle} - ${title}`;
+
+        // Atualizar histórico
+        const historicoSeries = JSON.parse(localStorage.getItem("historicoSeries")) || [];
+        const serieData = {
+          stream_id: streamId,
+          tmdb_id: tmdbId,
+          title: `${serieTitle} - ${title}`,
+          poster_path: serieLocal.image || "https://via.placeholder.com/300x450?text=Sem+Capa",
+          type: "serie"
+        };
+        const existingIndex = historicoSeries.findIndex(s => s.stream_id === streamId);
+        if (existingIndex >= 0) {
+          historicoSeries[existingIndex] = serieData;
+        } else {
+          historicoSeries.push(serieData);
+        }
+        localStorage.setItem("historicoSeries", JSON.stringify(historicoSeries));
+
+        // Configurar eventos do player
+        player.addEventListener("loadeddata", () => {
+          loading.style.display = "none";
+          durationDisplay.innerText = formatTime(player.duration);
         });
 
-      player.addEventListener("loadeddata", () => {
-        loading.style.display = "none";
-        durationDisplay.innerText = formatTime(player.duration);
-      });
+        player.addEventListener("timeupdate", () => {
+          const percent = (player.currentTime / player.duration) * 100;
+          progress.style.width = `${percent}%`;
+          currentTimeDisplay.innerText = formatTime(player.currentTime);
+          localStorage.setItem(`pos_${streamId}`, player.currentTime);
+        });
 
-      player.addEventListener("timeupdate", () => {
-        const percent = (player.currentTime / player.duration) * 100;
-        progress.style.width = `${percent}%`;
-        currentTimeDisplay.innerText = formatTime(player.currentTime);
-        localStorage.setItem(`pos_${streamId}`, player.currentTime);
-      });
+        player.addEventListener("ended", () => {
+          playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+          irParaProximoEpisodio(episodios, serieLocal.series_id);
+        });
 
-      player.addEventListener("ended", () => {
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-        irParaProximoEpisodio();
-      });
+        player.addEventListener("error", () => {
+          showError("Não foi possível carregar o vídeo. Verifique sua conexão ou tente outro episódio.");
+        });
 
-      player.addEventListener("error", () => {
-        loading.style.display = "none";
-        document.getElementById("player-container").innerHTML = "<div style='color:#fff;padding:30px;text-align:center;'>Não foi possível carregar o vídeo.</div>";
-      });
+        // Configurar lista de episódios
+        btnEpisodios.addEventListener("click", () => abrirListaEpisodios(episodios, serieLocal.series_id));
+      } catch (error) {
+        console.error("Erro ao inicializar o player:", error);
+        showError("Erro ao carregar o episódio. Tente novamente mais tarde.");
+      }
+    }
+
+    function showError(message) {
+      loading.style.display = "none";
+      document.getElementById("player-container").innerHTML = `
+        <div class="error-message">${message}</div>
+        <button class="btn-voltar" onclick="history.back()" style="position: absolute; top: 20px; left: 20px;">
+          <i class="fas fa-arrow-left"></i> Voltar
+        </button>`;
     }
 
     function formatTime(sec) {
+      if (isNaN(sec)) return "--:--";
       const m = Math.floor(sec / 60).toString().padStart(2, '0');
       const s = Math.floor(sec % 60).toString().padStart(2, '0');
       return `${m}:${s}`;
     }
 
-    function seek(seconds) { player.currentTime += seconds; }
+    function seek(seconds) {
+      player.currentTime += seconds;
+    }
 
     function togglePlay() {
       if (player.paused) {
@@ -425,29 +479,16 @@
     }
 
     function toggleSize() {
-      player.style.objectFit = (player.style.objectFit === "contain") ? "fill" : "contain";
+      player.style.objectFit = player.style.objectFit === "contain" ? "fill" : "contain";
     }
 
     function toggleSpeed() {
       let speed = player.playbackRate;
-      speed = (speed === 2) ? 0.5 : speed + 0.5;
+      speed = speed === 2 ? 0.5 : speed + 0.5;
       player.playbackRate = speed;
     }
 
-    window.onbeforeunload = () => {
-      localStorage.setItem(`pos_${streamId}`, player.currentTime);
-    };
-
-    progressBar.addEventListener('click', (e) => {
-      if (!player.duration) return;
-      const rect = progressBar.getBoundingClientRect();
-      const percent = (e.clientX - rect.left) / rect.width;
-      player.currentTime = percent * player.duration;
-      progress.style.width = `${percent * 100}%`;
-    });
-
     function mostrarControles() {
-      // Mostrar interface (retornar à posição original)
       controlsOverlay.classList.remove('hidden-interface');
       progressContainer.classList.remove('bottom-hidden');
       bottomBar.classList.remove('bottom-hidden');
@@ -460,71 +501,85 @@
 
       clearTimeout(controlesTimeout);
       controlesTimeout = setTimeout(() => {
-        // Esconder interface (mover para fora da tela)
-        controlsOverlay.classList.add('hidden-interface');
-        progressContainer.classList.add('bottom-hidden');
-        bottomBar.classList.add('bottom-hidden');
-        dica.classList.add('bottom-hidden');
-        titleEl.classList.add('hidden-interface');
-        btnEpisodios.classList.add('hidden-interface');
-        document.querySelectorAll('.btn-voltar').forEach(btn => {
-          btn.classList.add('hidden-interface');
-        });
+        if (!player.paused && episodiosJanela.style.display !== "block") {
+          controlsOverlay.classList.add('hidden-interface');
+          progressContainer.classList.add('bottom-hidden');
+          bottomBar.classList.add('bottom-hidden');
+          dica.classList.add('bottom-hidden');
+          titleEl.classList.add('hidden-interface');
+          btnEpisodios.classList.add('hidden-interface');
+          document.querySelectorAll('.btn-voltar').forEach(btn => {
+            btn.classList.add('hidden-interface');
+          });
+        }
       }, 3000);
     }
 
-    document.addEventListener('mousemove', mostrarControles);
-    document.addEventListener('keydown', mostrarControles);
-    mostrarControles();
+    function abrirListaEpisodios(episodios, seriesId) {
+      const container = document.getElementById("lista-episodios");
+      container.innerHTML = "";
+      if (!episodios || episodios.length === 0) {
+        container.innerHTML = '<p style="color: #e50914;">Nenhum episódio disponível.</p>';
+        episodiosJanela.style.display = "block";
+        return;
+      }
 
-    btnEpisodios.addEventListener("click", abrirListaEpisodios);
-    btnFecharEpisodios.addEventListener("click", fecharListaEpisodios);
-
-    function abrirListaEpisodios() {
-      if (!tmdbId) return alert("TMDb ID ausente da URL.");
-      fetch("series.json")
-        .then(res => res.json())
-        .then(series => {
-          const serie = series.find(s => s.tmdb_id == tmdbId);
-          if (!serie || !serie.episodes) return alert("Episódios não encontrados.");
-          const container = document.getElementById("lista-episodios");
-          container.innerHTML = "";
-          const temporadas = [...new Set(serie.episodes.map(ep => ep.season))].sort();
-          temporadas.forEach(season => {
-            const header = document.createElement("h3");
-            header.textContent = `Temporada ${season}`;
-            header.style.color = "#e50914";
-            container.appendChild(header);
-            const eps = serie.episodes.filter(e => e.season === season);
-            eps.forEach(ep => {
-              const btn = document.createElement("button");
-              btn.textContent = ep.title;
-              btn.onclick = () => location.href = `playerseries.html?id=${ep.id}&tmdb=${tmdbId}`;
-              container.appendChild(btn);
-            });
-          });
-          episodiosJanela.style.display = "block";
+      const temporadas = [...new Set(episodios.map(ep => ep.season))].sort((a, b) => a - b);
+      temporadas.forEach(season => {
+        const header = document.createElement("h3");
+        header.textContent = `Temporada ${season}`;
+        header.style.color = "#e50914";
+        header.style.marginTop = "10px";
+        container.appendChild(header);
+        const seasonEps = episodios.filter(e => e.season === season).sort((a, b) => a.id - b.id);
+        seasonEps.forEach(ep => {
+          const btn = document.createElement("button");
+          btn.textContent = ep.title || `Episódio ${ep.id}`;
+          btn.onclick = () => {
+            location.href = `playerSeries.html?id=${ep.id}&tmdb=${tmdbId}`;
+          };
+          container.appendChild(btn);
         });
+      });
+      episodiosJanela.style.display = "block";
     }
 
     function fecharListaEpisodios() {
       episodiosJanela.style.display = "none";
     }
 
-    function irParaProximoEpisodio() {
-      if (!tmdbId) return;
-      fetch("series.json")
-        .then(res => res.json())
-        .then(series => {
-          const serie = series.find(s => s.tmdb_id == tmdbId);
-          if (!serie || !serie.episodes) return;
-          const idx = serie.episodes.findIndex(e => e.id == streamId);
-          if (idx !== -1 && idx + 1 < serie.episodes.length) {
-            const proximo = serie.episodes[idx + 1];
-            location.href = `playerseries.html?id=${proximo.id}&tmdb=${tmdbId}`;
-          }
-        });
+    function irParaProximoEpisodio(episodios, seriesId) {
+      if (!episodios || !seriesId) return;
+      const eps = episodios.sort((a, b) => a.id - b.id);
+      const idx = eps.findIndex(e => e.id == streamId);
+      if (idx !== -1 && idx + 1 < eps.length) {
+        const proximo = eps[idx + 1];
+        location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
+      } else {
+        console.log("Não há próximo episódio disponível.");
+      }
     }
+
+    // Configurar eventos
+    window.onbeforeunload = () => {
+      if (player) localStorage.setItem(`pos_${streamId}`, player.currentTime);
+    };
+
+    progressBar.addEventListener('click', (e) => {
+      if (!player.duration) return;
+      const rect = progressBar.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      player.currentTime = percent * player.duration;
+      progress.style.width = `${percent * 100}%`;
+    });
+
+    document.addEventListener('mousemove', mostrarControles);
+    document.addEventListener('keydown', mostrarControles);
+    btnFecharEpisodios.addEventListener("click", fecharListaEpisodios);
+
+    // Iniciar o player
+    inicializarPlayer();
+    mostrarControles();
   </script>
 </body>
 </html>
