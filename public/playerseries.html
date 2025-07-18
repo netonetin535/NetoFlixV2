@@ -442,9 +442,22 @@
           irParaProximoEpisodio(episodios, serieLocal.series_id);
         });
 
-        player.addEventListener("error", (e) => {
+        player.addEventListener("error", async (e) => {
           console.error("Erro no player:", e);
-          showError(`Não foi possível carregar o vídeo. Erro: ${e.message || 'Desconhecido'}. Tente outro episódio.`);
+          // Verificar o status da resposta do proxy
+          try {
+            const response = await fetch(videoUrl, { method: 'HEAD' });
+            let errorMessage = `Não foi possível carregar o vídeo. Erro: ${response.status} (${response.statusText}).`;
+            if (response.status === 404) {
+              errorMessage = `Vídeo não encontrado no servidor (ID: ${streamId}). Verifique o ID do episódio ou tente outro.`;
+            } else if (response.status >= 500) {
+              errorMessage = `Erro no servidor ao carregar o vídeo (ID: ${streamId}). Tente novamente mais tarde.`;
+            }
+            showError(errorMessage);
+          } catch (fetchError) {
+            console.error("Erro ao verificar URL do vídeo:", fetchError);
+            showError(`Não foi possível carregar o vídeo (ID: ${streamId}). Tente outro episódio ou verifique sua conexão.`);
+          }
         });
 
         // Configurar lista de episódios
