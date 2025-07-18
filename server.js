@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 const cookieParser = require('cookie-parser');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(express.json());
@@ -12,11 +12,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Configurar o proxy para vídeos
-app.use('/video', createProxyMiddleware({
-  target: 'http://hsgbola1.xyz:80', // Servidor de vídeo HTTP
+app.use('/video/:streamId', createProxyMiddleware({
+  target: 'http://hsgbola1.xyz:80',
   changeOrigin: true,
-  pathRewrite: {
-    '^/video': '/movie/879446467/771463126', // Reescrita do caminho
+  pathRewrite: (path, req) => {
+    const streamId = req.params.streamId;
+    return `/series/879446467/771463126/${streamId}.mp4`;
+  },
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`Proxying request to: http://hsgbola1.xyz/series/879446467/771463126/${req.params.streamId}.mp4`);
   },
   onProxyRes: (proxyRes, req, res) => {
     // Configurar cabeçalhos CORS
@@ -26,7 +30,12 @@ app.use('/video', createProxyMiddleware({
     // Garantir que o tipo de conteúdo seja correto
     proxyRes.headers['Content-Type'] = 'video/mp4';
   },
-  secure: false, // Ignorar verificação de certificado (necessário para servidor sem HTTPS)
+  onError: (err, req, res) => {
+    console.error('Erro no proxy:', err);
+    res.status(500).send('Erro ao carregar o vídeo.');
+  },
+  secure: false, // Ignorar verificação de certificado
+  followRedirects: true // Seguir redirecionamentos
 }));
 
 // Servir favicon
@@ -52,7 +61,7 @@ app.get('/check-admin', (req, res) =>
 );
 
 // Login / Logout
-app.post ('/api/login', (req, res) => {
+app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (
     username === adminCredentials.username &&
