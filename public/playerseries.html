@@ -327,20 +327,9 @@
     let lastTime = parseFloat(localStorage.getItem(`pos_${streamId}`)) || 0;
     let controlesTimeout;
 
-    async function verificarVideoExiste(videoUrl) {
-      try {
-        const response = await fetch(videoUrl, { method: 'HEAD' });
-        console.log(`[Verificar Vídeo] ${videoUrl} - Status: ${response.status}`);
-        return response.ok;
-      } catch (error) {
-        console.error(`[Verificar Vídeo] Erro ao verificar ${videoUrl}:`, error);
-        return false;
-      }
-    }
-
     async function inicializarPlayer() {
       if (!streamId || !tmdbId) {
-        showError("ID do episódio ou TMDb ausente na URL.", true);
+        showError("ID do episódio ou TMDb ausente na URL.");
         return;
       }
 
@@ -348,7 +337,7 @@
         // Carregar dados da série e episódios
         const [serieTMDB, seriesLocal, cachedData] = await Promise.all([
           fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => res.json()),
-          fetch("/series_only.json").then(res => res.json()),
+          fetch("series_only.json").then(res => res.json()),
           Promise.resolve(JSON.parse(localStorage.getItem(CACHE_KEY)))
         ]);
 
@@ -385,13 +374,8 @@
         const episodio = episodios.find(e => e.id == streamId);
         if (!episodio) throw new Error("Episódio não encontrado.");
 
-        // Configurar a URL do vídeo usando o proxy
-        const videoUrl = episodio.video_url || `/video/${streamId}.mp4`;
-        const videoExiste = await verificarVideoExiste(videoUrl);
-        if (!videoExiste) {
-          throw new Error("Vídeo não encontrado no servidor ou erro de conexão.");
-        }
-
+        // Configurar o player
+        const videoUrl = `http://hsgbola1.xyz:80/series/879446467/771463126/${streamId}.mp4`;
         player.src = videoUrl;
         player.currentTime = lastTime;
 
@@ -437,31 +421,24 @@
         });
 
         player.addEventListener("error", () => {
-          showError("Erro ao carregar o vídeo. O servidor de vídeos pode estar indisponível ou o episódio não existe. Tente outro episódio.", true);
+          showError("Não foi possível carregar o vídeo. Verifique sua conexão ou tente outro episódio.");
         });
 
         // Configurar lista de episódios
         btnEpisodios.addEventListener("click", () => abrirListaEpisodios(episodios, serieLocal.series_id));
       } catch (error) {
         console.error("Erro ao inicializar o player:", error);
-        showError(`Erro ao carregar o episódio: ${error.message}. Tente outro episódio ou contate o suporte.`, true);
+        showError("Erro ao carregar o episódio. Tente novamente mais tarde.");
       }
     }
 
-    function showError(message, showEpisodesButton = false) {
+    function showError(message) {
       loading.style.display = "none";
-      let html = `
+      document.getElementById("player-container").innerHTML = `
         <div class="error-message">${message}</div>
         <button class="btn-voltar" onclick="history.back()" style="position: absolute; top: 20px; left: 20px;">
           <i class="fas fa-arrow-left"></i> Voltar
         </button>`;
-      if (showEpisodesButton) {
-        html += `
-          <button class="btn-voltar" onclick="document.getElementById('btn-episodios').click()" style="position: absolute; top: 20px; left: 80px;">
-            <i class="fas fa-list"></i> Escolher outro episódio
-          </button>`;
-      }
-      document.getElementById("player-container").innerHTML = html;
     }
 
     function formatTime(sec) {
@@ -477,9 +454,7 @@
 
     function togglePlay() {
       if (player.paused) {
-        player.play().catch(() => {
-          showError("Erro ao reproduzir o vídeo. O servidor de vídeos pode estar indisponível. Tente outro episódio.", true);
-        });
+        player.play();
         playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
       } else {
         player.pause();
@@ -540,7 +515,7 @@
       }, 3000);
     }
 
-    async function abrirListaEpisodios(episodios, seriesId) {
+    function abrirListaEpisodios(episodios, seriesId) {
       const container = document.getElementById("lista-episodios");
       container.innerHTML = "";
       if (!episodios || episodios.length === 0) {
@@ -550,54 +525,42 @@
       }
 
       const temporadas = [...new Set(episodios.map(ep => ep.season))].sort((a, b) => a - b);
-      for (const season of temporadas) {
+      temporadas.forEach(season => {
         const header = document.createElement("h3");
         header.textContent = `Temporada ${season}`;
         header.style.color = "#e50914";
         header.style.marginTop = "10px";
         container.appendChild(header);
         const seasonEps = episodios.filter(e => e.season === season).sort((a, b) => a.id - b.id);
-        for (const ep of seasonEps) {
+        seasonEps.forEach(ep => {
           const btn = document.createElement("button");
           btn.textContent = ep.title || `Episódio ${ep.id}`;
-          const epVideoUrl = ep.video_url || `/video/${ep.id}.mp4`;
-          const videoExiste = await verificarVideoExiste(epVideoUrl);
-          if (videoExiste) {
-            btn.onclick = () => {
-              location.href = `playerSeries.html?id=${ep.id}&tmdb=${tmdbId}`;
-            };
-          } else {
-            btn.style.opacity = "0.5";
-            btn.style.cursor = "not-allowed";
-            btn.title = "Vídeo indisponível";
-            btn.disabled = true;
-          }
+          btn.onclick = () => {
+            location.href = `playerSeries.html?id=${ep.id}&tmdb=${tmdbId}`;
+          };
           container.appendChild(btn);
-        }
-      }
+        });
+      });
       episodiosJanela.style.display = "block";
     }
 
-    async function irParaProximoEpisodio(episodios, seriesId) {
+    function fecharListaEpisodios() {
+      episodiosJanela.style.display = "none";
+    }
+
+    function irParaProximoEpisodio(episodios, seriesId) {
       if (!episodios || !seriesId) return;
       const eps = episodios.sort((a, b) => a.id - b.id);
       const idx = eps.findIndex(e => e.id == streamId);
       if (idx !== -1 && idx + 1 < eps.length) {
         const proximo = eps[idx + 1];
-        const videoUrl = proximo.video_url || `/video/${proximo.id}.mp4`;
-        const videoExiste = await verificarVideoExiste(videoUrl);
-        if (videoExiste) {
-          location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
-        } else {
-          console.log("Próximo episódio não disponível:", proximo.id);
-          showError("O próximo episódio não está disponível. Escolha outro episódio.", true);
-        }
+        location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
       } else {
         console.log("Não há próximo episódio disponível.");
-        showError("Não há mais episódios disponíveis nesta temporada.", true);
       }
     }
 
+    // Configurar eventos
     window.onbeforeunload = () => {
       if (player) localStorage.setItem(`pos_${streamId}`, player.currentTime);
     };
@@ -612,8 +575,9 @@
 
     document.addEventListener('mousemove', mostrarControles);
     document.addEventListener('keydown', mostrarControles);
-    btnFecharEpisodios.addEventListener("click", () => episodiosJanela.style.display = "none");
+    btnFecharEpisodios.addEventListener("click", fecharListaEpisodios);
 
+    // Iniciar o player
     inicializarPlayer();
     mostrarControles();
   </script>
