@@ -337,12 +337,12 @@
         // Carregar dados da série e episódios
         const [serieTMDB, seriesLocal, cachedData] = await Promise.all([
           fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => res.json()),
-          fetch("series_only.json").then(res => res.json()),
+          fetch("series.json").then(res => res.json()), // Ajustado para series.json
           Promise.resolve(JSON.parse(localStorage.getItem(CACHE_KEY)))
         ]);
 
         const serieLocal = seriesLocal.find(s => s.tmdb_id == tmdbId);
-        if (!serieLocal) throw new Error("Série não encontrada em series_only.json");
+        if (!serieLocal) throw new Error("Série não encontrada em series.json");
 
         let episodios = [];
         if (cachedData && cachedData.timestamp > Date.now() - CACHE_DURATION && Array.isArray(cachedData.episodios)) {
@@ -374,8 +374,8 @@
         const episodio = episodios.find(e => e.id == streamId);
         if (!episodio) throw new Error("Episódio não encontrado.");
 
-        // Configurar o player
-        const videoUrl = `http://hsgbola1.xyz:80/series/879446467/771463126/${streamId}.mp4`;
+        // Configurar o player com a URL do proxy
+        const videoUrl = `/video/${streamId}.mp4`; // Usar o proxy local
         player.src = videoUrl;
         player.currentTime = lastTime;
 
@@ -420,8 +420,9 @@
           irParaProximoEpisodio(episodios, serieLocal.series_id);
         });
 
-        player.addEventListener("error", () => {
-          showError("Não foi possível carregar o vídeo. Verifique sua conexão ou tente outro episódio.");
+        player.addEventListener("error", (e) => {
+          console.error("Erro no player:", e);
+          showError(`Erro ao carregar o vídeo: ${e.message || "Verifique sua conexão ou tente outro episódio."}`);
         });
 
         // Configurar lista de episódios
