@@ -374,8 +374,8 @@
         const episodio = episodios.find(e => e.id == streamId);
         if (!episodio) throw new Error("Episódio não encontrado.");
 
-        // Configurar o player
-        const videoUrl = `http://hsgbola1.xyz:80/series/879446467/771463126/${streamId}.mp4`;
+        // Configurar o player com a URL do proxy
+        const videoUrl = `/video/${streamId}.mp4`; // Use the proxy endpoint
         player.src = videoUrl;
         player.currentTime = lastTime;
 
@@ -420,7 +420,8 @@
           irParaProximoEpisodio(episodios, serieLocal.series_id);
         });
 
-        player.addEventListener("error", () => {
+        player.addEventListener("error", (e) => {
+          console.error("Erro no player:", e);
           showError("Não foi possível carregar o vídeo. Verifique sua conexão ou tente outro episódio.");
         });
 
@@ -454,7 +455,10 @@
 
     function togglePlay() {
       if (player.paused) {
-        player.play();
+        player.play().catch(e => {
+          console.error("Erro ao reproduzir vídeo:", e);
+          showError("Não foi possível iniciar a reprodução. Tente novamente.");
+        });
         playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
       } else {
         player.pause();
@@ -464,7 +468,7 @@
 
     function toggleFullscreen() {
       const el = document.documentElement;
-      if (!document.fullscreenElement) el.requestFullscreen();
+      if (!document.fullscreenElement) el.requestFullscreen().catch(e => console.error("Erro ao entrar em tela cheia:", e));
       else document.exitFullscreen();
     }
 
