@@ -6,41 +6,38 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Configurações de variáveis de ambiente (recomendado para produção)
-const VIDEO_SERVER = process.env.VIDEO_SERVER || 'http://hsgbola1.xyz:80';
-const VIDEO_PATH = process.env.VIDEO_PATH || '/movie/879446467/771463126';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
-
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configurar o proxy para vídeos
-app.use('/video', createProxyMiddleware({
-  target: VIDEO_SERVER,
+// Proxy dinâmico para filmes e séries
+app.use('/video/:type', createProxyMiddleware({
+  target: 'http://hsgbola1.xyz:80',
   changeOrigin: true,
-  pathRewrite: {
-    '^/video': VIDEO_PATH,
+  pathRewrite: (path, req) => {
+    const type = req.params.type === 'series' ? 'series' : 'movie';
+    return `/${type}/879446467/771463126${path.replace(`/video/${req.params.type}`, '')}`;
   },
   onProxyReq: (proxyReq, req, res) => {
-    // Passar headers de Range para suportar streaming parcial
-    if (req.headers['range']) {
-      proxyReq.setHeader('Range', req.headers['range']);
+    if (req.headers.range) {
+      proxyReq.setHeader('Range', req.headers.range);
     }
+    console.log(`Proxying request to: ${proxyReq.path}`);
   },
   onProxyRes: (proxyRes, req, res) => {
-    // Configurar cabeçalhos CORS
-    proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+    proxyRes.headers['Access-Control-Allow-Origin'] = process.env.NODE_ENV === 'production' ? 'https://yourdomain.com' : '*';
     proxyRes.headers['Access-Control-Allow-Methods'] = 'GET';
     proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type, Range';
     proxyRes.headers['Content-Type'] = 'video/mp4';
     proxyRes.headers['Accept-Ranges'] = 'bytes';
+    proxyRes.headers['Cache-Control'] = 'public, max-age=3600';
   },
-  secure: false, // Ignorar verificação de certificado
-  // Descomente e ajuste se o servidor exigir autenticação
-  // auth: 'username:password',
+  onError: (err, req, res) => {
+    console.error('Erro no proxy:', err);
+    res.status(500).json({ success: false, message: 'Erro ao carregar o vídeo. Tente novamente mais tarde.' });
+  },
+  secure: false,
 }));
 
 // Servir favicon
@@ -49,7 +46,10 @@ app.get('/favicon.ico', (req, res) => {
 });
 
 // Credenciais admin
-const adminCredentials = { username: ADMIN_USERNAME, password: ADMIN_PASSWORD };
+const adminCredentials = {
+  username: process.env.ADMIN_USERNAME || 'admin',
+  password: process.env.ADMIN_PASSWORD || 'admin123'
+};
 
 // Rotas públicas
 app.get('/', (req, res) =>
@@ -60,6 +60,9 @@ app.get('/catalogo.json', (req, res) =>
 );
 app.get('/series.json', (req, res) =>
   res.sendFile(path.join(__dirname, 'public', 'series.json'))
+);
+app.get('/series_only.json', (req, res) =>
+  res.sendFile(path.join(__dirname, 'public', 'series_only.json'))
 );
 app.get('/check-admin', (req, res) =>
   res.json({ isAdmin: req.cookies.adminToken === 'true' })
@@ -74,13 +77,12 @@ app.post('/api/login', (req, res) => {
   ) {
     res.cookie('adminToken', 'true', {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000,
     });
     res.json({ success: true, message: 'Login bem-sucedido' });
   } else {
-    res
-      .status(401)
-      .json({ success: false, message: 'Usuário ou senha incorretos' });
+    res.status(401).json({ success: false, message: 'Usuário ou senha incorretos' });
   }
 });
 app.post('/api/logout', (req, res) => {
