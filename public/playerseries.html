@@ -327,6 +327,17 @@
     let lastTime = parseFloat(localStorage.getItem(`pos_${streamId}`)) || 0;
     let controlesTimeout;
 
+    async function verificarVideoExiste(videoUrl) {
+      try {
+        const response = await fetch(videoUrl, { method: 'HEAD' });
+        console.log(`[Verificar Vídeo] ${videoUrl} - Status: ${response.status}`);
+        return response.ok;
+      } catch (error) {
+        console.error(`[Verificar Vídeo] Erro ao verificar ${videoUrl}:`, error);
+        return false;
+      }
+    }
+
     async function inicializarPlayer() {
       if (!streamId || !tmdbId) {
         showError("ID do episódio ou TMDb ausente na URL.", true);
@@ -337,7 +348,7 @@
         // Carregar dados da série e episódios
         const [serieTMDB, seriesLocal, cachedData] = await Promise.all([
           fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => res.json()),
-          fetch("series_only.json").then(res => res.json()),
+          fetch("/series_only.json").then(res => res.json()),
           Promise.resolve(JSON.parse(localStorage.getItem(CACHE_KEY)))
         ]);
 
@@ -374,10 +385,13 @@
         const episodio = episodios.find(e => e.id == streamId);
         if (!episodio) throw new Error("Episódio não encontrado.");
 
-        // Configurar o player
-        // NOTA: A URL usa HTTP na porta 80, mas isso causará Mixed Content em páginas HTTPS.
-        // Para resolver permanentemente, configure um proxy HTTPS (ex.: Cloudflare) ou migre os vídeos para um servidor HTTPS.
-        const videoUrl = episodio.video_url || `http://hsgbola1.xyz:80/movie/879446467/771463126/${streamId}.mp4`;
+        // Configurar a URL do vídeo usando o proxy
+        const videoUrl = episodio.video_url || `/video/${streamId}.mp4`;
+        const videoExiste = await verificarVideoExiste(videoUrl);
+        if (!videoExiste) {
+          throw new Error("Vídeo não encontrado no servidor ou erro de conexão.");
+        }
+
         player.src = videoUrl;
         player.currentTime = lastTime;
 
@@ -423,7 +437,7 @@
         });
 
         player.addEventListener("error", () => {
-          showError("Não foi possível carregar o vídeo devido a uma restrição de segurança (Mixed Content). Tente outro episódio ou contate o suporte.", true);
+          showError("Erro ao carregar o vídeo. O servidor de vídeos pode estar indisponível ou o episódio não existe. Tente outro episódio.", true);
         });
 
         // Configurar lista de episódios
@@ -464,7 +478,7 @@
     function togglePlay() {
       if (player.paused) {
         player.play().catch(() => {
-          showError("Não foi possível reproduzir o vídeo devido a uma restrição de segurança (Mixed Content). Tente outro episódio.", true);
+          showError("Erro ao reproduzir o vídeo. O servidor de vídeos pode estar indisponível. Tente outro episódio.", true);
         });
         playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
       } else {
@@ -526,7 +540,7 @@
       }, 3000);
     }
 
-    function abrirListaEpisodios(episodios, seriesId) {
+    async function abrirListaEpisodios(episodios, seriesId) {
       const container = document.getElementById("lista-episodios");
       container.innerHTML = "";
       if (!episodios || episodios.length === 0) {
@@ -536,36 +550,48 @@
       }
 
       const temporadas = [...new Set(episodios.map(ep => ep.season))].sort((a, b) => a - b);
-      temporadas.forEach(season => {
+      for (const season of temporadas) {
         const header = document.createElement("h3");
         header.textContent = `Temporada ${season}`;
         header.style.color = "#e50914";
         header.style.marginTop = "10px";
         container.appendChild(header);
         const seasonEps = episodios.filter(e => e.season === season).sort((a, b) => a.id - b.id);
-        seasonEps.forEach(ep => {
+        for (const ep of seasonEps) {
           const btn = document.createElement("button");
           btn.textContent = ep.title || `Episódio ${ep.id}`;
-          btn.onclick = () => {
-            location.href = `playerSeries.html?id=${ep.id}&tmdb=${tmdbId}`;
-          };
+          const epVideoUrl = ep.video_url || `/video/${ep.id}.mp4`;
+          const videoExiste = await verificarVideoExiste(epVideoUrl);
+          if (videoExiste) {
+            btn.onclick = () => {
+              location.href = `playerSeries.html?id=${ep.id}&tmdb=${tmdbId}`;
+            };
+          } else {
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+            btn.title = "Vídeo indisponível";
+            btn.disabled = true;
+          }
           container.appendChild(btn);
-        });
-      });
+        }
+      }
       episodiosJanela.style.display = "block";
     }
 
-    function fecharListaEpisodios() {
-      episodiosJanela.style.display = "none";
-    }
-
-    function irParaProximoEpisodio(episodios, seriesId) {
+    async function irParaProximoEpisodio(episodios, seriesId) {
       if (!episodios || !seriesId) return;
       const eps = episodios.sort((a, b) => a.id - b.id);
       const idx = eps.findIndex(e => e.id == streamId);
       if (idx !== -1 && idx + 1 < eps.length) {
         const proximo = eps[idx + 1];
-        location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
+        const videoUrl = proximo.video_url || `/video/${proximo.id}.mp4`;
+        const videoExiste = await verificarVideoExiste(videoUrl);
+        if (videoExiste) {
+          location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
+        } else {
+          console.log("Próximo episódio não disponível:", proximo.id);
+          showError("O próximo episódio não está disponível. Escolha outro episódio.", true);
+        }
       } else {
         console.log("Não há próximo episódio disponível.");
         showError("Não há mais episódios disponíveis nesta temporada.", true);
@@ -586,7 +612,7 @@
 
     document.addEventListener('mousemove', mostrarControles);
     document.addEventListener('keydown', mostrarControles);
-    btnFecharEpisodios.addEventListener("click", fecharListaEpisodios);
+    btnFecharEpisodios.addEventListener("click", () => episodiosJanela.style.display = "none");
 
     inicializarPlayer();
     mostrarControles();
