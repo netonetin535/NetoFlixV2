@@ -5,49 +5,43 @@ const cookieParser = require('cookie-parser');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 
+// Porta dinâmica para Render (ou 8000 localmente)
+const PORT = process.env.PORT || 8000;
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configurar o proxy para vídeos com logs de depuração
+// Configurar o proxy para vídeos
 app.use('/video', createProxyMiddleware({
-  target: 'http://hsgbola1.xyz:80',
+  target: 'http://hsgbola1.xyz:80', // Servidor de vídeo HTTP
   changeOrigin: true,
   pathRewrite: {
-    '^/video': '/movie/879446467/771463126',
-  },
-  onProxyReq: (proxyReq, req, res) => {
-    console.log(`[Proxy] Enviando solicitação para: ${proxyReq.path}`);
+    '^/video': '/movie/879446467/771463126', // Reescrita do caminho
   },
   onProxyRes: (proxyRes, req, res) => {
-    console.log(`[Proxy] Resposta recebida para ${req.url} - Status: ${proxyRes.statusCode}`);
-    proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+    // Configurar cabeçalhos CORS
+    proxyRes.headers['Access-Control-Allow-Origin'] = 'https://seu-site.onrender.com'; // Substitua pelo seu domínio
     proxyRes.headers['Access-Control-Allow-Methods'] = 'GET';
     proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type';
     proxyRes.headers['Content-Type'] = 'video/mp4';
+    console.log(`Proxy response: ${req.url} -> ${proxyRes.statusCode}`);
   },
   onError: (err, req, res) => {
-    console.error(`[Proxy] Erro ao processar ${req.url}:`, err);
-    res.status(500).send(`Erro no proxy: ${err.message}`);
+    console.error(`Proxy error: ${err.message}`);
+    res.status(500).json({ error: 'Erro ao acessar o vídeo', details: err.message });
   },
-  secure: false,
+  secure: false, // Ignorar verificação de certificado
+  rejectUnauthorized: false, // Desativar validação de certificado (necessário para HTTP)
 }));
-
-// Middleware global para CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
-});
 
 // Servir favicon
 app.get('/favicon.ico', (req, res) => {
-  res.sendFile(path.join(__dirname, 'favicon.ico'));
+  res.sendFile(path.join(__dirname, 'public', 'favicon.ico'));
 });
 
-// Credenciais admin (use variáveis de ambiente em produção)
+// Credenciais admin (use env vars em produção)
 const adminCredentials = { username: 'admin', password: 'admin123' };
 
 // Rotas públicas
@@ -121,7 +115,6 @@ app.post('/api/filmes', isAuthenticated, async (req, res) => {
     await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
     res.json({ success: true, message: 'Filme adicionado com sucesso' });
   } catch (e) {
-    console.error('[Filmes] Erro ao adicionar filme:', e);
     res
       .status(500)
       .json({ success: false, message: 'Erro ao adicionar filme: ' + e.message });
@@ -156,7 +149,6 @@ app.put('/api/filmes/:stream_id', isAuthenticated, async (req, res) => {
     await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
     res.json({ success: true, message: 'Filme editado com sucesso' });
   } catch (e) {
-    console.error('[Filmes] Erro ao editar filme:', e);
     res
       .status(500)
       .json({ success: false, message: 'Erro ao editar filme: ' + e.message });
@@ -176,7 +168,6 @@ app.delete('/api/filmes/:stream_id', isAuthenticated, async (req, res) => {
     await fs.writeFile(caminho, JSON.stringify(filtrados, null, 2));
     res.json({ success: true, message: 'Filme removido com sucesso' });
   } catch (e) {
-    console.error('[Filmes] Erro ao remover filme:', e);
     res
       .status(500)
       .json({ success: false, message: 'Erro ao remover filme: ' + e.message });
@@ -214,7 +205,6 @@ app.post('/api/series', isAuthenticated, async (req, res) => {
     await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
     res.json({ success: true, message: 'Série adicionada com sucesso' });
   } catch (e) {
-    console.error('[Séries] Erro ao adicionar série:', e);
     res
       .status(500)
       .json({ success: false, message: 'Erro ao adicionar série: ' + e.message });
@@ -248,7 +238,6 @@ app.put('/api/series/:series_id', isAuthenticated, async (req, res) => {
     await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
     res.json({ success: true, message: 'Série editada com sucesso' });
   } catch (e) {
-    console.error('[Séries] Erro ao editar série:', e);
     res
       .status(500)
       .json({ success: false, message: 'Erro ao editar série: ' + e.message });
@@ -267,7 +256,6 @@ app.delete('/api/series/:series_id', isAuthenticated, async (req, res) => {
     await fs.writeFile(caminho, JSON.stringify(filtrados, null, 2));
     res.json({ success: true, message: 'Série removida com sucesso' });
   } catch (e) {
-    console.error('[Séries] Erro ao remover série:', e);
     res
       .status(500)
       .json({ success: false, message: 'Erro ao remover série: ' + e.message });
@@ -298,7 +286,6 @@ app.put('/api/series/:series_id/episodios/:episode_id', isAuthenticated, async (
     await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
     res.json({ success: true, message: 'Episódio editado com sucesso' });
   } catch (e) {
-    console.error('[Episódios] Erro ao editar episódio:', e);
     res
       .status(500)
       .json({ success: false, message: 'Erro ao editar episódio: ' + e.message });
@@ -324,7 +311,6 @@ app.delete('/api/series/:series_id/episodios/:episode_id', isAuthenticated, asyn
     await fs.writeFile(caminho, JSON.stringify(dados, null, 2));
     res.json({ success: true, message: 'Episódio removido com sucesso' });
   } catch (e) {
-    console.error('[Episódios] Erro ao remover episódio:', e);
     res
       .status(500)
       .json({ success: false, message: 'Erro ao remover episódio: ' + e.message });
@@ -332,7 +318,6 @@ app.delete('/api/series/:series_id/episodios/:episode_id', isAuthenticated, asyn
 });
 
 // Inicia o servidor
-const PORT = process.env.PORT || 8000;
 app.listen(PORT, () =>
   console.log(`✅ Servidor rodando em http://localhost:${PORT}`)
 );
