@@ -327,16 +327,6 @@
     let lastTime = parseFloat(localStorage.getItem(`pos_${streamId}`)) || 0;
     let controlesTimeout;
 
-    async function verificarVideoExiste(videoUrl) {
-      try {
-        const response = await fetch(videoUrl, { method: 'HEAD' });
-        return response.ok;
-      } catch (error) {
-        console.error("Erro ao verificar vídeo:", error);
-        return false;
-      }
-    }
-
     async function inicializarPlayer() {
       if (!streamId || !tmdbId) {
         showError("ID do episódio ou TMDb ausente na URL.", true);
@@ -385,11 +375,9 @@
         if (!episodio) throw new Error("Episódio não encontrado.");
 
         // Configurar o player
+        // NOTA: A URL usa HTTP na porta 80, mas isso causará Mixed Content em páginas HTTPS.
+        // Para resolver permanentemente, configure um proxy HTTPS (ex.: Cloudflare) ou migre os vídeos para um servidor HTTPS.
         const videoUrl = episodio.video_url || `http://hsgbola1.xyz:80/movie/879446467/771463126/${streamId}.mp4`;
-        const videoExiste = await verificarVideoExiste(videoUrl);
-        if (!videoExiste) {
-          throw new Error("Vídeo não encontrado no servidor ou erro de conexão.");
-        }
         player.src = videoUrl;
         player.currentTime = lastTime;
 
@@ -435,14 +423,14 @@
         });
 
         player.addEventListener("error", () => {
-          showError("Não foi possível carregar o vídeo. Tente outro episódio ou verifique sua conexão.", true);
+          showError("Não foi possível carregar o vídeo devido a uma restrição de segurança (Mixed Content). Tente outro episódio ou contate o suporte.", true);
         });
 
         // Configurar lista de episódios
         btnEpisodios.addEventListener("click", () => abrirListaEpisodios(episodios, serieLocal.series_id));
       } catch (error) {
         console.error("Erro ao inicializar o player:", error);
-        showError(`Erro ao carregar o episódio: ${error.message}. Tente novamente ou escolha outro episódio.`, true);
+        showError(`Erro ao carregar o episódio: ${error.message}. Tente outro episódio ou contate o suporte.`, true);
       }
     }
 
@@ -476,7 +464,7 @@
     function togglePlay() {
       if (player.paused) {
         player.play().catch(() => {
-          showError("Não foi possível reproduzir o vídeo. Tente outro episódio.", true);
+          showError("Não foi possível reproduzir o vídeo devido a uma restrição de segurança (Mixed Content). Tente outro episódio.", true);
         });
         playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
       } else {
@@ -571,20 +559,13 @@
       episodiosJanela.style.display = "none";
     }
 
-    async function irParaProximoEpisodio(episodios, seriesId) {
+    function irParaProximoEpisodio(episodios, seriesId) {
       if (!episodios || !seriesId) return;
       const eps = episodios.sort((a, b) => a.id - b.id);
       const idx = eps.findIndex(e => e.id == streamId);
       if (idx !== -1 && idx + 1 < eps.length) {
         const proximo = eps[idx + 1];
-        const videoUrl = proximo.video_url || `http://hsgbola1.xyz:80/movie/879446467/771463126/${proximo.id}.mp4`;
-        const videoExiste = await verificarVideoExiste(videoUrl);
-        if (videoExiste) {
-          location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
-        } else {
-          console.log("Próximo episódio não disponível:", proximo.id);
-          showError("O próximo episódio não está disponível. Escolha outro episódio.", true);
-        }
+        location.href = `playerSeries.html?id=${proximo.id}&tmdb=${tmdbId}`;
       } else {
         console.log("Não há próximo episódio disponível.");
         showError("Não há mais episódios disponíveis nesta temporada.", true);
