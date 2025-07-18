@@ -54,7 +54,7 @@
   </div>
 
   <script>
-    const API_KEY = 'your_tmdb_api_key_here'; // Substitua pela sua chave da TMDb
+    const API_KEY = 'sua_chave_real_aqui'; // Substitua pela sua chave real da TMDb
     const CACHE_KEY = 'series_data';
     const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas
     const player = document.getElementById('player');
@@ -98,8 +98,15 @@
 
       try {
         const [serieTMDB, seriesLocal, cachedData] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`).then(res => res.json()),
-          fetch("series_only.json").then(res => res.json()),
+          fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${API_KEY}&language=pt-BR`)
+            .then(res => {
+              if (!res.ok) throw new Error(`Erro TMDb: ${res.status} ${res.statusText}`);
+              return res.json();
+            }),
+          fetch("series_only.json").then(res => {
+            if (!res.ok) throw new Error(`Erro ao carregar series_only.json: ${res.status}`);
+            return res.json();
+          }),
           Promise.resolve(JSON.parse(localStorage.getItem(CACHE_KEY)))
         ]);
 
@@ -117,7 +124,9 @@
           const data = await response.json();
           console.log("Resposta bruta do Firebase:", JSON.stringify(data, null, 2));
           if (data && typeof data === 'object' && !data.hasOwnProperty('error')) {
-            episodios = Object.keys(data).reduce((acc, key) => acc.concat(Object.values(data[key]).filter(ep => ep.series_id === Number(serieLocal.series_id))), []);
+            // Simplificar a extração dos episódios
+            episodios = Object.values(data).filter(ep => ep.series_id === Number(serieLocal.series_id));
+            console.log("Episódios extraídos:", episodios);
             if (episodios.length > 0) {
               localStorage.setItem(CACHE_KEY, JSON.stringify({ episodios, timestamp: Date.now() }));
               console.log("Episódios salvos no cache:", episodios);
@@ -129,8 +138,8 @@
           }
         }
 
-        const episodio = episodios.find(e => e.id == streamId);
-        if (!episodio) throw new Error("Episódio não encontrado.");
+        const episodio = episodios.find(e => String(e.id) === String(streamId));
+        if (!episodio) throw new Error(`Episódio com id ${streamId} não encontrado.`);
 
         // Tentar capturar o URL redirecionado
         let videoUrl = `http://hsgbola1.xyz/series/879446467/771463126/${streamId}.mp4`;
@@ -182,10 +191,10 @@
         else historicoSeries.push(serieData);
         localStorage.setItem("historicoSeries", JSON.stringify(historicoSeries));
 
-        btnEpisodios.addEventListener("click", () => abrirListaEpisodios(episodios, serieLocal.series_id));
+        episodesBtn.addEventListener("click", () => abrirListaEpisodios(episodios, serieLocal.series_id));
       } catch (error) {
         console.error("Erro ao inicializar o player:", error);
-        showError("Erro ao carregar o episódio. Tente novamente mais tarde.");
+        showError(`Erro ao carregar o episódio: ${error.message}. Tente novamente mais tarde.`);
       }
     }
 
@@ -250,7 +259,7 @@
     });
 
     function irParaProximoEpisodio(episodios, seriesId) {
-      const currentIndex = episodios.findIndex(e => e.id == streamId);
+      const currentIndex = episodios.findIndex(e => String(e.id) === String(streamId));
       if (currentIndex < episodios.length - 1) {
         const nextEp = episodios[currentIndex + 1];
         window.location.href = `playerSeries.html?id=${nextEp.id}&tmdb=${tmdbId}`;
