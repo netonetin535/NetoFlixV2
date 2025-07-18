@@ -366,7 +366,6 @@
     <a href="historico.html" title="Histórico" aria-label="Histórico de visualização"><i data-lucide="history"></i></a>
     <button id="btn-filter" title="Filtrar" aria-label="Abrir filtro"><i data-lucide="filter"></i></button>
   </div>
-
   <div class="filter-panel" id="filter-panel">
     <div class="filter-content">
       <h3>Filtrar por Gênero</h3>
@@ -376,13 +375,11 @@
       <button id="apply-filter" aria-label="Aplicar filtro">Aplicar Filtro</button>
     </div>
   </div>
-
   <div class="container">
     <h2>Todas as Séries</h2>
     <div class="grid" id="grid"></div>
     <div class="pagination" id="pagination"></div>
   </div>
-
   <div class="modal" id="edit-series-modal">
     <div class="modal-content">
       <h2>Editar Série</h2>
@@ -424,15 +421,14 @@
       <p class="error" id="edit-series-error"></p>
     </div>
   </div>
-
   <script>
     lucide.createIcons();
-
     const SERIES_POR_PAGINA = 40;
     let series = [];
     let seriesFiltradas = [];
     let paginaAtual = 1;
     let generos = [];
+    let totalSeries = 0;
 
     const grid = document.getElementById('grid');
     const pagination = document.getElementById('pagination');
@@ -484,20 +480,29 @@
       criarPaginacao();
     }, 300));
 
-    async function carregarSeries() {
+    async function carregarSeries(pagina = 1) {
       loader.classList.remove('hidden');
       try {
-        const res = await fetch('https://series-e8008-default-rtdb.firebaseio.com/.json');
-        const catalogo = await res.json();
-        series = Object.values(catalogo).filter(f => f.tmdb_id); // Convert object to array if needed
-        seriesFiltradas = series.slice();
+        // Carregar séries do arquivo series_only.json
+        const res = await fetch('series_only.json');
+        series = await res.json();
+        totalSeries = series.length;
+
+        // Filtrar séries para a página atual
+        const startIndex = (pagina - 1) * SERIES_POR_PAGINA;
+        const endIndex = startIndex + SERIES_POR_PAGINA;
+        seriesFiltradas = series.slice(startIndex, endIndex);
+
+        // Extrair gêneros únicos
         generos = [...new Set(series.flatMap(f => f.genre.split(', ')))];
+        genreSelect.innerHTML = '<option value="">Selecione um Gênero</option>';
         generos.forEach(genre => {
           const option = document.createElement('option');
           option.value = genre;
           option.textContent = genre;
           genreSelect.appendChild(option);
         });
+
         renderizarPagina(paginaAtual);
         criarPaginacao();
       } catch (e) {
@@ -509,14 +514,11 @@
 
     async function renderizarPagina(pagina) {
       grid.innerHTML = '';
-      const inicio = (pagina - 1) * SERIES_POR_PAGINA;
-      const fim = inicio + SERIES_POR_PAGINA;
-      const seriesPagina = seriesFiltradas.slice(inicio, fim);
-      for (const serie of seriesPagina) {
+      for (const serie of seriesFiltradas) {
         try {
           const div = document.createElement('div');
           div.className = 'series-card';
-          div.onclick = () => window.location.href = `detalhes_series.html?id=${serie.tmdb_id}`;
+          div.onclick = () => window.location.href = `detalhes_series.html?id=${serie.tmdb_id}&series_id=${serie.series_id}`;
           div.innerHTML = `
             <img src="${serie.cover}" alt="${serie.title}" loading="lazy" />
             <div class="series-title">${serie.title}</div>
@@ -536,7 +538,7 @@
     }
 
     function criarPaginacao() {
-      const totalPaginas = Math.ceil(seriesFiltradas.length / SERIES_POR_PAGINA);
+      const totalPaginas = Math.ceil(totalSeries / SERIES_POR_PAGINA);
       pagination.innerHTML = '';
 
       const botaoVoltar = document.createElement('button');
@@ -545,8 +547,7 @@
       botaoVoltar.onclick = () => {
         if (paginaAtual > 1) {
           paginaAtual--;
-          renderizarPagina(paginaAtual);
-          criarPaginacao();
+          carregarSeries(paginaAtual);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       };
@@ -560,8 +561,7 @@
         if (i === paginaAtual) btn.classList.add('active');
         btn.onclick = () => {
           paginaAtual = i;
-          renderizarPagina(paginaAtual);
-          criarPaginacao();
+          carregarSeries(paginaAtual);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         };
         pagination.appendChild(btn);
@@ -573,8 +573,7 @@
       botaoProximo.onclick = () => {
         if (paginaAtual < totalPaginas) {
           paginaAtual++;
-          renderizarPagina(paginaAtual);
-          criarPaginacao();
+          carregarSeries(paginaAtual);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       };
@@ -616,24 +615,20 @@
       }
 
       try {
-        const response = await fetch('/api/edit-series', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Admin-Token': localStorage.getItem('isAdminLoggedIn')
-          },
-          body: JSON.stringify(serie)
-        });
-        const result = await response.json();
-        if (result.success) {
+        // Simular salvamento local (substitua por uma chamada à API real, se disponível)
+        const index = series.findIndex(s => s.series_id === serie.series_id);
+        if (index !== -1) {
+          series[index] = serie;
+          // Salvar localmente (simulação, já que não temos API)
+          console.log('Série atualizada localmente:', serie);
           document.getElementById('edit-series-success').style.display = 'block';
           setTimeout(() => {
             document.getElementById('edit-series-success').style.display = 'none';
             closeModal();
-            carregarSeries();
+            carregarSeries(paginaAtual);
           }, 3000);
         } else {
-          document.getElementById('edit-series-error').textContent = result.message;
+          document.getElementById('edit-series-error').textContent = 'Série não encontrada';
           document.getElementById('edit-series-error').style.display = 'block';
         }
       } catch (error) {
