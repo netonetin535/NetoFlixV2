@@ -253,7 +253,7 @@
           poster = filme.poster_path ? `https://image.tmdb.org/t/p/w500${filme.poster_path}` : poster;
         }
 
-        const videoUrl = `/video/${streamId}.mp4`; // Usar a rota do proxy
+        const videoUrl = `http://hsgbola1.xyz:80/movie/879446467/771463126/${streamId}.mp4`;
         player.src = videoUrl;
         titleEl.innerText = title;
 
@@ -274,19 +274,6 @@
 
         player.addEventListener("ended", () => {
           playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-        });
-
-        player.addEventListener("error", () => {
-          loading.style.display = "none";
-          document.getElementById("player-container").innerHTML = "<div style='color:#fff;padding:30px;text-align:center;'>Erro ao carregar o vídeo. Tente novamente mais tarde.</div>";
-        });
-
-        player.addEventListener("waiting", () => {
-          loading.style.display = "flex";
-        });
-
-        player.addEventListener("playing", () => {
-          loading.style.display = "none";
         });
 
         // Atualizar histórico no localStorage
